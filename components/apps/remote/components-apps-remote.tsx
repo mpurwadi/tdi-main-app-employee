@@ -19,13 +19,37 @@ const RemoteCheckin = () => {
             return;
         }
 
+        setMessage({ text: 'Requesting location permission...', type: 'success' });
+
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 setLatitude(position.coords.latitude);
                 setLongitude(position.coords.longitude);
+                setMessage({ text: 'Location retrieved successfully!', type: 'success' });
             },
             (error) => {
-                setMessage({ text: `Unable to retrieve your location: ${error.message}`, type: 'error' });
+                let errorMessage = '';
+                switch (error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorMessage = 'Location access denied. Please enable location permissions in your browser settings.';
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorMessage = 'Location information is unavailable.';
+                        break;
+                    case error.TIMEOUT:
+                        errorMessage = 'The request to get user location timed out.';
+                        break;
+                    default:
+                        errorMessage = `An unknown error occurred: ${error.message}`;
+                        break;
+                }
+                setMessage({ text: errorMessage, type: 'error' });
+                console.error('Geolocation error:', error);
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
             }
         );
     };
@@ -38,7 +62,7 @@ const RemoteCheckin = () => {
         }
 
         setLoading(true);
-        setMessage(null);
+        setMessage({ text: 'Checking in...', type: 'success' });
 
         try {
             const response = await fetch('/api/remote/check-in', {
@@ -59,11 +83,15 @@ const RemoteCheckin = () => {
                 setMessage({ text: data.message, type: 'success' });
                 // Refresh history after successful check-in
                 fetchHistory();
+                // Clear location so user must get it again for next check-in
+                setLatitude(null);
+                setLongitude(null);
             } else {
                 setMessage({ text: data.message || 'Check-in failed', type: 'error' });
             }
         } catch (error) {
             setMessage({ text: 'Network error occurred', type: 'error' });
+            console.error('Check-in error:', error);
         } finally {
             setLoading(false);
         }
@@ -101,7 +129,8 @@ const RemoteCheckin = () => {
 
     // Initialize
     useEffect(() => {
-        getLocation();
+        // Don't automatically request location on page load
+        // User must explicitly click the "Get Location" button
         fetchHistory();
     }, []);
 
@@ -127,7 +156,14 @@ const RemoteCheckin = () => {
                                     onClick={getLocation}
                                     disabled={loading}
                                 >
-                                    {t('Get Location')}
+                                    {loading ? (
+                                        <span className="flex items-center">
+                                            <span className="mr-2 animate-spin border-2 border-white border-l-transparent rounded-full w-4 h-4"></span>
+                                            {t('Getting Location...')}
+                                        </span>
+                                    ) : (
+                                        t('Get Location')
+                                    )}
                                 </button>
                                 <button
                                     type="button"
@@ -135,10 +171,25 @@ const RemoteCheckin = () => {
                                     onClick={getLocation}
                                     disabled={loading}
                                 >
-                                    {t('Refresh Location')}
+                                    {loading ? (
+                                        <span className="flex items-center">
+                                            <span className="mr-2 animate-spin border-2 border-white border-l-transparent rounded-full w-4 h-4"></span>
+                                            {t('Getting Location...')}
+                                        </span>
+                                    ) : (
+                                        t('Refresh Location')
+                                    )}
                                 </button>
                             </div>
                         </div>
+
+                        {loading && !latitude && !longitude && (
+                            <div className="mb-4 p-3 bg-blue-100 rounded">
+                                <p className="text-sm text-blue-800">
+                                    <strong>{t('Requesting location')}...</strong> {t('Please allow location access when prompted by your browser.')}
+                                </p>
+                            </div>
+                        )}
 
                         {latitude !== null && longitude !== null && (
                             <div className="mb-4 p-3 bg-gray-100 rounded">
