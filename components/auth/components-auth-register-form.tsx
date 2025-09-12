@@ -125,7 +125,7 @@ const ComponentsAuthRegisterForm = () => {
                     <input id="campus" name="campus" type="text" placeholder="Enter Campus" className="form-input ps-10 placeholder:text-white-dark" value={formData.campus} onChange={handleChange} required />
                     <span className="absolute start-4 top-1/2 -translate-y-1/2">
                         {/* Using a generic icon, replace if a specific one exists */}
-                        <IconBookmark fill={true} />
+                        <IconBookmark bookmark={true} />
                     </span>
                 </div>
             </div>

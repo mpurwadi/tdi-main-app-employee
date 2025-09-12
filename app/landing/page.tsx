@@ -47,8 +47,8 @@ const IconArrow = ({ direction }: { direction: 'left' | 'right' }) => (
 );
 
 const LandingPage = () => {
-    const [news, setNews] = useState([]);
-    const [announcements, setAnnouncements] = useState([]);
+    const [news, setNews] = useState<{ id: number; title: string; excerpt: string; date: string }[]>([]);
+    const [announcements, setAnnouncements] = useState<{ id: number; title: string; content: string; priority: string }[]>([]);
     const themeConfig = useSelector((state: IRootState) => state.themeConfig);
 
     // Sample features data

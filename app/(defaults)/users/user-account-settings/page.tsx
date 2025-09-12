@@ -134,7 +134,7 @@ const UserProfileSettings = () => {
                     <div className="relative text-white-dark">
                         <input id="campus" name="campus" type="text" placeholder="Enter Campus" className="form-input ps-10 placeholder:text-white-dark" value={user.campus} onChange={handleChange} required />
                         <span className="absolute start-4 top-1/2 -translate-y-1/2">
-                            <IconBookmark fill={true} />
+                            <IconBookmark bookmark={true} />
                         </span>
                     </div>
                 </div>

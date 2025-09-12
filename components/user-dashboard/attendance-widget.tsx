@@ -1,11 +1,9 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 import Swal from 'sweetalert2';
 
-const AbsensiPage = () => {
-    const router = useRouter();
+const AttendanceWidget = () => {
     const qrCodeScannerRef = useRef<Html5QrcodeScanner | null>(null);
     const [scanResult, setScanResult] = useState<string | null>(null);
     const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null);
@@ -21,7 +19,7 @@ const AbsensiPage = () => {
         // Initialize QR code scanner
         if (!qrCodeScannerRef.current) {
             qrCodeScannerRef.current = new Html5QrcodeScanner(
-                "qr-code-reader",
+                "qr-code-reader-widget",
                 {
                     fps: 10,
                     qrbox: { width: 250, height: 250 },
@@ -34,8 +32,7 @@ const AbsensiPage = () => {
         }
 
         return () => {
-            if (qrCodeScannerRef.current && qrCodeScannerRef.current.is
-                Scanning) {
+            if (qrCodeScannerRef.current) {
                 qrCodeScannerRef.current.clear().catch(error => {
                     console.error("Failed to clear html5QrcodeScanner", error);
                 });
@@ -88,7 +85,9 @@ const AbsensiPage = () => {
                         title: 'Location Error',
                         text: `You are ${distance.toFixed(2)} meters away from the office. Must be within ${GEOFENCE_RADIUS_METERS} meters.`,
                         padding: '2em',
-                        customClass: 'sweet-alerts',
+                        customClass: {
+                            container: 'sweet-alerts'
+                        },
                     });
                 }
                 setLoading(false);
@@ -100,7 +99,9 @@ const AbsensiPage = () => {
                     title: 'Geolocation Error',
                     text: `Please enable location services and try again. (${posError.message})`,
                     padding: '2em',
-                    customClass: 'sweet-alerts',
+                    customClass: {
+                        container: 'sweet-alerts'
+                    },
                 });
                 setLoading(false);
             },
@@ -143,7 +144,9 @@ const AbsensiPage = () => {
                     title: 'Attendance Recorded!',
                     text: data.message || 'Your attendance has been successfully recorded.',
                     padding: '2em',
-                    customClass: 'sweet-alerts',
+                    customClass: {
+                        container: 'sweet-alerts'
+                    },
                 });
                 // Optionally redirect or update UI
             } else {
@@ -153,7 +156,9 @@ const AbsensiPage = () => {
                     title: 'Attendance Failed',
                     text: data.message || 'Failed to record attendance.',
                     padding: '2em',
-                    customClass: 'sweet-alerts',
+                    customClass: {
+                        container: 'sweet-alerts'
+                    },
                 });
             }
         } catch (err: any) {
@@ -163,7 +168,9 @@ const AbsensiPage = () => {
                 title: 'Error',
                 text: `An unexpected error occurred: ${err.message}`,
                 padding: '2em',
-                customClass: 'sweet-alerts',
+                customClass: {
+                    container: 'sweet-alerts'
+                },
             });
         }
     };
@@ -186,7 +193,7 @@ const AbsensiPage = () => {
             )}
 
             {!scanResult ? (
-                <div id="qr-code-reader" style={{ width: '100%', maxWidth: '500px', margin: '0 auto' }}></div>
+                <div id="qr-code-reader-widget" style={{ width: '100%', maxWidth: '500px', margin: '0 auto' }}></div>
             ) : (
                 <div>
                     <p className="text-success text-lg font-bold">QR Code Scanned: {scanResult}</p>
@@ -200,4 +207,4 @@ const AbsensiPage = () => {
     );
 };
 
-export default AbsensiPage;
+export default AttendanceWidget;

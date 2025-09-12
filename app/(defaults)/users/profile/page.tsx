@@ -79,7 +79,9 @@ const UserProfilePage = () => {
                 title: 'Validation Error',
                 text: 'Please correct the errors in the form.',
                 padding: '2em',
-                customClass: 'sweet-alerts',
+                customClass: {
+                    container: 'sweet-alerts'
+                },
             });
             return;
         }
@@ -99,7 +101,9 @@ const UserProfilePage = () => {
                     title: 'Profile Updated!',
                     text: 'Your profile has been updated successfully.',
                     padding: '2em',
-                    customClass: 'sweet-alerts',
+                    customClass: {
+                        container: 'sweet-alerts'
+                    },
                 });
             } else {
                 const errorData = await response.json();
@@ -108,7 +112,9 @@ const UserProfilePage = () => {
                     title: 'Update Failed',
                     text: errorData.message || 'Failed to update profile.',
                     padding: '2em',
-                    customClass: 'sweet-alerts',
+                    customClass: {
+                        container: 'sweet-alerts'
+                    },
                 });
             }
         } catch (error) {
@@ -118,7 +124,9 @@ const UserProfilePage = () => {
                 title: 'Error',
                 text: 'An unexpected error occurred. Please try again.',
                 padding: '2em',
-                customClass: 'sweet-alerts',
+                customClass: {
+                    container: 'sweet-alerts'
+                },
             });
         }
     };

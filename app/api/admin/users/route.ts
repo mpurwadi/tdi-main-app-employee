@@ -67,7 +67,7 @@ export async function POST(request: Request) {
 
         // Check if user already exists
         const existingUser = await pool.query('SELECT id FROM users WHERE email = $1 OR student_id = $2', [email, student_id]);
-        if (existingUser.rowCount > 0) {
+        if (existingUser.rowCount && existingUser.rowCount > 0) {
             return NextResponse.json({ message: 'User with this email or student ID already exists' }, { status: 409 });
         }
 

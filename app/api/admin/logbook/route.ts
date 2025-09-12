@@ -1,4 +1,6 @@
 import { Pool } from 'pg';
+
+export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { verifyAuth, isAdmin } from '@/lib/auth';
 

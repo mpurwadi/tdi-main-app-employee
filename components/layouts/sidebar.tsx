@@ -213,19 +213,7 @@ const Sidebar = () => {
                                     </div>
                                 </Link>
                             </li>
-                            {/* Absensi Menu Item for User Role */}
-                            {(userRole === 'user') && (
-                                <li className="nav-item">
-                                    <Link href="/absensi" className="group">
-                                        <div className="flex items-center">
-                                            <IconMenuDashboard className="shrink-0 group-hover:!text-primary" /> {/* Using a generic icon for now */}
-                                            <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">
-                                                {t('Absensi')}
-                                            </span>
-                                        </div>
-                                    </Link>
-                                </li>
-                            )}
+                            {/* Absensi is now accessible through the User Dashboard */}
                         </ul>
                     </PerfectScrollbar>
                 </div>

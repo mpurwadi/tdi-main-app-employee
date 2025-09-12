@@ -1,5 +1,7 @@
 
 import { Pool } from 'pg';
+
+export const dynamic = 'force-dynamic';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { NextResponse } from 'next/server';

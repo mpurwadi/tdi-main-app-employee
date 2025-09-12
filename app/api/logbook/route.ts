@@ -61,7 +61,7 @@ export async function POST(request: Request) {
             [auth.userId, entryDate]
         );
         
-        if (existingEntry.rowCount > 0) {
+        if (existingEntry.rowCount && existingEntry.rowCount > 0) {
             return NextResponse.json({ message: 'A logbook entry already exists for this date' }, { status: 409 });
         }
         

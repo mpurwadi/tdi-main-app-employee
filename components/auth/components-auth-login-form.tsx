@@ -35,7 +35,7 @@ const ComponentsAuthLoginForm = () => {
             if (userRole === 'superadmin' || userRole === 'admin') {
                 router.push('/admin/approval'); // Redirect to admin approval page
             } else if (userRole === 'user') {
-                router.push('/dashboard'); // Assuming user dashboard is at /dashboard
+                router.push('/user-dashboard'); // Redirect to the new user dashboard
             } else {
                 router.push('/'); // Fallback to home if role is unknown
             }

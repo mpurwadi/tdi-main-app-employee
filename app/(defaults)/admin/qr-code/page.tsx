@@ -17,7 +17,9 @@ const AdminQrCodePage = () => {
             title: 'QR Code Generated',
             text: 'The QR code value is static for now. In a production environment, this would be dynamic.',
             padding: '2em',
-            customClass: 'sweet-alerts',
+            customClass: {
+                container: 'sweet-alerts'
+            },
         });
     };
 
