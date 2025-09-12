@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 
 interface AttendanceRecord {
     id: number;
@@ -30,21 +30,21 @@ const AttendanceReport = () => {
         try {
             let url = '/api/admin/reports/attendance';
             const params = new URLSearchParams();
-            
+
             if (startDate) {
                 params.append('startDate', startDate);
             }
-            
+
             if (endDate) {
                 params.append('endDate', endDate);
             }
-            
+
             params.append('filterType', filterType);
-            
+
             if (params.toString()) {
                 url += `?${params.toString()}`;
             }
-            
+
             const response = await fetch(url);
             if (!response.ok) {
                 const data = await response.json();
@@ -91,14 +91,14 @@ const AttendanceReport = () => {
 
             // Create worksheet
             const ws = XLSX.utils.json_to_sheet(exportData);
-            
+
             // Create workbook
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'Attendance Report');
-            
+
             // Export to Excel
             XLSX.writeFile(wb, 'attendance_report.xlsx');
-            
+
             Swal.fire({
                 icon: 'success',
                 title: 'Export Successful',
@@ -125,15 +125,15 @@ const AttendanceReport = () => {
         try {
             // Create PDF document
             const doc = new jsPDF();
-            
+
             // Add title
             doc.setFontSize(18);
             doc.text('Attendance Report', 14, 22);
-            
+
             // Add date
             doc.setFontSize(12);
             doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 32);
-            
+
             // Prepare table data
             const tableData = attendanceData.map(record => [
                 record.fullName,
@@ -143,9 +143,9 @@ const AttendanceReport = () => {
                 record.clockOutTime ? formatDate(record.clockOutTime) : 'Not clocked out',
                 `${record.latitude.toFixed(6)}, ${record.longitude.toFixed(6)}`
             ]);
-            
+
             // Add table
-            (doc as any).autoTable({
+            autoTable(doc, {
                 head: [['User Name', 'Student ID', 'Division', 'Clock In', 'Clock Out', 'Location']],
                 body: tableData,
                 startY: 40,
@@ -156,10 +156,10 @@ const AttendanceReport = () => {
                     fillColor: [67, 97, 238] // Primary color
                 }
             });
-            
+
             // Save PDF
             doc.save('attendance_report.pdf');
-            
+
             Swal.fire({
                 icon: 'success',
                 title: 'Export Successful',
@@ -225,7 +225,7 @@ const AttendanceReport = () => {
                         onChange={(e) => setStartDate(e.target.value)}
                     />
                 </div>
-                
+
                 <div>
                     <label className="block text-sm font-medium mb-2">End Date</label>
                     <input
@@ -235,7 +235,7 @@ const AttendanceReport = () => {
                         onChange={(e) => setEndDate(e.target.value)}
                     />
                 </div>
-                
+
                 <div>
                     <label className="block text-sm font-medium mb-2">Filter Type</label>
                     <select
@@ -248,7 +248,7 @@ const AttendanceReport = () => {
                         <option value="month">By Month</option>
                     </select>
                 </div>
-                
+
                 <div className="flex items-end">
                     <button
                         type="button"
@@ -272,7 +272,7 @@ const AttendanceReport = () => {
                     </svg>
                     Export to Excel
                 </button>
-                
+
                 <button
                     type="button"
                     className="btn btn-danger"

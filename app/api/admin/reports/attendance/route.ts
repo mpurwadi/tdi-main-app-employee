@@ -100,8 +100,8 @@ export async function GET(req: NextRequest) {
             division: record.division,
             clockInTime: record.clock_in_time,
             clockOutTime: record.check_out_time,
-            latitude: record.latitude,
-            longitude: record.longitude
+            latitude: parseFloat(record.latitude),
+            longitude: parseFloat(record.longitude)
         }));
 
         return NextResponse.json({ 
