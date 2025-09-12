@@ -29,6 +29,7 @@
         "@types/react-dom": "^18.3.0",
         "@x1mrdonut1x/nouislider-react": "^3.4.3",
         "apexcharts": "^3.37.1",
+        "autotable": "^1.0.0",
         "bcrypt": "^6.0.0",
         "easymde": "^2.18.0",
         "eslint": "8.57.0",
@@ -38,6 +39,7 @@
         "html5-qrcode": "^2.3.8",
         "i18next": "^23.13.0",
         "jsonwebtoken": "^9.0.2",
+        "jspdf": "^3.0.2",
         "leaflet": "^1.9.4",
         "mantine-datatable": "^1.7.35",
         "next": "14.2.13",
@@ -69,6 +71,7 @@
         "swiper": "^11.2.10",
         "typescript": "^5.3.3",
         "universal-cookie": "^7.2.0",
+        "xlsx": "^0.18.5",
         "yet-another-react-lightbox": "^3.15.6",
         "yup": "^1.4.0"
     },
