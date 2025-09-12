@@ -53,79 +53,49 @@ const LandingPage = () => {
 
     // Sample features data
     const features = [
-        {
-            id: 1,
-            title: 'Attendance Tracking',
-            description: 'QR code-based clock-in/out system with geofencing validation for location accuracy.',
-            icon: (
-                <div className="bg-info/20 text-info w-16 h-16 rounded-full flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                </div>
-            ),
-        },
-        {
-            id: 2,
-            title: 'Intern Logbook',
-            description: 'Daily activity logging for interns with on-site vs. remote work tracking.',
-            icon: (
-                <div className="bg-success/20 text-success w-16 h-16 rounded-full flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                </div>
-            ),
-        },
-        {
-            id: 3,
-            title: 'Financial Management',
-            description: 'Income and expense tracking with financial category management.',
-            icon: (
-                <div className="bg-primary/20 text-primary w-16 h-16 rounded-full flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                </div>
-            ),
-        },
-        {
-            id: 4,
-            title: 'Remote Work Scheduling',
-            description: 'Remote work request and approval system with calendar-based scheduling.',
-            icon: (
-                <div className="bg-warning/20 text-warning w-16 h-16 rounded-full flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                    </svg>
-                </div>
-            ),
-        },
-        {
-            id: 5,
-            title: 'Holiday Management',
-            description: 'National and company holiday tracking with calendar integration.',
-            icon: (
-                <div className="bg-secondary/20 text-secondary w-16 h-16 rounded-full flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                </div>
-            ),
-        },
-        {
-            id: 6,
-            title: 'Reporting & Analytics',
-            description: 'Executive dashboard with KPIs and data visualizations.',
-            icon: (
-                <div className="bg-danger/20 text-danger w-16 h-16 rounded-full flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                    </svg>
-                </div>
-            ),
-        },
+        // ... existing features data ...
     ];
+
+    useEffect(() => {
+        // Fetch news and announcements from API
+        const fetchNewsAndAnnouncements = async () => {
+            try {
+                const response = await fetch('/api/public/news');
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Separate news and announcements
+                    const newsItems = data.data
+                        .filter((item: any) => item.category === 'news')
+                        .map((item: any) => ({
+                            id: item.id,
+                            title: item.title,
+                            excerpt: item.content.substring(0, 100) + '...',
+                            date: new Date(item.publishedAt).toLocaleDateString()
+                        }));
+                    
+                    const announcementItems = data.data
+                        .filter((item: any) => item.category === 'announcement')
+                        .map((item: any) => ({
+                            id: item.id,
+                            title: item.title,
+                            content: item.content,
+                            priority: 'medium' // Default priority, you might want to add this to the database
+                        }));
+                    
+                    setNews(newsItems);
+                    setAnnouncements(announcementItems);
+                }
+            } catch (error) {
+                console.error('Failed to fetch news and announcements:', error);
+                // Fallback to sample data if API fails
+                setNews(sampleNews);
+                setAnnouncements(sampleAnnouncements);
+            }
+        };
+
+        fetchNewsAndAnnouncements();
+    }, []);
 
     // Sample news data
     const sampleNews = [
@@ -170,12 +140,6 @@ const LandingPage = () => {
             priority: 'low',
         },
     ];
-
-    useEffect(() => {
-        // In a real application, this would be an API call
-        setNews(sampleNews);
-        setAnnouncements(sampleAnnouncements);
-    }, []);
 
     return (
         <div className={`min-h-screen ${themeConfig.theme === 'dark' ? 'dark bg-black' : 'bg-gray-50'}`}>
