@@ -33,8 +33,8 @@ export async function GET(req: NextRequest) {
         // Format the records for the frontend
         const records = result.rows.map(record => ({
             id: record.id,
-            latitude: record.latitude,
-            longitude: record.longitude,
+            latitude: parseFloat(record.latitude),
+            longitude: parseFloat(record.longitude),
             workLocation: record.work_location,
             checkinTime: record.checkin_time
         }));

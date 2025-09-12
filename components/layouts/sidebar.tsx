@@ -125,10 +125,22 @@ const Sidebar = () => {
                             {/* ADMIN SECTION */}
                             {(userRole === 'admin' || userRole === 'superadmin') && (
                                 <>
-                                    <h2 className="-mx-4 mb-1 flex items-center bg-white-light/30 px-7 py-3 font-extrabold uppercase dark:bg-dark dark:bg-opacity-[0.08]">
+                                    <h2 className="hidden -mx-4 mb-1 flex items-center bg-white-light/30 px-7 py-3 font-extrabold uppercase dark:bg-dark dark:bg-opacity-[0.08]">
                                         <IconMinus className="hidden h-5 w-4 flex-none" />
                                         <span>{t('Admin')}</span>
                                     </h2>
+                                    
+                                    {/* Admin Dashboard */}
+                                    <li className="nav-item">
+                                        <Link href="/admin/dashboard" className="group">
+                                            <div className="flex items-center">
+                                                <IconMenuDashboard className="shrink-0 group-hover:!text-primary" />
+                                                <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">
+                                                    {t('Dashboard')}
+                                                </span>
+                                            </div>
+                                        </Link>
+                                    </li>
                                     
                                     <li className="menu nav-item">
                                         <button type="button" className={`${currentMenu === 'userManagement' ? 'active' : ''} nav-link group w-full`} onClick={() => toggleMenu('userManagement')}>
@@ -186,6 +198,20 @@ const Sidebar = () => {
                                             </div>
                                         </Link>
                                     </li>
+                                    
+                                    {/* Roles Management - Only visible to superadmins */}
+                                    {userRole === 'superadmin' && (
+                                        <li className="nav-item">
+                                            <Link href="/admin/roles" className="group">
+                                                <div className="flex items-center">
+                                                    <IconMenuUsers className="shrink-0 group-hover:!text-primary" />
+                                                    <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">
+                                                        {t('Roles Management')}
+                                                    </span>
+                                                </div>
+                                            </Link>
+                                        </li>
+                                    )}
                                 </>
                             )}
 

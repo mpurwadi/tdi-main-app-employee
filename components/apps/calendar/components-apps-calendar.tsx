@@ -2,7 +2,7 @@
 import IconPlus from '@/components/icon/icon-plus';
 import IconX from '@/components/icon/icon-x';
 import { Transition, Dialog, DialogBackdrop, TransitionChild, DialogPanel } from '@headlessui/react';
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -17,108 +17,11 @@ const ComponentsAppsCalendar = () => {
         return str;
     };
 
-    const [events, setEvents] = useState<any>([
-        {
-            id: 1,
-            title: 'All Day Event',
-            start: now.getFullYear() + '-' + getMonth(now) + '-01T14:30:00',
-            end: now.getFullYear() + '-' + getMonth(now) + '-02T14:30:00',
-            className: 'danger',
-            description: 'Aenean fermentum quam vel sapien rutrum cursus. Vestibulum imperdiet finibus odio, nec tincidunt felis facilisis eu.',
-        },
-        {
-            id: 2,
-            title: 'Site Visit',
-            start: now.getFullYear() + '-' + getMonth(now) + '-07T19:30:00',
-            end: now.getFullYear() + '-' + getMonth(now) + '-08T14:30:00',
-            className: 'primary',
-            description: 'Etiam a odio eget enim aliquet laoreet. Vivamus auctor nunc ultrices varius lobortis.',
-        },
-        {
-            id: 3,
-            title: 'Product Lunching Event',
-            start: now.getFullYear() + '-' + getMonth(now) + '-17T14:30:00',
-            end: now.getFullYear() + '-' + getMonth(now) + '-18T14:30:00',
-            className: 'info',
-            description: 'Proin et consectetur nibh. Mauris et mollis purus. Ut nec tincidunt lacus. Nam at rutrum justo, vitae egestas dolor.',
-        },
-        {
-            id: 4,
-            title: 'Meeting',
-            start: now.getFullYear() + '-' + getMonth(now) + '-12T10:30:00',
-            end: now.getFullYear() + '-' + getMonth(now) + '-13T10:30:00',
-            className: 'danger',
-            description: 'Mauris ut mauris aliquam, fringilla sapien et, dignissim nisl. Pellentesque ornare velit non mollis fringilla.',
-        },
-        {
-            id: 5,
-            title: 'Lunch',
-            start: now.getFullYear() + '-' + getMonth(now) + '-12T15:00:00',
-            end: now.getFullYear() + '-' + getMonth(now) + '-13T15:00:00',
-            className: 'info',
-            description: 'Integer fermentum bibendum elit in egestas. Interdum et malesuada fames ac ante ipsum primis in faucibus.',
-        },
-        {
-            id: 6,
-            title: 'Conference',
-            start: now.getFullYear() + '-' + getMonth(now) + '-12T21:30:00',
-            end: now.getFullYear() + '-' + getMonth(now) + '-13T21:30:00',
-            className: 'success',
-            description:
-                'Curabitur facilisis vel elit sed dapibus. Nunc sagittis ex nec ante facilisis, sed sodales purus rhoncus. Donec est sapien, porttitor et feugiat sed, eleifend quis sapien. Sed sit amet maximus dolor.',
-        },
-        {
-            id: 7,
-            title: 'Happy Hour',
-            start: now.getFullYear() + '-' + getMonth(now) + '-12T05:30:00',
-            end: now.getFullYear() + '-' + getMonth(now) + '-13T05:30:00',
-            className: 'info',
-            description: ' odio lectus, porttitor molestie scelerisque blandit, hendrerit sed ex. Aenean malesuada iaculis erat, vitae blandit nisl accumsan ut.',
-        },
-        {
-            id: 8,
-            title: 'Dinner',
-            start: now.getFullYear() + '-' + getMonth(now) + '-12T20:00:00',
-            end: now.getFullYear() + '-' + getMonth(now) + '-13T20:00:00',
-            className: 'danger',
-            description: 'Sed purus urna, aliquam et pharetra ut, efficitur id mi. Pellentesque ut convallis velit. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-        },
-        {
-            id: 9,
-            title: 'Birthday Party',
-            start: now.getFullYear() + '-' + getMonth(now) + '-27T20:00:00',
-            end: now.getFullYear() + '-' + getMonth(now) + '-28T20:00:00',
-            className: 'success',
-            description: 'Sed purus urna, aliquam et pharetra ut, efficitur id mi. Pellentesque ut convallis velit. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-        },
-        {
-            id: 10,
-            title: 'New Talent Event',
-            start: now.getFullYear() + '-' + getMonth(now, 1) + '-24T08:12:14',
-            end: now.getFullYear() + '-' + getMonth(now, 1) + '-27T22:20:20',
-            className: 'danger',
-            description: 'Sed purus urna, aliquam et pharetra ut, efficitur id mi. Pellentesque ut convallis velit. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-        },
-        {
-            id: 11,
-            title: 'Other new',
-            start: now.getFullYear() + '-' + getMonth(now, -1) + '-13T08:12:14',
-            end: now.getFullYear() + '-' + getMonth(now, -1) + '-16T22:20:20',
-            className: 'primary',
-            description: 'Pellentesque ut convallis velit. Sed purus urna, aliquam et pharetra ut, efficitur id mi. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-        },
-        {
-            id: 13,
-            title: 'Upcoming Event',
-            start: now.getFullYear() + '-' + getMonth(now, 1) + '-15T08:12:14',
-            end: now.getFullYear() + '-' + getMonth(now, 1) + '-18T22:20:20',
-            className: 'primary',
-            description: 'Pellentesque ut convallis velit. Sed purus urna, aliquam et pharetra ut, efficitur id mi. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-        },
-    ]);
+    const [events, setEvents] = useState<any>([]);
     const [isAddEventModal, setIsAddEventModal] = useState(false);
     const [minStartDate, setMinStartDate] = useState<any>('');
     const [minEndDate, setMinEndDate] = useState<any>('');
+    const [loading, setLoading] = useState(true);
     const defaultParams = {
         id: null,
         title: '',
@@ -128,6 +31,31 @@ const ComponentsAppsCalendar = () => {
         type: 'primary',
     };
     const [params, setParams] = useState<any>(defaultParams);
+    
+    // Fetch calendar events from API
+    const fetchCalendarEvents = async () => {
+        try {
+            setLoading(true);
+            const response = await fetch('/api/calendar');
+            const data = await response.json();
+            
+            if (response.ok) {
+                setEvents(data);
+            } else {
+                showMessage('Failed to fetch calendar events', 'error');
+            }
+        } catch (error) {
+            console.error('Error fetching calendar events:', error);
+            showMessage('Failed to fetch calendar events', 'error');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Initialize component
+    useEffect(() => {
+        fetchCalendarEvents();
+    }, []);
     const dateFormat = (dt: any) => {
         dt = new Date(dt);
         const month = dt.getMonth() + 1 < 10 ? '0' + (dt.getMonth() + 1) : dt.getMonth() + 1;
@@ -137,6 +65,7 @@ const ComponentsAppsCalendar = () => {
         dt = dt.getFullYear() + '-' + month + '-' + date + 'T' + hours + ':' + mins;
         return dt;
     };
+    
     const editEvent = (data: any = null) => {
         let params = JSON.parse(JSON.stringify(defaultParams));
         setParams(params);
@@ -158,6 +87,7 @@ const ComponentsAppsCalendar = () => {
         }
         setIsAddEventModal(true);
     };
+    
     const editDate = (data: any) => {
         let obj = {
             event: {
@@ -168,54 +98,31 @@ const ComponentsAppsCalendar = () => {
         editEvent(obj);
     };
 
-    const saveEvent = () => {
+    const saveEvent = async () => {
         if (!params.title) {
-            return true;
+            return showMessage('Title is required', 'error');
         }
         if (!params.start) {
-            return true;
+            return showMessage('Start date is required', 'error');
         }
         if (!params.end) {
-            return true;
+            return showMessage('End date is required', 'error');
         }
-        if (params.id) {
-            //update event
-            let dataevent = events || [];
-            let event: any = dataevent.find((d: any) => d.id === parseInt(params.id));
-            event.title = params.title;
-            event.start = params.start;
-            event.end = params.end;
-            event.description = params.description;
-            event.className = params.type;
-
-            setEvents([]);
-            setTimeout(() => {
-                setEvents(dataevent);
-            });
-        } else {
-            //add event
-            let maxEventId = 0;
-            if (events) {
-                maxEventId = events.reduce((max: number, character: any) => (character.id > max ? character.id : max), events[0].id);
-            }
-            maxEventId = maxEventId + 1;
-            let event = {
-                id: maxEventId,
-                title: params.title,
-                start: params.start,
-                end: params.end,
-                description: params.description,
-                className: params.type,
-            };
-            let dataevent = events || [];
-            dataevent = dataevent.concat([event]);
-            setTimeout(() => {
-                setEvents(dataevent);
-            });
+        
+        try {
+            // For now, we'll just show a message since we don't have a create endpoint
+            // In a real implementation, you would send a POST request to create the event
+            showMessage('Event creation not implemented in this demo', 'info');
+            setIsAddEventModal(false);
+            
+            // Refresh events
+            await fetchCalendarEvents();
+        } catch (error) {
+            console.error('Error saving event:', error);
+            showMessage('Failed to save event', 'error');
         }
-        showMessage('Event has been saved successfully.');
-        setIsAddEventModal(false);
     };
+    
     const startDateChange = (event: any) => {
         const dateStr = event.target.value;
         if (dateStr) {
@@ -223,10 +130,12 @@ const ComponentsAppsCalendar = () => {
             setParams({ ...params, start: dateStr, end: '' });
         }
     };
+    
     const changeValue = (e: any) => {
         const { value, id } = e.target;
         setParams({ ...params, [id]: value });
     };
+    
     const showMessage = (msg = '', type = 'success') => {
         const toast: any = Swal.mixin({
             toast: true,
@@ -273,22 +182,28 @@ const ComponentsAppsCalendar = () => {
                     </button>
                 </div>
                 <div className="calendar-wrapper">
-                    <FullCalendar
-                        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-                        initialView="dayGridMonth"
-                        headerToolbar={{
-                            left: 'prev,next today',
-                            center: 'title',
-                            right: 'dayGridMonth,timeGridWeek,timeGridDay',
-                        }}
-                        editable={true}
-                        dayMaxEvents={true}
-                        selectable={true}
-                        droppable={true}
-                        eventClick={(event: any) => editEvent(event)}
-                        select={(event: any) => editDate(event)}
-                        events={events}
-                    />
+                    {loading ? (
+                        <div className="flex justify-center items-center h-64">
+                            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+                        </div>
+                    ) : (
+                        <FullCalendar
+                            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+                            initialView="dayGridMonth"
+                            headerToolbar={{
+                                left: 'prev,next today',
+                                center: 'title',
+                                right: 'dayGridMonth,timeGridWeek,timeGridDay',
+                            }}
+                            editable={true}
+                            dayMaxEvents={true}
+                            selectable={true}
+                            droppable={true}
+                            eventClick={(event: any) => editEvent(event)}
+                            select={(event: any) => editDate(event)}
+                            events={events}
+                        />
+                    )}
                 </div>
             </div>
 
