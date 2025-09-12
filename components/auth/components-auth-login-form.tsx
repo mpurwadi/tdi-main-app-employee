@@ -1,6 +1,8 @@
 'use client';
 import IconLockDots from '@/components/icon/icon-lock-dots';
 import IconMail from '@/components/icon/icon-mail';
+import IconEye from '@/components/icon/icon-eye';
+import IconEyeOff from '@/components/icon/icon-eye-off';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 
@@ -8,6 +10,7 @@ const ComponentsAuthLoginForm = () => {
     const router = useRouter();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -58,10 +61,25 @@ const ComponentsAuthLoginForm = () => {
             <div>
                 <label htmlFor="password">Password</label>
                 <div className="relative text-white-dark">
-                    <input id="password" type="password" placeholder="Enter Password" className="form-input ps-10 placeholder:text-white-dark" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                    <input 
+                        id="password" 
+                        type={showPassword ? "text" : "password"} 
+                        placeholder="Enter Password" 
+                        className="form-input ps-10 placeholder:text-white-dark pe-10" 
+                        value={password} 
+                        onChange={(e) => setPassword(e.target.value)} 
+                        required 
+                    />
                     <span className="absolute start-4 top-1/2 -translate-y-1/2">
                         <IconLockDots fill={true} />
                     </span>
+                    <button 
+                        type="button" 
+                        className="absolute end-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+                        onClick={() => setShowPassword(!showPassword)}
+                    >
+                        {showPassword ? <IconEyeOff className="w-5 h-5" /> : <IconEye className="w-5 h-5" />}
+                    </button>
                 </div>
             </div>
             

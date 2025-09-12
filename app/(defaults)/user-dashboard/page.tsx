@@ -1,6 +1,7 @@
 import { verifyAuth } from '@/lib/auth';
 import { notFound, redirect } from 'next/navigation';
 import AttendanceWidget from '@/components/user-dashboard/attendance-widget';
+import TodoWidget from '@/components/user-dashboard/todo-widget';
 import Link from 'next/link';
 
 export default async function UserDashboardPage() {
@@ -31,7 +32,7 @@ export default async function UserDashboardPage() {
                 <div className="card bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md rounded-lg p-6">
                     <h6 className="text-xl font-bold mb-2">Absensi</h6>
                     <p className="mb-4">Record your daily attendance.</p>
-                    <Link href="#absensi" className="btn btn-light btn-sm">Record Attendance</Link>
+                    <Link href="/apps/absen" className="btn btn-light btn-sm">Go to Absensi</Link>
                 </div>
 
                 {/* Logbook Card */}
@@ -49,9 +50,9 @@ export default async function UserDashboardPage() {
                 </div>
             </div>
 
-            {/* Attendance Widget */}
-            <div id="absensi">
-                <AttendanceWidget />
+            {/* TODO Widget */}
+            <div className="mb-6">
+                <TodoWidget />
             </div>
 
             {/* Monitoring Section (Placeholder) */}

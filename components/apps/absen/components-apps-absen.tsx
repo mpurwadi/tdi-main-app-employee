@@ -2,8 +2,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 import Swal from 'sweetalert2';
+import { useRouter } from 'next/navigation';
 
-const AttendanceWidget = () => {
+const AbsenceComponent = () => {
+    const router = useRouter();
     const qrCodeScannerRef = useRef<Html5QrcodeScanner | null>(null);
     const [scanResult, setScanResult] = useState<string | null>(null);
     const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null);
@@ -22,7 +24,7 @@ const AttendanceWidget = () => {
         // Initialize QR code scanner
         if (isScanning && !qrCodeScannerRef.current) {
             qrCodeScannerRef.current = new Html5QrcodeScanner(
-                "qr-code-reader-widget",
+                "qr-code-reader-absence",
                 {
                     fps: 10,
                     qrbox: { width: 250, height: 250 },
@@ -269,7 +271,7 @@ const AttendanceWidget = () => {
                 <div>
                     {isScanning ? (
                         <div>
-                            <div id="qr-code-reader-widget" style={{ width: '100%', maxWidth: '500px', margin: '0 auto' }}></div>
+                            <div id="qr-code-reader-absence" style={{ width: '100%', maxWidth: '500px', margin: '0 auto' }}></div>
                             <p className="text-center text-gray-500 mt-2">Point your camera at the QR code</p>
                         </div>
                     ) : (
@@ -334,4 +336,4 @@ const AttendanceWidget = () => {
     );
 };
 
-export default AttendanceWidget;
+export default AbsenceComponent;

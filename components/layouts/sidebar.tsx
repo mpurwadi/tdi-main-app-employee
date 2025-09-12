@@ -213,7 +213,16 @@ const Sidebar = () => {
                                     </div>
                                 </Link>
                             </li>
-                            {/* Absensi is now accessible through the User Dashboard */}
+                            <li className="nav-item">
+                                <Link href="/apps/absen" className="group">
+                                    <div className="flex items-center">
+                                        <IconMenuDashboard className="shrink-0 group-hover:!text-primary" />
+                                        <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">
+                                            Absence
+                                        </span>
+                                    </div>
+                                </Link>
+                            </li>
                         </ul>
                     </PerfectScrollbar>
                 </div>
