@@ -6,8 +6,13 @@ import { Nunito } from 'next/font/google';
 
 export const metadata: Metadata = {
     title: {
-        template: '%s | VRISTO - Multipurpose Tailwind Dashboard Template',
-        default: 'VRISTO - Multipurpose Tailwind Dashboard Template',
+        template: '%s | TDI Employee Service',
+        default: 'TDI Employee Service',
+    },
+    icons: {
+        icon: '/logo.ico',
+        shortcut: '/logo.ico',
+        apple: '/logo.png',
     },
 };
 const nunito = Nunito({
