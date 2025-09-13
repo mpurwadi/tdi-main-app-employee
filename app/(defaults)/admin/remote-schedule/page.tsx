@@ -2,7 +2,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { verifyAuth, isAdmin } from '@/lib/auth';
 import { useRouter } from 'next/navigation';
 
 const RemoteSchedulePage = () => {
@@ -21,33 +20,51 @@ const RemoteSchedulePage = () => {
   // State for schedule history
   const [scheduleHistory, setScheduleHistory] = useState<any[]>([]);
   const [historyLoading, setHistoryLoading] = useState(true);
+  const [editingDate, setEditingDate] = useState<{scheduleId: number, internId: number, date: string} | null>(null);
+  const [newDateValue, setNewDateValue] = useState('');
 
   // Check authentication and redirect if not admin
   useEffect(() => {
-    try {
-      const auth = verifyAuth();
-      if (!isAdmin(auth)) {
-        router.push('/');
-        return;
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/auth/me');
+        const data = await response.json();
+        
+        if (!response.ok || !data.isAdmin) {
+          router.push('/auth/boxed-signin');
+          return;
+        }
+        
+        setIsLoading(false);
+      } catch (err) {
+        router.push('/auth/boxed-signin');
       }
-      setIsLoading(false);
-      
-      // Load interns (mock data for now)
-      const mockInterns = [
-        { id: 1, name: 'John Doe', email: 'john.doe@example.com' },
-        { id: 2, name: 'Jane Smith', email: 'jane.smith@example.com' },
-        { id: 3, name: 'Robert Johnson', email: 'robert.johnson@example.com' },
-        { id: 4, name: 'Emily Davis', email: 'emily.davis@example.com' },
-        { id: 5, name: 'Michael Wilson', email: 'michael.wilson@example.com' },
-        { id: 6, name: 'Sarah Brown', email: 'sarah.brown@example.com' },
-        { id: 7, name: 'David Miller', email: 'david.miller@example.com' },
-        { id: 8, name: 'Lisa Wilson', email: 'lisa.wilson@example.com' },
-      ];
-      setAllInterns(mockInterns);
-    } catch (err) {
-      router.push('/auth/boxed-signin');
-    }
+    };
+    
+    checkAuth();
   }, [router]);
+
+  // Load interns from database
+  useEffect(() => {
+    const loadInterns = async () => {
+      if (isLoading) return;
+      
+      try {
+        const response = await fetch('/api/admin/remote-schedule/interns');
+        const result = await response.json();
+        
+        if (result.success) {
+          setAllInterns(result.data);
+        } else {
+          setError(result.error || 'Failed to load interns');
+        }
+      } catch (err) {
+        setError('Failed to load interns');
+      }
+    };
+    
+    loadInterns();
+  }, [isLoading]);
 
   // Load schedule history
   useEffect(() => {
@@ -145,7 +162,11 @@ const RemoteSchedulePage = () => {
         if (historyResult.success) {
           setScheduleHistory(historyResult.data);
         }
-        // Clear generated schedule
+        // Clear form
+        setStartDate('');
+        setEndDate('');
+        setMethod('Satu kali remote per minggu');
+        setSelectedInterns([]);
         setGeneratedSchedule(null);
       } else {
         setError(result.error || 'Failed to save schedule');
@@ -153,6 +174,55 @@ const RemoteSchedulePage = () => {
     } catch (err) {
       setError('Failed to save schedule');
     }
+  };
+
+  // Start editing a date
+  const startEditingDate = (scheduleId: number, internId: number, date: string) => {
+    setEditingDate({ scheduleId, internId, date });
+    setNewDateValue(date);
+  };
+
+  // Save edited date
+  const saveEditedDate = async () => {
+    if (!editingDate) return;
+
+    try {
+      const response = await fetch(`/api/admin/remote-schedule/${editingDate.scheduleId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          internId: editingDate.internId,
+          oldDate: editingDate.date,
+          newDate: newDateValue,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Refresh history
+        const historyResponse = await fetch('/api/admin/remote-schedule');
+        const historyResult = await historyResponse.json();
+        if (historyResult.success) {
+          setScheduleHistory(historyResult.data);
+        }
+        setEditingDate(null);
+        setNewDateValue('');
+        alert('Date updated successfully!');
+      } else {
+        setError(result.error || 'Failed to update date');
+      }
+    } catch (err) {
+      setError('Failed to update date');
+    }
+  };
+
+  // Cancel editing
+  const cancelEditing = () => {
+    setEditingDate(null);
+    setNewDateValue('');
   };
 
   if (isLoading) {
@@ -353,8 +423,9 @@ const RemoteSchedulePage = () => {
                 <tr>
                   <th>Period</th>
                   <th>Method</th>
-                  <th>Interns</th>
+                  <th>Interns Count</th>
                   <th>Created At</th>
+                  <th>Details</th>
                 </tr>
               </thead>
               <tbody>
@@ -364,6 +435,60 @@ const RemoteSchedulePage = () => {
                     <td>{schedule.method}</td>
                     <td>{schedule.interns.length} interns</td>
                     <td>{new Date(schedule.createdAt).toLocaleDateString()}</td>
+                    <td>
+                      <details className="collapse collapse-arrow">
+                        <summary className="collapse-title text-xs">View Details</summary>
+                        <div className="collapse-content">
+                          {schedule.interns.map((intern: any) => (
+                            <div key={`${schedule.id}-${intern.id}`} className="mb-2 p-2 border-b border-gray-200 dark:border-gray-700">
+                              <div className="font-medium">{intern.name}</div>
+                              <div className="flex flex-wrap gap-2 mt-1">
+                                {intern.remoteDates.map((date: string, index: number) => (
+                                  <div key={`${schedule.id}-${intern.id}-${date}`} className="flex items-center">
+                                    {editingDate?.scheduleId === schedule.id && 
+                                     editingDate?.internId === intern.id && 
+                                     editingDate?.date === date ? (
+                                      <div className="flex items-center gap-1">
+                                        <input
+                                          type="date"
+                                          className="form-input text-xs p-1"
+                                          value={newDateValue}
+                                          onChange={(e) => setNewDateValue(e.target.value)}
+                                        />
+                                        <button 
+                                          className="btn btn-success btn-xs"
+                                          onClick={saveEditedDate}
+                                        >
+                                          Save
+                                        </button>
+                                        <button 
+                                          className="btn btn-secondary btn-xs"
+                                          onClick={cancelEditing}
+                                        >
+                                          Cancel
+                                        </button>
+                                      </div>
+                                    ) : (
+                                      <div className="flex items-center gap-1">
+                                        <span className="text-sm bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded">
+                                          {date}
+                                        </span>
+                                        <button 
+                                          className="btn btn-primary btn-xs"
+                                          onClick={() => startEditingDate(schedule.id, intern.id, date)}
+                                        >
+                                          Edit
+                                        </button>
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </details>
+                    </td>
                   </tr>
                 ))}
               </tbody>

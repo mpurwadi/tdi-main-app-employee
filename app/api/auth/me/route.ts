@@ -1,12 +1,23 @@
+// app/api/auth/me/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+import { verifyAuth, isAdmin } from '@/lib/auth';
 
-import { NextResponse } from 'next/server';
-import { verifyAuth } from '@/lib/auth';
-
-export async function GET(request: Request) {
-    try {
-        const auth = verifyAuth(); // This will throw an error if not authenticated
-        return NextResponse.json(auth, { status: 200 });
-    } catch (error: any) {
-        return NextResponse.json({ message: error.message }, { status: 401 });
-    }
+export async function GET(request: NextRequest) {
+  try {
+    const auth = verifyAuth();
+    const admin = isAdmin(auth);
+    
+    return NextResponse.json({
+      success: true,
+      userId: auth.userId,
+      email: auth.email,
+      role: auth.role,
+      isAdmin: admin,
+    });
+  } catch (error) {
+    return NextResponse.json(
+      { success: false, error: 'Unauthorized' },
+      { status: 401 }
+    );
+  }
 }

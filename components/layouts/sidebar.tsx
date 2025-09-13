@@ -31,9 +31,7 @@ import IconMenuUsers from '@/components/icon/menu/icon-menu-users';
 import IconMenuPages from '@/components/icon/menu/icon-menu-pages';
 import IconMenuAuthentication from '@/components/icon/menu/icon-menu-authentication';
 import IconMenuDocumentation from '@/components/icon/menu/icon-menu-documentation';
-import IconInfoCircle from '@/components/icon/icon-info-circle';
 import IconLogout from '@/components/icon/icon-logout';
-import Dropdown from '@/components/dropdown';
 import { usePathname } from 'next/navigation';
 import { getTranslation } from '@/i18n';
 
