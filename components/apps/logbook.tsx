@@ -28,6 +28,20 @@ const LogbookPage = () => {
     const [endTime, setEndTime] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+    const [showDuplicateDialog, setShowDuplicateDialog] = useState<boolean>(false);
+    const [duplicateEntry, setDuplicateEntry] = useState<LogbookEntry | null>(null);
+
+    // Monitor duplicateEntry state changes for debugging
+    useEffect(() => {
+        // This effect is just for monitoring state changes during development
+        // It can be removed in production
+    }, [duplicateEntry, showDuplicateDialog]);
+
+    // Monitor entries for debugging
+    useEffect(() => {
+        // This is just for monitoring during development
+    }, [entries]);
 
     // Get the first day of the month and the number of days in the month
     const getDaysInMonth = (date: Date) => {
@@ -70,13 +84,19 @@ const LogbookPage = () => {
 
     // Get entries for a specific date
     const getEntriesForDate = (date: Date) => {
-        const dateString = date.toISOString().split('T')[0];
+        // Format date as YYYY-MM-DD without timezone conversion
+        const dateString = date.getFullYear() + '-' + 
+                          String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+                          String(date.getDate()).padStart(2, '0');
+        
         return entries.filter(entry => entry.entry_date === dateString);
     };
 
     // Check if a date has any entries
     const hasEntries = (date: Date) => {
-        return getEntriesForDate(date).length > 0;
+        const entriesForDate = getEntriesForDate(date);
+        const result = entriesForDate.length > 0;
+        return result;
     };
 
     // Get the status of entries for a date
@@ -116,6 +136,17 @@ const LogbookPage = () => {
         setShowEntryForm(true);
     };
 
+    // Handle viewing/editing a duplicate entry
+    const handleViewEditDuplicate = () => {
+        setShowDuplicateDialog(false);
+        if (duplicateEntry) {
+            handleEditEntry(duplicateEntry);
+        } else {
+            setMessage({ text: 'Error: Could not load the existing entry', type: 'error' });
+            setTimeout(() => setMessage(null), 5000);
+        }
+    };
+
     // Handle saving an entry
     const handleSaveEntry = async () => {
         if (!activity.trim()) {
@@ -143,13 +174,33 @@ const LogbookPage = () => {
 
             if (!response.ok) {
                 const data = await response.json();
+                // Handle duplicate entry error specifically
+                if (response.status === 409) {
+                    // Use the entry data from the API response
+                    if (data.entry) {
+                        setDuplicateEntry(data.entry);
+                        setShowDuplicateDialog(true);
+                    } else {
+                        // Fallback if entry data is not provided
+                        setMessage({ text: data.message || 'A logbook entry already exists for this date', type: 'error' });
+                        setTimeout(() => setMessage(null), 5000);
+                    }
+                    return;
+                }
                 throw new Error(data.message || `Failed to ${editingEntry ? 'update' : 'create'} logbook entry`);
             }
 
             setShowEntryForm(false);
+            setMessage({ 
+                text: editingEntry ? 'Logbook entry updated successfully' : 'Logbook entry created successfully', 
+                type: 'success' 
+            });
+            setTimeout(() => setMessage(null), 5000); // Hide message after 5 seconds
             fetchEntries(); // Refresh entries
         } catch (err: any) {
             setError(err.message);
+            setMessage({ text: err.message, type: 'error' });
+            setTimeout(() => setMessage(null), 5000); // Hide message after 5 seconds
         }
     };
 
@@ -169,9 +220,13 @@ const LogbookPage = () => {
                 throw new Error(data.message || 'Failed to delete logbook entry');
             }
 
+            setMessage({ text: 'Logbook entry deleted successfully', type: 'success' });
+            setTimeout(() => setMessage(null), 5000); // Hide message after 5 seconds
             fetchEntries(); // Refresh entries
         } catch (err: any) {
             setError(err.message);
+            setMessage({ text: err.message, type: 'error' });
+            setTimeout(() => setMessage(null), 5000); // Hide message after 5 seconds
         }
     };
 
@@ -208,7 +263,7 @@ const LogbookPage = () => {
             const hasEntry = hasEntries(date);
             const status = getDateStatus(date);
 
-            let dayClass = "p-2 border border-gray-200 h-24 cursor-pointer";
+            let dayClass = "p-1 border border-gray-200 h-32 cursor-pointer overflow-y-auto";
             if (isToday) dayClass += " bg-blue-100";
             if (isSelected) dayClass += " bg-blue-200";
             
@@ -229,23 +284,30 @@ const LogbookPage = () => {
                     }}
                 >
                     <div className="font-medium">{day}</div>
+                    {/* Test element to see if day cells are rendering */}
+                    <div className="text-xs text-gray-500">Test: Day cell rendered</div>
                     {hasEntry && (
                         <div className="mt-1">
+                            <div className="text-xs text-gray-500 mb-1">
+                                {getEntriesForDate(date).length} entr{getEntriesForDate(date).length === 1 ? 'y' : 'ies'}
+                            </div>
+                            {/* Test element to see if this section is rendering */}
+                            <div className="bg-blue-200 text-blue-800 text-xs p-1 mb-1">Test: Entries section rendered</div>
                             {getEntriesForDate(date).map(entry => (
                                 <div 
                                     key={entry.id} 
-                                    className={`text-xs p-1 mb-1 rounded ${
-                                        entry.status === 'approved' ? 'bg-green-500 text-white' :
-                                        entry.status === 'pending' ? 'bg-yellow-500 text-white' :
-                                        'bg-red-500 text-white'
+                                    className={`text-xs p-1 mb-1 rounded cursor-pointer border ${
+                                        entry.status === 'approved' ? 'bg-green-500 text-white border-green-600' :
+                                        entry.status === 'pending' ? 'bg-yellow-500 text-white border-yellow-600' :
+                                        'bg-red-500 text-white border-red-600'
                                     }`}
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         handleEditEntry(entry);
                                     }}
                                 >
-                                    <div className="truncate">{entry.activity.substring(0, 20)}{entry.activity.length > 20 ? '...' : ''}</div>
-                                    <div className="text-xs">
+                                    <div className="truncate font-medium">{entry.activity.substring(0, 25)}{entry.activity.length > 25 ? '...' : ''}</div>
+                                    <div className="text-xs mt-1">
                                         {entry.status === 'approved' ? 'Approved' :
                                          entry.status === 'pending' ? 'Pending' :
                                          'Rejected'}
@@ -281,6 +343,16 @@ const LogbookPage = () => {
                     Today
                 </button>
             </div>
+            
+            {message && (
+                <div className={`p-3.5 rounded-md mb-4 ${
+                    message.type === 'success' 
+                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
+                        : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                }`}>
+                    {message.text}
+                </div>
+            )}
 
             <div className="flex justify-between items-center mb-4">
                 <button 
@@ -321,6 +393,16 @@ const LogbookPage = () => {
                         {error && (
                             <div className="p-3.5 rounded-md bg-danger-light text-danger mb-4">
                                 {error}
+                            </div>
+                        )}
+                        
+                        {message && (
+                            <div className={`p-3.5 rounded-md mb-4 ${
+                                message.type === 'success' 
+                                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
+                                    : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                            }`}>
+                                {message.text}
                             </div>
                         )}
                         
@@ -396,6 +478,57 @@ const LogbookPage = () => {
                                 onClick={handleSaveEntry}
                             >
                                 {editingEntry ? 'Update Entry' : 'Create Entry'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {showDuplicateDialog && duplicateEntry && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white dark:bg-black rounded-lg p-6 w-full max-w-md">
+                        <h3 className="text-lg font-bold mb-4">Duplicate Entry Warning</h3>
+                        <p className="mb-4">A logbook entry already exists for {selectedDate.toLocaleDateString()}.</p>
+                        
+                        {message && (
+                            <div className={`p-3.5 rounded-md mb-4 ${
+                                message.type === 'success' 
+                                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
+                                    : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                            }`}>
+                                {message.text}
+                            </div>
+                        )}
+                        
+                        <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded mb-4">
+                            <h4 className="font-semibold mb-2">Existing Entry:</h4>
+                            <p className="text-sm mb-2">{duplicateEntry.activity.substring(0, 25)}{duplicateEntry.activity.length > 25 ? '...' : ''}</p>
+                            <div className="flex justify-between text-xs">
+                                <span>Status: {duplicateEntry.status}</span>
+                                <span>
+                                    {duplicateEntry.start_time && duplicateEntry.end_time 
+                                        ? `${duplicateEntry.start_time} - ${duplicateEntry.end_time}` 
+                                        : 'No time specified'}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <p className="mb-4">Would you like to view/edit the existing entry?</p>
+                        
+                        <div className="flex justify-end space-x-3">
+                            <button
+                                type="button"
+                                className="btn btn-outline-secondary"
+                                onClick={() => setShowDuplicateDialog(false)}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                className="btn btn-primary"
+                                onClick={handleViewEditDuplicate}
+                            >
+                                View/Edit Entry
                             </button>
                         </div>
                     </div>

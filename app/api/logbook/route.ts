@@ -57,12 +57,15 @@ export async function POST(request: Request) {
         
         // Check if an entry already exists for this date
         const existingEntry = await pool.query(
-            'SELECT id FROM logbook_entries WHERE user_id = $1 AND entry_date = $2',
+            'SELECT id, user_id, entry_date, activity, work_type, start_time, end_time, status, created_at, updated_at FROM logbook_entries WHERE user_id = $1 AND entry_date = $2',
             [auth.userId, entryDate]
         );
         
         if (existingEntry.rowCount && existingEntry.rowCount > 0) {
-            return NextResponse.json({ message: 'A logbook entry already exists for this date' }, { status: 409 });
+            return NextResponse.json({ 
+                message: 'A logbook entry already exists for this date',
+                entry: existingEntry.rows[0]
+            }, { status: 409 });
         }
         
         // Insert new logbook entry
