@@ -21,7 +21,7 @@ const Dropdown = (props: any, forwardedRef: any) => {
     });
 
     const handleDocumentClick = (event: any) => {
-        if (referenceRef.current.contains(event.target) || popperRef.current.contains(event.target)) {
+        if (referenceRef.current?.contains(event.target) || popperRef.current?.contains(event.target)) {
             return;
         }
 
@@ -47,7 +47,13 @@ const Dropdown = (props: any, forwardedRef: any) => {
                 {props.button}
             </button>
 
-            <div ref={popperRef} style={styles.popper} {...attributes.popper} className="z-50" onClick={() => setVisibility(!visibility)}>
+            <div 
+                ref={popperRef} 
+                style={styles.popper} 
+                {...attributes.popper} 
+                className="z-[9999]"
+                onClick={() => setVisibility(!visibility)}
+            >
                 {visibility && props.children}
             </div>
         </>

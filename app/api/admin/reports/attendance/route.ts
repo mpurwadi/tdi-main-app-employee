@@ -52,42 +52,91 @@ export async function GET(req: NextRequest) {
         const endDate = searchParams.get('endDate');
         const filterType = searchParams.get('filterType') || 'date'; // date, week, month
 
-        // Build query based on filter type
+        // Build query to fetch data from both attendance_records and remote_checkin_records
         let query = `
             SELECT 
-                ar.id,
-                u.full_name,
-                u.student_id,
-                u.division,
-                ar.clock_in_time,
-                ar.check_out_time,
-                ar.latitude,
-                ar.longitude
-            FROM attendance_records ar
-            JOIN users u ON ar.user_id = u.id
-            WHERE 1=1
+                id,
+                user_id,
+                full_name,
+                student_id,
+                division,
+                clock_in_time,
+                check_out_time,
+                latitude,
+                longitude,
+                'qr' as checkin_type
+            FROM (
+                SELECT 
+                    ar.id,
+                    ar.user_id,
+                    u.full_name,
+                    u.student_id,
+                    u.division,
+                    ar.clock_in_time,
+                    ar.check_out_time,
+                    ar.latitude,
+                    ar.longitude
+                FROM attendance_records ar
+                JOIN users u ON ar.user_id = u.id
+                WHERE 1=1
         `;
         
         const params: any[] = [];
         let paramIndex = 1;
 
-        // Apply date filters
+        // Apply date filters for QR attendance
         if (startDate && endDate) {
-            query += ` AND ar.clock_in_time >= $${paramIndex} AND ar.clock_in_time <= $${paramIndex + 1}`;
+            query += ` AND ar.clock_in_time >= ${paramIndex} AND ar.clock_in_time <= ${paramIndex + 1}`;
             params.push(startDate, endDate);
             paramIndex += 2;
         } else if (startDate) {
-            query += ` AND ar.clock_in_time >= $${paramIndex}`;
+            query += ` AND ar.clock_in_time >= ${paramIndex}`;
             params.push(startDate);
             paramIndex += 1;
         } else if (endDate) {
-            query += ` AND ar.clock_in_time <= $${paramIndex}`;
+            query += ` AND ar.clock_in_time <= ${paramIndex}`;
+            params.push(endDate);
+            paramIndex += 1;
+        }
+
+        query += `
+            ) AS qr_attendance
+            
+            UNION ALL
+            
+            SELECT 
+                rcr.id,
+                rcr.user_id,
+                u.full_name,
+                u.student_id,
+                u.division,
+                rcr.checkin_time as clock_in_time,
+                NULL as check_out_time,
+                rcr.latitude,
+                rcr.longitude,
+                'remote' as checkin_type
+            FROM remote_checkin_records rcr
+            JOIN users u ON rcr.user_id = u.id
+            WHERE 1=1
+        `;
+
+        // Apply date filters for remote check-in
+        if (startDate && endDate) {
+            query += ` AND rcr.checkin_time >= ${paramIndex} AND rcr.checkin_time <= ${paramIndex + 1}`;
+            params.push(startDate, endDate);
+            paramIndex += 2;
+        } else if (startDate) {
+            query += ` AND rcr.checkin_time >= ${paramIndex}`;
+            params.push(startDate);
+            paramIndex += 1;
+        } else if (endDate) {
+            query += ` AND rcr.checkin_time <= ${paramIndex}`;
             params.push(endDate);
             paramIndex += 1;
         }
 
         // Add ordering
-        query += ' ORDER BY ar.clock_in_time DESC';
+        query += ' ORDER BY clock_in_time DESC';
 
         // Execute query
         const result = await db.query(query, params);
@@ -95,13 +144,15 @@ export async function GET(req: NextRequest) {
         // Format the data for the frontend
         const attendanceData = result.rows.map(record => ({
             id: record.id,
+            userId: record.user_id,
             fullName: record.full_name,
             studentId: record.student_id,
             division: record.division,
             clockInTime: record.clock_in_time,
             clockOutTime: record.check_out_time,
             latitude: parseFloat(record.latitude),
-            longitude: parseFloat(record.longitude)
+            longitude: parseFloat(record.longitude),
+            checkinType: record.checkin_type // 'qr' or 'remote'
         }));
 
         return NextResponse.json({ 

@@ -22,7 +22,6 @@ const RemoteCheckin = () => {
     const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
     const [history, setHistory] = useState<any[]>([]);
     const [historyLoading, setHistoryLoading] = useState(true);
-    const [showMap, setShowMap] = useState(false);
     const [selectedHistoryMap, setSelectedHistoryMap] = useState<any | null>(null);
 
     // Get user's location
@@ -192,13 +191,38 @@ const RemoteCheckin = () => {
                         </div>
 
                         {latitude !== null && longitude !== null && (
-                            <div className="mb-4 p-3 bg-gray-100 rounded">
-                                <p className="text-sm">
-                                    <strong>{t('Latitude')}:</strong> {latitude.toFixed(6)}
-                                </p>
-                                <p className="text-sm">
-                                    <strong>{t('Longitude')}:</strong> {longitude.toFixed(6)}
-                                </p>
+                            <div className="mb-4">
+                                <div className="flex justify-between items-center mb-2">
+                                    <label className="block text-sm font-medium">{t('Location Coordinates')}</label>
+                                </div>
+                                <div className="p-3 bg-gray-100 rounded mb-2">
+                                    <p className="text-sm">
+                                        <strong>{t('Latitude')}:</strong> {latitude.toFixed(6)}
+                                    </p>
+                                    <p className="text-sm">
+                                        <strong>{t('Longitude')}:</strong> {longitude.toFixed(6)}
+                                    </p>
+                                </div>
+                                
+                                <div className="h-80 rounded-lg overflow-hidden border border-gray-200">
+                                    <MapContainer 
+                                        center={[latitude, longitude]} 
+                                        zoom={13} 
+                                        style={{ height: '100%', width: '100%' }}
+                                        className="z-0"
+                                    >
+                                        <TileLayer
+                                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                        />
+                                        <Marker position={[latitude, longitude]}>
+                                            <Popup>
+                                                {t('Your Current Location')}<br />
+                                                {latitude.toFixed(6)}, {longitude.toFixed(6)}
+                                            </Popup>
+                                        </Marker>
+                                    </MapContainer>
+                                </div>
                             </div>
                         )}
 
@@ -246,40 +270,30 @@ const RemoteCheckin = () => {
                                 <p className="text-gray-500">{t('No check-in history found')}</p>
                             </div>
                         ) : (
-                            <table className="table table-hover whitespace-nowrap">
-                                <thead>
-                                    <tr>
-                                        <th>{t('Date')}</th>
-                                        <th>{t('Location')}</th>
-                                        <th>{t('Coordinates')}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {history.map((record) => (
-                                        <tr key={record.id}>
-                                            <td>{formatDate(record.checkinTime)}</td>
-                                            <td>{record.workLocation}</td>
-                                            <td>
-                                                {formatCoordinates(record.latitude, record.longitude)}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                            <div className="space-y-4">
+                                {history.map((record) => (
+                                    <div key={record.id} className="border-b border-gray-200 dark:border-gray-700 pb-4 last:border-0 last:pb-0">
+                                        <div className="flex justify-between items-start">
+                                            <div>
+                                                <span className="text-sm text-gray-500 dark:text-gray-400">{formatDate(record.checkinTime)}</span>
+                                                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mt-1 mb-2">{record.workLocation || t('Remote Work')}</h4>
+                                                <p className="text-gray-600 dark:text-gray-400 text-sm">
+                                                    {formatCoordinates(record.latitude, record.longitude)}
+                                                </p>
+                                            </div>
+                                            <button 
+                                                type="button" 
+                                                className="btn btn-primary btn-sm"
+                                                onClick={() => setSelectedHistoryMap(record)}
+                                            >
+                                                {t('View on Map')}
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         )}
                     </div>
-                    {history.length > 0 && (
-                        <div className="mt-4 flex justify-end">
-                            <button
-                                type="button"
-                                className="btn btn-primary"
-                                onClick={fetchHistory}
-                                disabled={historyLoading}
-                            >
-                                {historyLoading ? t('Refreshing...') : t('Refresh History')}
-                            </button>
-                        </div>
-                    )}
                 </div>
             </div>
 
@@ -294,7 +308,72 @@ const RemoteCheckin = () => {
                 </div>
             )}
 
-            {/* Info Section */}
+            {/* History Map Modal */}
+            {selectedHistoryMap && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-white dark:bg-black rounded-lg p-4 w-full max-w-2xl">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-lg font-semibold">{t('Check-in Location')}</h3>
+                            <button 
+                                type="button" 
+                                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+                                onClick={() => setSelectedHistoryMap(null)}
+                            >
+                                &times;
+                            </button>
+                        </div>
+                        <div className="h-80 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+                            <MapContainer 
+                                center={[selectedHistoryMap.latitude, selectedHistoryMap.longitude]} 
+                                zoom={13} 
+                                style={{ height: '100%', width: '100%' }}
+                                className="z-0"
+                            >
+                                <TileLayer
+                                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                />
+                                <Marker position={[selectedHistoryMap.latitude, selectedHistoryMap.longitude]}>
+                                    <Popup>
+                                        <div>
+                                            <strong>{selectedHistoryMap.workLocation || t('Remote Work')}</strong><br />
+                                            {t('Date')}: {formatDate(selectedHistoryMap.checkinTime)}<br />
+                                            {formatCoordinates(selectedHistoryMap.latitude, selectedHistoryMap.longitude)}
+                                        </div>
+                                    </Popup>
+                                </Marker>
+                            </MapContainer>
+                        </div>
+                        <div className="mt-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">{t('Date')}</label>
+                                    <p className="text-gray-900 dark:text-white">{formatDate(selectedHistoryMap.checkinTime)}</p>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">{t('Location')}</label>
+                                    <p className="text-gray-900 dark:text-white">{selectedHistoryMap.workLocation || t('Remote Work')}</p>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">{t('Coordinates')}</label>
+                                    <p className="text-gray-900 dark:text-white">
+                                        {formatCoordinates(selectedHistoryMap.latitude, selectedHistoryMap.longitude)}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="mt-4 flex justify-end">
+                            <button 
+                                type="button" 
+                                className="btn btn-primary"
+                                onClick={() => setSelectedHistoryMap(null)}
+                            >
+                                {t('Close')}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
             <div className="panel mt-6">
                 <div className="flex items-center justify-between mb-5">
                     <h5 className="font-semibold text-lg">{t('Remote Work Information')}</h5>
@@ -308,6 +387,73 @@ const RemoteCheckin = () => {
                     </ul>
                 </div>
             </div>
+
+            {/* History Map Modal */}
+            {selectedHistoryMap && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-white dark:bg-black rounded-lg p-4 w-full max-w-2xl">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-lg font-semibold">{t('Check-in Location')}</h3>
+                            <button 
+                                type="button" 
+                                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+                                onClick={() => setSelectedHistoryMap(null)}
+                            >
+                                &times;
+                            </button>
+                        </div>
+                        <div className="h-80 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+                            <MapContainer 
+                                center={[selectedHistoryMap.latitude, selectedHistoryMap.longitude]} 
+                                zoom={13} 
+                                style={{ height: '100%', width: '100%' }}
+                                className="z-0"
+                            >
+                                <TileLayer
+                                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                />
+                                <Marker position={[selectedHistoryMap.latitude, selectedHistoryMap.longitude]}>
+                                    <Popup>
+                                        <div>
+                                            <strong>{selectedHistoryMap.workLocation || t('Remote Work')}</strong><br />
+                                            {t('Date')}: {formatDate(selectedHistoryMap.checkinTime)}<br />
+                                            {formatCoordinates(selectedHistoryMap.latitude, selectedHistoryMap.longitude)}
+                                        </div>
+                                    </Popup>
+                                </Marker>
+                            </MapContainer>
+                        </div>
+                        <div className="mt-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">{t('Date')}</label>
+                                    <p className="text-gray-900 dark:text-white">{formatDate(selectedHistoryMap.checkinTime)}</p>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">{t('Location')}</label>
+                                    <p className="text-gray-900 dark:text-white">{selectedHistoryMap.workLocation || t('Remote Work')}</p>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">{t('Coordinates')}</label>
+                                    <p className="text-gray-900 dark:text-white">
+                                        {formatCoordinates(selectedHistoryMap.latitude, selectedHistoryMap.longitude)}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="mt-4 flex justify-end">
+                            <button 
+                                type="button" 
+                                className="btn btn-primary"
+                                onClick={() => setSelectedHistoryMap(null)}
+                            >
+                                {t('Close')}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <style jsx>{`
                 .leaflet-container {

@@ -4,9 +4,21 @@ import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+
+// Fix for default marker icons in Leaflet
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
 
 interface AttendanceRecord {
     id: number;
+    userId: number;
     fullName: string;
     studentId: string;
     division: string;
@@ -14,6 +26,7 @@ interface AttendanceRecord {
     clockOutTime: string | null;
     latitude: number;
     longitude: number;
+    checkinType: 'qr' | 'remote';
 }
 
 const AttendanceReport = () => {
@@ -23,6 +36,7 @@ const AttendanceReport = () => {
     const [startDate, setStartDate] = useState<string>('');
     const [endDate, setEndDate] = useState<string>('');
     const [filterType, setFilterType] = useState<string>('date');
+    const [selectedMap, setSelectedMap] = useState<AttendanceRecord | null>(null);
 
     const fetchAttendanceData = async () => {
         setLoading(true);
@@ -298,9 +312,11 @@ const AttendanceReport = () => {
                                 <th>User Name</th>
                                 <th>Student ID</th>
                                 <th>Division</th>
+                                <th>Check-in Type</th>
                                 <th>Clock In</th>
                                 <th>Clock Out</th>
                                 <th>Location</th>
+                                <th>Map</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -309,10 +325,22 @@ const AttendanceReport = () => {
                                     <td>{record.fullName}</td>
                                     <td>{record.studentId}</td>
                                     <td>{record.division || 'N/A'}</td>
+                                    <td>
+                                        {record.checkinType === 'qr' ? 'QR Scan' : 'Remote Check-in'}
+                                    </td>
                                     <td>{formatDate(record.clockInTime)}</td>
                                     <td>{record.clockOutTime ? formatDate(record.clockOutTime) : 'Not clocked out'}</td>
                                     <td>
                                         {record.latitude.toFixed(6)}, {record.longitude.toFixed(6)}
+                                    </td>
+                                    <td>
+                                        <button
+                                            type="button"
+                                            className="btn btn-primary btn-sm"
+                                            onClick={() => setSelectedMap(record)}
+                                        >
+                                            View on Map
+                                        </button>
                                     </td>
                                 </tr>
                             ))}
@@ -325,7 +353,85 @@ const AttendanceReport = () => {
             {attendanceData.length > 0 && (
                 <div className="mt-6 p-4 bg-gray-100 dark:bg-gray-800 rounded">
                     <h3 className="text-lg font-semibold mb-2">Report Summary</h3>
-                    <p>Total Records: {attendanceData.length}</p>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <p>Total Records: {attendanceData.length}</p>
+                        <p>QR Scans: {attendanceData.filter(r => r.checkinType === 'qr').length}</p>
+                        <p>Remote Check-ins: {attendanceData.filter(r => r.checkinType === 'remote').length}</p>
+                    </div>
+                </div>
+            )}
+
+            {/* Map Modal */}
+            {selectedMap && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-white dark:bg-black rounded-lg p-4 w-full max-w-2xl">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-lg font-semibold">Check-in Location</h3>
+                            <button 
+                                type="button" 
+                                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+                                onClick={() => setSelectedMap(null)}
+                            >
+                                &times;
+                            </button>
+                        </div>
+                        <div className="h-80 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+                            <MapContainer 
+                                center={[selectedMap.latitude, selectedMap.longitude]} 
+                                zoom={13} 
+                                style={{ height: '100%', width: '100%' }}
+                                className="z-0"
+                            >
+                                <TileLayer
+                                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                />
+                                <Marker position={[selectedMap.latitude, selectedMap.longitude]}>
+                                    <Popup>
+                                        <div>
+                                            <strong>{selectedMap.fullName}</strong><br />
+                                            {selectedMap.checkinType === 'qr' ? 'QR Scan' : 'Remote Check-in'}<br />
+                                            {formatDate(selectedMap.clockInTime)}<br />
+                                            {selectedMap.latitude.toFixed(6)}, {selectedMap.longitude.toFixed(6)}
+                                        </div>
+                                    </Popup>
+                                </Marker>
+                            </MapContainer>
+                        </div>
+                        <div className="mt-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">User</label>
+                                    <p className="text-gray-900 dark:text-white">{selectedMap.fullName}</p>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">Check-in Type</label>
+                                    <p className="text-gray-900 dark:text-white">
+                                        {selectedMap.checkinType === 'qr' ? 'QR Scan' : 'Remote Check-in'}
+                                    </p>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">Date</label>
+                                    <p className="text-gray-900 dark:text-white">{formatDate(selectedMap.clockInTime)}</p>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">Coordinates</label>
+                                    <p className="text-gray-900 dark:text-white">
+                                        {selectedMap.latitude.toFixed(6)}, {selectedMap.longitude.toFixed(6)}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="mt-4 flex justify-end">
+                            <button 
+                                type="button" 
+                                className="btn btn-primary"
+                                onClick={() => setSelectedMap(null)}
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>
