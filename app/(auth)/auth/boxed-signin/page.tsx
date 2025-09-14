@@ -1,96 +1,173 @@
-import ComponentsAuthLoginForm from '@/components/auth/components-auth-login-form';
-import IconFacebookCircle from '@/components/icon/icon-facebook-circle';
-import IconGoogle from '@/components/icon/icon-google';
-import IconInstagram from '@/components/icon/icon-instagram';
-import IconTwitter from '@/components/icon/icon-twitter';
-import LanguageDropdown from '@/components/language-dropdown';
-import { Metadata } from 'next';
+'use client';
+import { useState } from 'react';
 import Link from 'next/link';
-import React from 'react';
+import { useRouter } from 'next/navigation';
+import IconMail from '@/components/icon/icon-mail';
+import IconLockDots from '@/components/icon/icon-lock-dots';
+import IconEye from '@/components/icon/icon-eye';
+import IconEyeOff from '@/components/icon/icon-eye-off';
 
-export const metadata: Metadata = {
-    title: 'Login Boxed',
-};
+const SimpleBoxedSignIn = () => {
+    const router = useRouter();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
 
-const BoxedSignIn = () => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setError(null);
+        setIsLoading(true);
+
+        try {
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Login failed');
+            }
+
+            // On successful login, the API sets a cookie.
+            // Redirect based on user role.
+            const userRole = data.role;
+            if (userRole === 'superadmin' || userRole === 'admin') {
+                router.push('/admin/approval'); // Redirect to admin approval page
+            } else if (userRole === 'user') {
+                router.push('/user-dashboard'); // Redirect to the new user dashboard
+            } else {
+                router.push('/'); // Fallback to home if role is unknown
+            }
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
-        <div>
-            <div className="absolute inset-0">
-                <img src="/assets/images/auth/bg-gradient.png" alt="image" className="h-full w-full object-cover" />
-            </div>
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
+            <div className="w-full max-w-md">
+                <div className="text-center mb-8">
+                    <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">Welcome Back</h1>
+                    <p className="text-gray-600 dark:text-gray-300">Sign in to your account</p>
+                </div>
 
-            <div className="relative flex min-h-screen items-center justify-center bg-[url(/assets/images/auth/map.png)] bg-cover bg-center bg-no-repeat px-6 py-10 dark:bg-[#060818] sm:px-16">
-                <img src="/assets/images/auth/coming-soon-object1.png" alt="image" className="absolute left-0 top-1/2 h-full max-h-[893px] -translate-y-1/2" />
-                <img src="/assets/images/auth/coming-soon-object2.png" alt="image" className="absolute left-24 top-0 h-40 md:left-[30%]" />
-                <img src="/assets/images/auth/coming-soon-object3.png" alt="image" className="absolute right-0 top-0 h-[300px]" />
-                <img src="/assets/images/auth/polygon-object.svg" alt="image" className="absolute bottom-0 end-[28%]" />
-                <div className="relative w-full max-w-[870px] rounded-md bg-[linear-gradient(45deg,#fff9f9_0%,rgba(255,255,255,0)_25%,rgba(255,255,255,0)_75%,_#fff9f9_100%)] p-2 dark:bg-[linear-gradient(52.22deg,#0E1726_0%,rgba(14,23,38,0)_18.66%,rgba(14,23,38,0)_51.04%,rgba(14,23,38,0)_80.07%,#0E1726_100%)]">
-                    <div className="relative flex flex-col justify-center rounded-md bg-white/60 px-6 py-20 backdrop-blur-lg dark:bg-black/50 lg:min-h-[758px]">
-                        <div className="absolute end-6 top-6">
-                            <LanguageDropdown />
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 sm:p-8">
+                    <form onSubmit={handleSubmit}>
+                        <div className="mb-4">
+                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                Email
+                            </label>
+                            <div className="relative">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <IconMail className="h-5 w-5 text-gray-400" />
+                                </div>
+                                <input
+                                    id="email"
+                                    type="email"
+                                    placeholder="Enter your email"
+                                    className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                />
+                            </div>
                         </div>
-                        <div className="mx-auto w-full max-w-[440px]">
-                            <div className="mb-10">
-                                <h1 className="text-3xl font-extrabold uppercase !leading-snug text-primary md:text-4xl">Sign in</h1>
-                                <p className="text-base font-bold leading-normal text-white-dark">Enter your email and password to login</p>
+
+                        <div className="mb-6">
+                            <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                Password
+                            </label>
+                            <div className="relative">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <IconLockDots className="h-5 w-5 text-gray-400" />
+                                </div>
+                                <input
+                                    id="password"
+                                    type={showPassword ? "text" : "password"}
+                                    placeholder="Enter your password"
+                                    className="w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                />
+                                <button
+                                    type="button"
+                                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                >
+                                    {showPassword ? (
+                                        <IconEyeOff className="h-5 w-5 text-gray-400" />
+                                    ) : (
+                                        <IconEye className="h-5 w-5 text-gray-400" />
+                                    )}
+                                </button>
                             </div>
-                            <ComponentsAuthLoginForm />
-                            <div className="relative my-7 text-center md:mb-9">
-                                <span className="absolute inset-x-0 top-1/2 h-px w-full -translate-y-1/2 bg-white-light dark:bg-white-dark"></span>
-                                <span className="relative bg-white px-2 font-bold uppercase text-white-dark dark:bg-dark dark:text-white-light">or</span>
+                        </div>
+
+                        {error && (
+                            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 rounded-md text-sm">
+                                {error}
                             </div>
-                            <div className="mb-10 md:mb-[60px]">
-                                <ul className="flex justify-center gap-3.5 text-white">
-                                    <li>
-                                        <Link
-                                            href="#"
-                                            className="inline-flex h-8 w-8 items-center justify-center rounded-full p-0 transition hover:scale-110"
-                                            style={{ background: 'linear-gradient(135deg, rgba(239, 18, 98, 1) 0%, rgba(67, 97, 238, 1) 100%)' }}
-                                        >
-                                            <IconInstagram />
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link
-                                            href="#"
-                                            className="inline-flex h-8 w-8 items-center justify-center rounded-full p-0 transition hover:scale-110"
-                                            style={{ background: 'linear-gradient(135deg, rgba(239, 18, 98, 1) 0%, rgba(67, 97, 238, 1) 100%)' }}
-                                        >
-                                            <IconFacebookCircle />
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link
-                                            href="#"
-                                            className="inline-flex h-8 w-8 items-center justify-center rounded-full p-0 transition hover:scale-110"
-                                            style={{ background: 'linear-gradient(135deg, rgba(239, 18, 98, 1) 0%, rgba(67, 97, 238, 1) 100%)' }}
-                                        >
-                                            <IconTwitter fill={true} />
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link
-                                            href="#"
-                                            className="inline-flex h-8 w-8 items-center justify-center rounded-full p-0 transition hover:scale-110"
-                                            style={{ background: 'linear-gradient(135deg, rgba(239, 18, 98, 1) 0%, rgba(67, 97, 238, 1) 100%)' }}
-                                        >
-                                            <IconGoogle />
-                                        </Link>
-                                    </li>
-                                </ul>
+                        )}
+
+                        <div className="flex items-center justify-between mb-6">
+                            <div className="flex items-center">
+                                <input
+                                    id="remember-me"
+                                    name="remember-me"
+                                    type="checkbox"
+                                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                />
+                                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+                                    Remember me
+                                </label>
                             </div>
-                            <div className="text-center dark:text-white">
-                                Don&apos;t have an account ?&nbsp;
-                                <Link href="/auth/boxed-signup" className="uppercase text-primary underline transition hover:text-black dark:hover:text-white">
-                                    SIGN UP
+                            <div className="text-sm">
+                                <Link href="/auth/boxed-password-reset" className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
+                                    Forgot password?
                                 </Link>
                             </div>
                         </div>
-                    </div>
+
+                        <button
+                            type="submit"
+                            disabled={isLoading}
+                            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                        >
+                            {isLoading ? 'Signing in...' : 'Sign in'}
+                        </button>
+                    </form>
+                </div>
+
+                <div className="mt-6 text-center">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                        Don't have an account?{' '}
+                        <Link href="/auth/boxed-signup" className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
+                            Sign up
+                        </Link>
+                    </p>
+                </div>
+
+                <div className="mt-8 text-center">
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                        &copy; {new Date().getFullYear()} TDI Employee. All rights reserved.
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        Made with Love by mpurwadi
+                    </p>
                 </div>
             </div>
         </div>
     );
 };
 
-export default BoxedSignIn;
+export default SimpleBoxedSignIn;

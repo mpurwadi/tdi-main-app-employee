@@ -10,6 +10,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-key';
 const OFFICE_LATITUDE = -6.200000; // Example: Jakarta
 const OFFICE_LONGITUDE = 106.816666; // Example: Jakarta
 const GEOFENCE_RADIUS_METERS = 100; // 100 meters
+const OFFICE_QR_CODE = 'TDI_OFFICE_QR_CODE'; // Static QR code for the office
 
 // Haversine formula to calculate distance between two lat/lon points
 const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
@@ -44,28 +45,52 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ message: 'Invalid token' }, { status: 401 });
         }
 
-        const { qrData, latitude, longitude } = await req.json();
+        const { qrData, latitude, longitude, officeCode, checkInType } = await req.json();
 
-        if (!qrData || !latitude || !longitude) {
-            return NextResponse.json({ message: 'Missing QR data or location' }, { status: 400 });
+        // Handle different check-in types
+        if (checkInType === 'manual') {
+            // Manual check-in without location
+            if (!officeCode) {
+                return NextResponse.json({ message: 'Office code is required for manual check-in' }, { status: 400 });
+            }
+
+            // Validate office code
+            if (officeCode !== OFFICE_QR_CODE) {
+                return NextResponse.json({ message: 'Invalid office code' }, { status: 400 });
+            }
+
+            // Record attendance without location (use default office coordinates)
+            await db.query(
+                'INSERT INTO attendance_records (user_id, qr_data, latitude, longitude) VALUES ($1, $2, $3, $4)',
+                [userId, officeCode, OFFICE_LATITUDE, OFFICE_LONGITUDE]
+            );
+
+            return NextResponse.json({ message: 'Manual check-in successful!' }, { status: 200 });
+        } else {
+            // Standard QR code check-in with location
+            if (!qrData || !latitude || !longitude) {
+                return NextResponse.json({ message: 'Missing QR data or location' }, { status: 400 });
+            }
+
+            // Validate QR code
+            if (qrData !== OFFICE_QR_CODE) {
+                return NextResponse.json({ message: 'Invalid QR code' }, { status: 400 });
+            }
+
+            // Geofencing validation
+            const distance = calculateDistance(latitude, longitude, OFFICE_LATITUDE, OFFICE_LONGITUDE);
+            if (distance > GEOFENCE_RADIUS_METERS) {
+                return NextResponse.json({ message: `You are ${distance.toFixed(2)} meters away from the office. Must be within ${GEOFENCE_RADIUS_METERS} meters.` }, { status: 400 });
+            }
+
+            // Record attendance
+            await db.query(
+                'INSERT INTO attendance_records (user_id, qr_data, latitude, longitude) VALUES ($1, $2, $3, $4)',
+                [userId, qrData, latitude, longitude]
+            );
+
+            return NextResponse.json({ message: 'Check-in successful!' }, { status: 200 });
         }
-
-        // Geofencing validation
-        const distance = calculateDistance(latitude, longitude, OFFICE_LATITUDE, OFFICE_LONGITUDE);
-        if (distance > GEOFENCE_RADIUS_METERS) {
-            return NextResponse.json({ message: `You are ${distance.toFixed(2)} meters away from the office. Must be within ${GEOFENCE_RADIUS_METERS} meters.` }, { status: 400 });
-        }
-
-        // TODO: Add QR data validation (e.g., check if qrData matches expected office QR)
-        // For now, any QR data is accepted if location is valid.
-
-        // Record attendance
-        await db.query(
-            'INSERT INTO attendance_records (user_id, qr_data, latitude, longitude) VALUES ($1, $2, $3, $4)',
-            [userId, qrData, latitude, longitude]
-        );
-
-        return NextResponse.json({ message: 'Check-in successful!' }, { status: 200 });
 
     } catch (error: any) {
         console.error('Attendance Check-in Error:', error);

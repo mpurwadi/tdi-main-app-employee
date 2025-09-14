@@ -1,8 +1,8 @@
 import { verifyAuth } from '@/lib/auth';
 import { notFound, redirect } from 'next/navigation';
 import AttendanceWidget from '@/components/user-dashboard/attendance-widget';
-import TodoWidget from '@/components/user-dashboard/todo-widget';
 import Link from 'next/link';
+import ActivityOverviewClient from '@/components/user-dashboard/activity-overview-client';
 
 export default async function UserDashboardPage() {
     let authPayload;
@@ -50,19 +50,9 @@ export default async function UserDashboardPage() {
                 </div>
             </div>
 
-            {/* TODO Widget */}
+            {/* Activity Overview Widget */}
             <div className="mb-6">
-                <TodoWidget />
-            </div>
-
-            {/* Monitoring Section (Placeholder) */}
-            <div className="panel mt-6">
-                <h5 className="mb-5 text-lg font-semibold">Your Activity Overview</h5>
-                <p>This section will display key metrics and summaries of your attendance, logbook entries, and schedule.</p>
-                {/* Placeholder for charts, recent activities, etc. */}
-                <div className="mt-4 p-4 border border-dashed rounded-md text-center text-gray-500">
-                    <p>Monitoring data will appear here.</p>
-                </div>
+                <ActivityOverviewClient />
             </div>
         </div>
     );

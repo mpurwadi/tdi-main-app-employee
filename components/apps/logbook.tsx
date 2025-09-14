@@ -53,6 +53,9 @@ const LogbookPage = () => {
             }
             const data: LogbookEntry[] = await response.json();
             setEntries(data);
+            
+            // NOTE: We no longer automatically load the most recent entry for editing
+            // This allows users to start with a clean form
         } catch (err: any) {
             setError(err.message);
         } finally {
@@ -218,7 +221,7 @@ const LogbookPage = () => {
                 </div>
             )}
 
-            {/* Entry Form Section */}
+            {/* Entry Form Section */}{/* Entry Form Section */}
             <div className="panel mb-6">
                 <h3 className="text-lg font-bold mb-4">
                     {editingEntry ? 'Edit Logbook Entry' : 'Create New Logbook Entry'}
@@ -357,12 +360,14 @@ const LogbookPage = () => {
                                                 : '-'}
                                         </td>
                                         <td>
-                                            <span className={`badge ${
-                                                entry.status === 'approved' ? 'badge-success' :
-                                                entry.status === 'pending' ? 'badge-warning' :
-                                                'badge-danger'
+                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                                entry.status === 'approved' ? 'bg-green-100 text-green-800' :
+                                                entry.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                                                entry.status ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'
                                             }`}>
-                                                {entry.status.charAt(0).toUpperCase() + entry.status.slice(1)}
+                                                {entry.status ? 
+                                                    entry.status.charAt(0).toUpperCase() + entry.status.slice(1) : 
+                                                    'No Status'}
                                             </span>
                                         </td>
                                         <td className="text-center">
@@ -410,7 +415,7 @@ const LogbookPage = () => {
                             <h4 className="font-semibold mb-2">Existing Entry:</h4>
                             <p className="text-sm mb-2">{duplicateEntry.activity.substring(0, 25)}{duplicateEntry.activity.length > 25 ? '...' : ''}</p>
                             <div className="flex justify-between text-xs">
-                                <span>Status: {duplicateEntry.status}</span>
+                                <span>Status: {duplicateEntry.status || 'No Status'}</span>
                                 <span>
                                     {duplicateEntry.start_time && duplicateEntry.end_time 
                                         ? `${duplicateEntry.start_time} - ${duplicateEntry.end_time}` 

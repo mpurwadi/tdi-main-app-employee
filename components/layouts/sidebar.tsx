@@ -121,7 +121,39 @@ const Sidebar = () => {
                             <IconCaretsDown className="m-auto rotate-90" />
                         </button>
                     </div>
-                    <PerfectScrollbar className="relative h-[calc(100vh-80px)]">
+                    
+                    {/* Quick Access Section - Moved to top and made static */}
+                    <div className="border-b border-gray-200 dark:border-gray-700">
+                        <h2 className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase">Quick Access</h2>
+                        <div className="grid grid-cols-3 gap-2 px-4 py-2">
+                            <Link 
+                                href="/apps/calendar" 
+                                className="flex flex-col items-center justify-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
+                                title="Calendar"
+                            >
+                                <IconMenuCalendar className="w-5 h-5 mb-1" />
+                                <span className="text-xs">Calendar</span>
+                            </Link>
+                            <Link 
+                                href="/apps/todolist" 
+                                className="flex flex-col items-center justify-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
+                                title="Todo List"
+                            >
+                                <IconMenuTodo className="w-5 h-5 mb-1" />
+                                <span className="text-xs">Todo</span>
+                            </Link>
+                            <Link 
+                                href="/auth/boxed-signin" 
+                                className="flex flex-col items-center justify-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
+                                title="Sign Out"
+                            >
+                                <IconLogout className="w-5 h-5 mb-1" />
+                                <span className="text-xs">Sign Out</span>
+                            </Link>
+                        </div>
+                    </div>
+                    
+                    <PerfectScrollbar className="relative h-[calc(100vh-180px)]">
                         <ul className="relative space-y-0.5 p-4 py-0 font-semibold">
                             {/* ADMIN SECTION */}
                             {(userRole === 'admin' || userRole === 'superadmin') && (
@@ -308,37 +340,6 @@ const Sidebar = () => {
                                     </div>
                                 </Link>
                             </li>
-                            
-                            {/* Quick Access Section */}
-                            <div className="mt-auto pt-4 border-t border-gray-200 dark:border-gray-700">
-                                <h2 className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase">Quick Access</h2>
-                                <div className="grid grid-cols-3 gap-2 px-4 py-2">
-                                    <Link 
-                                        href="/apps/calendar" 
-                                        className="flex flex-col items-center justify-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
-                                        title="Calendar"
-                                    >
-                                        <IconMenuCalendar className="w-5 h-5 mb-1" />
-                                        <span className="text-xs">Calendar</span>
-                                    </Link>
-                                    <Link 
-                                        href="/apps/todolist" 
-                                        className="flex flex-col items-center justify-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
-                                        title="Todo List"
-                                    >
-                                        <IconMenuTodo className="w-5 h-5 mb-1" />
-                                        <span className="text-xs">Todo</span>
-                                    </Link>
-                                    <Link 
-                                        href="/auth/boxed-signin" 
-                                        className="flex flex-col items-center justify-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
-                                        title="Sign Out"
-                                    >
-                                        <IconLogout className="w-5 h-5 mb-1" />
-                                        <span className="text-xs">Sign Out</span>
-                                    </Link>
-                                </div>
-                            </div>
                         </ul>
                     </PerfectScrollbar>
                 </div>
