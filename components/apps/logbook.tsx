@@ -18,9 +18,8 @@ interface LogbookEntry {
 
 const LogbookPage = () => {
     const [entries, setEntries] = useState<LogbookEntry[]>([]);
-    const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-    const [showEntryForm, setShowEntryForm] = useState<boolean>(false);
+    const [showEntryForm, setShowEntryForm] = useState<boolean>(true);
     const [editingEntry, setEditingEntry] = useState<LogbookEntry | null>(null);
     const [activity, setActivity] = useState<string>('');
     const [workType, setWorkType] = useState<string>('');
@@ -32,39 +31,22 @@ const LogbookPage = () => {
     const [showDuplicateDialog, setShowDuplicateDialog] = useState<boolean>(false);
     const [duplicateEntry, setDuplicateEntry] = useState<LogbookEntry | null>(null);
 
-    // Monitor duplicateEntry state changes for debugging
-    useEffect(() => {
-        // This effect is just for monitoring state changes during development
-        // It can be removed in production
-    }, [duplicateEntry, showDuplicateDialog]);
-
-    // Monitor entries for debugging
-    useEffect(() => {
-        // This is just for monitoring during development
-    }, [entries]);
-
-    // Get the first day of the month and the number of days in the month
-    const getDaysInMonth = (date: Date) => {
-        const year = date.getFullYear();
-        const month = date.getMonth();
-        const firstDay = new Date(year, month, 1);
-        const lastDay = new Date(year, month + 1, 0);
-        const daysInMonth = lastDay.getDate();
-        const startingDayOfWeek = firstDay.getDay(); // 0 = Sunday, 1 = Monday, etc.
-
-        return { firstDay, lastDay, daysInMonth, startingDayOfWeek };
-    };
-
-    // Fetch logbook entries for the current month
+    // Fetch all logbook entries for the current user
     const fetchEntries = async () => {
         setLoading(true);
         setError(null);
         try {
-            const { firstDay, lastDay } = getDaysInMonth(currentMonth);
-            const startDate = firstDay.toISOString().split('T')[0];
-            const endDate = lastDay.toISOString().split('T')[0];
+            // Fetch entries for the last 30 days
+            const endDate = new Date();
+            const startDate = new Date();
+            startDate.setDate(startDate.getDate() - 30);
+            
+            const startDateString = startDate.toISOString().split('T')[0];
+            const endDateString = endDate.toISOString().split('T')[0];
 
-            const response = await fetch(`/api/logbook?startDate=${startDate}&endDate=${endDate}`);
+            const response = await fetch(`/api/logbook?startDate=${startDateString}&endDate=${endDateString}`, {
+                credentials: 'include' // Ensure cookies are sent
+            });
             if (!response.ok) {
                 const data = await response.json();
                 throw new Error(data.message || 'Failed to fetch logbook entries');
@@ -80,49 +62,18 @@ const LogbookPage = () => {
 
     useEffect(() => {
         fetchEntries();
-    }, [currentMonth]);
-
-    // Get entries for a specific date
-    const getEntriesForDate = (date: Date) => {
-        // Format date as YYYY-MM-DD without timezone conversion
-        const dateString = date.getFullYear() + '-' + 
-                          String(date.getMonth() + 1).padStart(2, '0') + '-' + 
-                          String(date.getDate()).padStart(2, '0');
-        
-        return entries.filter(entry => entry.entry_date === dateString);
-    };
-
-    // Check if a date has any entries
-    const hasEntries = (date: Date) => {
-        const entriesForDate = getEntriesForDate(date);
-        const result = entriesForDate.length > 0;
-        return result;
-    };
-
-    // Get the status of entries for a date
-    const getDateStatus = (date: Date) => {
-        const dateEntries = getEntriesForDate(date);
-        if (dateEntries.length === 0) return null;
-        
-        // If any entry is approved, return approved
-        if (dateEntries.some(entry => entry.status === 'approved')) return 'approved';
-        
-        // If any entry is pending, return pending
-        if (dateEntries.some(entry => entry.status === 'pending')) return 'pending';
-        
-        // Otherwise, return rejected
-        return 'rejected';
-    };
+    }, []);
 
     // Handle creating a new entry
-    const handleCreateEntry = (date: Date) => {
-        setSelectedDate(date);
+    const handleCreateEntry = () => {
         setEditingEntry(null);
         setActivity('');
         setWorkType('');
         setStartTime('');
         setEndTime('');
         setShowEntryForm(true);
+        // Set selected date to today
+        setSelectedDate(new Date());
     };
 
     // Handle editing an entry
@@ -134,17 +85,6 @@ const LogbookPage = () => {
         setStartTime(entry.start_time || '');
         setEndTime(entry.end_time || '');
         setShowEntryForm(true);
-    };
-
-    // Handle viewing/editing a duplicate entry
-    const handleViewEditDuplicate = () => {
-        setShowDuplicateDialog(false);
-        if (duplicateEntry) {
-            handleEditEntry(duplicateEntry);
-        } else {
-            setMessage({ text: 'Error: Could not load the existing entry', type: 'error' });
-            setTimeout(() => setMessage(null), 5000);
-        }
     };
 
     // Handle saving an entry
@@ -162,6 +102,7 @@ const LogbookPage = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include', // Ensure cookies are sent
                 body: JSON.stringify({
                     entryId: editingEntry?.id,
                     entryDate: dateString,
@@ -190,13 +131,17 @@ const LogbookPage = () => {
                 throw new Error(data.message || `Failed to ${editingEntry ? 'update' : 'create'} logbook entry`);
             }
 
+            const savedEntry = await response.json();
             setShowEntryForm(false);
             setMessage({ 
                 text: editingEntry ? 'Logbook entry updated successfully' : 'Logbook entry created successfully', 
                 type: 'success' 
             });
             setTimeout(() => setMessage(null), 5000); // Hide message after 5 seconds
-            fetchEntries(); // Refresh entries
+            // Add a small delay to ensure the database is updated
+            setTimeout(() => {
+                fetchEntries(); // Refresh entries
+            }, 500);
         } catch (err: any) {
             setError(err.message);
             setMessage({ text: err.message, type: 'error' });
@@ -213,6 +158,7 @@ const LogbookPage = () => {
         try {
             const response = await fetch(`/api/logbook?entryId=${entryId}`, {
                 method: 'DELETE',
+                credentials: 'include' // Ensure cookies are sent
             });
 
             if (!response.ok) {
@@ -230,97 +176,15 @@ const LogbookPage = () => {
         }
     };
 
-    // Navigation functions
-    const goToPreviousMonth = () => {
-        setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1));
-    };
-
-    const goToNextMonth = () => {
-        setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1));
-    };
-
-    const goToToday = () => {
-        const today = new Date();
-        setCurrentMonth(new Date(today.getFullYear(), today.getMonth(), 1));
-        setSelectedDate(today);
-    };
-
-    // Render calendar
-    const renderCalendar = () => {
-        const { daysInMonth, startingDayOfWeek } = getDaysInMonth(currentMonth);
-        const days = [];
-
-        // Add empty cells for days before the first day of the month
-        for (let i = 0; i < startingDayOfWeek; i++) {
-            days.push(<div key={`empty-${i}`} className="p-2 border border-gray-200"></div>);
+    // Handle viewing/editing a duplicate entry
+    const handleViewEditDuplicate = () => {
+        setShowDuplicateDialog(false);
+        if (duplicateEntry) {
+            handleEditEntry(duplicateEntry);
+        } else {
+            setMessage({ text: 'Error: Could not load the existing entry', type: 'error' });
+            setTimeout(() => setMessage(null), 5000);
         }
-
-        // Add cells for each day of the month
-        for (let day = 1; day <= daysInMonth; day++) {
-            const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
-            const isToday = date.toDateString() === new Date().toDateString();
-            const isSelected = date.toDateString() === selectedDate.toDateString();
-            const hasEntry = hasEntries(date);
-            const status = getDateStatus(date);
-
-            let dayClass = "p-1 border border-gray-200 h-32 cursor-pointer overflow-y-auto";
-            if (isToday) dayClass += " bg-blue-100";
-            if (isSelected) dayClass += " bg-blue-200";
-            
-            // Add status indicators
-            if (status === 'approved') dayClass += " bg-green-100";
-            else if (status === 'pending') dayClass += " bg-yellow-100";
-            else if (status === 'rejected') dayClass += " bg-red-100";
-
-            days.push(
-                <div 
-                    key={day} 
-                    className={dayClass}
-                    onClick={() => {
-                        setSelectedDate(date);
-                        if (!hasEntry) {
-                            handleCreateEntry(date);
-                        }
-                    }}
-                >
-                    <div className="font-medium">{day}</div>
-                    {/* Test element to see if day cells are rendering */}
-                    <div className="text-xs text-gray-500">Test: Day cell rendered</div>
-                    {hasEntry && (
-                        <div className="mt-1">
-                            <div className="text-xs text-gray-500 mb-1">
-                                {getEntriesForDate(date).length} entr{getEntriesForDate(date).length === 1 ? 'y' : 'ies'}
-                            </div>
-                            {/* Test element to see if this section is rendering */}
-                            <div className="bg-blue-200 text-blue-800 text-xs p-1 mb-1">Test: Entries section rendered</div>
-                            {getEntriesForDate(date).map(entry => (
-                                <div 
-                                    key={entry.id} 
-                                    className={`text-xs p-1 mb-1 rounded cursor-pointer border ${
-                                        entry.status === 'approved' ? 'bg-green-500 text-white border-green-600' :
-                                        entry.status === 'pending' ? 'bg-yellow-500 text-white border-yellow-600' :
-                                        'bg-red-500 text-white border-red-600'
-                                    }`}
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleEditEntry(entry);
-                                    }}
-                                >
-                                    <div className="truncate font-medium">{entry.activity.substring(0, 25)}{entry.activity.length > 25 ? '...' : ''}</div>
-                                    <div className="text-xs mt-1">
-                                        {entry.status === 'approved' ? 'Approved' :
-                                         entry.status === 'pending' ? 'Pending' :
-                                         'Rejected'}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
-            );
-        }
-
-        return days;
     };
 
     if (loading) {
@@ -338,9 +202,9 @@ const LogbookPage = () => {
                 <button 
                     type="button" 
                     className="btn btn-primary"
-                    onClick={goToToday}
+                    onClick={handleCreateEntry}
                 >
-                    Today
+                    New Entry
                 </button>
             </div>
             
@@ -354,136 +218,178 @@ const LogbookPage = () => {
                 </div>
             )}
 
-            <div className="flex justify-between items-center mb-4">
-                <button 
-                    type="button" 
-                    className="btn btn-outline-primary"
-                    onClick={goToPreviousMonth}
-                >
-                    Previous
-                </button>
-                <h3 className="text-lg font-semibold">
-                    {currentMonth.toLocaleString('default', { month: 'long', year: 'numeric' })}
+            {/* Entry Form Section */}
+            <div className="panel mb-6">
+                <h3 className="text-lg font-bold mb-4">
+                    {editingEntry ? 'Edit Logbook Entry' : 'Create New Logbook Entry'}
                 </h3>
-                <button 
-                    type="button" 
-                    className="btn btn-outline-primary"
-                    onClick={goToNextMonth}
-                >
-                    Next
-                </button>
-            </div>
-
-            <div className="grid grid-cols-7 gap-0 border border-gray-200">
-                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                    <div key={day} className="p-2 bg-gray-100 font-medium text-center border border-gray-200">
-                        {day}
+                
+                {error && (
+                    <div className="p-3.5 rounded-md bg-danger-light text-danger mb-4">
+                        {error}
                     </div>
-                ))}
-                {renderCalendar()}
-            </div>
-
-            {showEntryForm && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white dark:bg-black rounded-lg p-6 w-full max-w-md">
-                        <h3 className="text-lg font-bold mb-4">
-                            {editingEntry ? 'Edit Logbook Entry' : 'Create Logbook Entry'}
-                        </h3>
-                        
-                        {error && (
-                            <div className="p-3.5 rounded-md bg-danger-light text-danger mb-4">
-                                {error}
-                            </div>
-                        )}
-                        
-                        {message && (
-                            <div className={`p-3.5 rounded-md mb-4 ${
-                                message.type === 'success' 
-                                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
-                                    : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                            }`}>
-                                {message.text}
-                            </div>
-                        )}
-                        
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium mb-1">Date</label>
-                            <input
-                                type="text"
-                                className="form-input"
-                                value={selectedDate.toLocaleDateString()}
-                                readOnly
-                            />
-                        </div>
-                        
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium mb-1">Activity</label>
-                            <textarea
-                                className="form-textarea"
-                                rows={4}
-                                value={activity}
-                                onChange={(e) => setActivity(e.target.value)}
-                                placeholder="Describe your activities for this day..."
-                            />
-                        </div>
-                        
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium mb-1">Work Type</label>
-                            <select
-                                className="form-select"
-                                value={workType}
-                                onChange={(e) => setWorkType(e.target.value)}
-                            >
-                                <option value="">Select work type</option>
-                                <option value="onsite">On-site</option>
-                                <option value="remote">Remote</option>
-                                <option value="meeting">Meeting</option>
-                                <option value="training">Training</option>
-                                <option value="other">Other</option>
-                            </select>
-                        </div>
-                        
-                        <div className="grid grid-cols-2 gap-4 mb-4">
-                            <div>
-                                <label className="block text-sm font-medium mb-1">Start Time</label>
-                                <input
-                                    type="time"
-                                    className="form-input"
-                                    value={startTime}
-                                    onChange={(e) => setStartTime(e.target.value)}
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium mb-1">End Time</label>
-                                <input
-                                    type="time"
-                                    className="form-input"
-                                    value={endTime}
-                                    onChange={(e) => setEndTime(e.target.value)}
-                                />
-                            </div>
-                        </div>
-                        
-                        <div className="flex justify-end space-x-3">
-                            <button
-                                type="button"
-                                className="btn btn-outline-secondary"
-                                onClick={() => setShowEntryForm(false)}
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                type="button"
-                                className="btn btn-primary"
-                                onClick={handleSaveEntry}
-                            >
-                                {editingEntry ? 'Update Entry' : 'Create Entry'}
-                            </button>
-                        </div>
+                )}
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label className="block text-sm font-medium mb-1">Date</label>
+                        <input
+                            type="date"
+                            className="form-input"
+                            value={selectedDate.toISOString().split('T')[0]}
+                            onChange={(e) => setSelectedDate(new Date(e.target.value))}
+                        />
+                    </div>
+                    
+                    <div>
+                        <label className="block text-sm font-medium mb-1">Work Type</label>
+                        <select
+                            className="form-select"
+                            value={workType}
+                            onChange={(e) => setWorkType(e.target.value)}
+                        >
+                            <option value="">Select work type</option>
+                            <option value="onsite">On-site</option>
+                            <option value="remote">Remote</option>
+                            <option value="meeting">Meeting</option>
+                            <option value="training">Training</option>
+                            <option value="other">Other</option>
+                        </select>
                     </div>
                 </div>
-            )}
+                
+                <div className="mb-4">
+                    <label className="block text-sm font-medium mb-1">Activity</label>
+                    <textarea
+                        className="form-textarea"
+                        rows={4}
+                        value={activity}
+                        onChange={(e) => setActivity(e.target.value)}
+                        placeholder="Describe your activities for this day..."
+                    />
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label className="block text-sm font-medium mb-1">Start Time</label>
+                        <input
+                            type="time"
+                            className="form-input"
+                            value={startTime}
+                            onChange={(e) => setStartTime(e.target.value)}
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium mb-1">End Time</label>
+                        <input
+                            type="time"
+                            className="form-input"
+                            value={endTime}
+                            onChange={(e) => setEndTime(e.target.value)}
+                        />
+                    </div>
+                </div>
+                
+                <div className="flex justify-end space-x-3">
+                    <button
+                        type="button"
+                        className="btn btn-outline-secondary"
+                        onClick={() => setShowEntryForm(false)}
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        type="button"
+                        className="btn btn-primary"
+                        onClick={handleSaveEntry}
+                    >
+                        {editingEntry ? 'Update Entry' : 'Create Entry'}
+                    </button>
+                </div>
+            </div>
 
+            {/* Historical Entries Section */}
+            <div className="panel">
+                <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-lg font-bold">Historical Entries</h3>
+                    <button 
+                        type="button" 
+                        className="btn btn-outline-primary"
+                        onClick={fetchEntries}
+                    >
+                        Refresh
+                    </button>
+                </div>
+                
+                {entries.length === 0 ? (
+                    <div className="text-center py-8">
+                        <p className="text-lg">No logbook entries found.</p>
+                        <p className="text-gray-500 mt-2">
+                            Create your first logbook entry using the form above.
+                        </p>
+                    </div>
+                ) : (
+                    <div className="table-responsive">
+                        <table className="table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Activity</th>
+                                    <th>Work Type</th>
+                                    <th>Time</th>
+                                    <th>Status</th>
+                                    <th className="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {entries.map((entry) => (
+                                    <tr key={entry.id}>
+                                        <td>{new Date(entry.entry_date).toLocaleDateString()}</td>
+                                        <td>
+                                            <div className="max-w-xs truncate" title={entry.activity}>
+                                                {entry.activity}
+                                            </div>
+                                        </td>
+                                        <td>{entry.work_type || '-'}</td>
+                                        <td>
+                                            {entry.start_time && entry.end_time 
+                                                ? `${entry.start_time} - ${entry.end_time}` 
+                                                : '-'}
+                                        </td>
+                                        <td>
+                                            <span className={`badge ${
+                                                entry.status === 'approved' ? 'badge-success' :
+                                                entry.status === 'pending' ? 'badge-warning' :
+                                                'badge-danger'
+                                            }`}>
+                                                {entry.status.charAt(0).toUpperCase() + entry.status.slice(1)}
+                                            </span>
+                                        </td>
+                                        <td className="text-center">
+                                            <button 
+                                                type="button" 
+                                                className="btn btn-sm btn-outline-primary mr-2"
+                                                onClick={() => handleEditEntry(entry)}
+                                            >
+                                                Edit
+                                            </button>
+                                            <button 
+                                                type="button" 
+                                                className="btn btn-sm btn-outline-danger"
+                                                onClick={() => handleDeleteEntry(entry.id)}
+                                            >
+                                                Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+            </div>
+
+            {/* Duplicate Entry Dialog */}
             {showDuplicateDialog && duplicateEntry && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white dark:bg-black rounded-lg p-6 w-full max-w-md">
@@ -534,28 +440,6 @@ const LogbookPage = () => {
                     </div>
                 </div>
             )}
-
-            <div className="mt-6">
-                <h4 className="text-md font-semibold mb-3">Legend</h4>
-                <div className="flex flex-wrap gap-4">
-                    <div className="flex items-center">
-                        <div className="w-4 h-4 bg-green-100 mr-2"></div>
-                        <span>Approved</span>
-                    </div>
-                    <div className="flex items-center">
-                        <div className="w-4 h-4 bg-yellow-100 mr-2"></div>
-                        <span>Pending</span>
-                    </div>
-                    <div className="flex items-center">
-                        <div className="w-4 h-4 bg-red-100 mr-2"></div>
-                        <span>Rejected</span>
-                    </div>
-                    <div className="flex items-center">
-                        <div className="w-4 h-4 bg-blue-100 mr-2"></div>
-                        <span>Today</span>
-                    </div>
-                </div>
-            </div>
         </div>
     );
 };

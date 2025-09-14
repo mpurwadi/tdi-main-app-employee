@@ -1,111 +1,302 @@
-import ComponentsAuthRegisterForm from '@/components/auth/components-auth-register-form';
-import IconFacebookCircle from '@/components/icon/icon-facebook-circle';
-import IconGoogle from '@/components/icon/icon-google';
-import IconInstagram from '@/components/icon/icon-instagram';
-import IconTwitter from '@/components/icon/icon-twitter';
-import LanguageDropdown from '@/components/language-dropdown';
-import { Metadata } from 'next';
+'use client';
+import { useState } from 'react';
 import Link from 'next/link';
-import React from 'react';
+import { useRouter } from 'next/navigation';
+import IconMail from '@/components/icon/icon-mail';
+import IconLockDots from '@/components/icon/icon-lock-dots';
+import IconUser from '@/components/icon/icon-user';
+import IconBookmark from '@/components/icon/icon-bookmark';
+import IconEye from '@/components/icon/icon-eye';
+import IconEyeOff from '@/components/icon/icon-eye-off';
 
-export const metadata: Metadata = {
-    title: 'Register Cover',
-};
+const SimpleCoverRegister = () => {
+    const router = useRouter();
+    const [formData, setFormData] = useState({
+        fullName: '',
+        email: '',
+        password: '',
+        passwordConfirm: '',
+        studentId: '',
+        campus: '',
+        division: '',
+    });
+    const [showPassword, setShowPassword] = useState(false);
+    const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
 
-const CoverRegister = () => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setError(null);
+        setIsLoading(true);
+
+        if (formData.password !== formData.passwordConfirm) {
+            setError('Passwords do not match');
+            setIsLoading(false);
+            return;
+        }
+
+        // Password strength check (basic)
+        if (formData.password.length < 8) {
+            setError('Password must be at least 8 characters long');
+            setIsLoading(false);
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    fullName: formData.fullName,
+                    email: formData.email,
+                    password: formData.password,
+                    studentId: formData.studentId,
+                    campus: formData.campus,
+                    division: formData.division,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Something went wrong');
+            }
+
+            // On success, you might want to redirect or show a message
+            alert('Registration successful! Please wait for admin approval.');
+            router.push('/auth/cover-login');
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const divisions = ['BA', 'QA', 'Developer', 'UIUX', 'Multimedia', 'Helpdesk'];
+
     return (
-        <div>
-            <div className="absolute inset-0">
-                <img src="/assets/images/auth/bg-gradient.png" alt="image" className="h-full w-full object-cover" />
-            </div>
-            <div className="relative flex min-h-screen items-center justify-center bg-[url(/assets/images/auth/map.png)] bg-cover bg-center bg-no-repeat px-6 py-10 dark:bg-[#060818] sm:px-16">
-                <img src="/assets/images/auth/coming-soon-object1.png" alt="image" className="absolute left-0 top-1/2 h-full max-h-[893px] -translate-y-1/2" />
-                <img src="/assets/images/auth/coming-soon-object2.png" alt="image" className="absolute left-24 top-0 h-40 md:left-[30%]" />
-                <img src="/assets/images/auth/coming-soon-object3.png" alt="image" className="absolute right-0 top-0 h-[300px]" />
-                <img src="/assets/images/auth/polygon-object.svg" alt="image" className="absolute bottom-0 end-[28%]" />
-                <div className="relative flex w-full max-w-[1502px] flex-col justify-between overflow-hidden rounded-md bg-white/60 backdrop-blur-lg dark:bg-black/50 lg:min-h-[758px] lg:flex-row lg:gap-10 xl:gap-0">
-                    <div className="relative hidden w-full items-center justify-center bg-[linear-gradient(225deg,rgba(239,18,98,1)_0%,rgba(67,97,238,1)_100%)] p-5 lg:inline-flex lg:max-w-[835px] xl:-ms-28 ltr:xl:skew-x-[14deg] rtl:xl:skew-x-[-14deg]">
-                        <div className="absolute inset-y-0 w-8 from-primary/10 via-transparent to-transparent ltr:-right-10 ltr:bg-gradient-to-r rtl:-left-10 rtl:bg-gradient-to-l xl:w-16 ltr:xl:-right-20 rtl:xl:-left-20"></div>
-                        <div className="ltr:xl:-skew-x-[14deg] rtl:xl:skew-x-[14deg]">
-                            <Link href="/" className="ms-10 block w-48 lg:w-72">
-                                <img src="/assets/images/auth/logo-white.svg" alt="Logo" className="w-full" />
-                            </Link>
-                            <div className="mt-24 hidden w-full max-w-[430px] lg:block">
-                                <img src="/assets/images/auth/register.svg" alt="Cover Image" className="w-full" />
-                            </div>
-                        </div>
-                    </div>
-                    <div className="relative flex w-full flex-col items-center justify-center gap-6 px-4 pb-16 pt-6 sm:px-6 lg:max-w-[667px]">
-                        <div className="flex w-full max-w-[440px] items-center gap-2 lg:absolute lg:end-6 lg:top-6 lg:max-w-full">
-                            <Link href="/" className="block w-8 lg:hidden">
-                                <img src="/logo.png" alt="Logo" className="mx-auto w-10" />
-                            </Link>
-                            <LanguageDropdown className="ms-auto w-max" />
-                        </div>
-                        <div className="w-full max-w-[440px] lg:mt-16">
-                            <div className="mb-10">
-                                <h1 className="text-3xl font-extrabold uppercase !leading-snug text-primary md:text-4xl">Sign Up</h1>
-                                <p className="text-base font-bold leading-normal text-white-dark">Enter your email and password to register</p>
-                            </div>
-                            <ComponentsAuthRegisterForm />
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
+            <div className="w-full max-w-md">
+                <div className="text-center mb-8">
+                    <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">Create Account</h1>
+                    <p className="text-gray-600 dark:text-gray-300">Sign up for a new account</p>
+                </div>
 
-                            <div className="relative my-7 text-center md:mb-9">
-                                <span className="absolute inset-x-0 top-1/2 h-px w-full -translate-y-1/2 bg-white-light dark:bg-white-dark"></span>
-                                <span className="relative bg-white px-2 font-bold uppercase text-white-dark dark:bg-dark dark:text-white-light">or</span>
-                            </div>
-                            <div className="mb-10 md:mb-[60px]">
-                                <ul className="flex justify-center gap-3.5 text-white">
-                                    <li>
-                                        <Link
-                                            href="#"
-                                            className="inline-flex h-8 w-8 items-center justify-center rounded-full p-0 transition hover:scale-110"
-                                            style={{ background: 'linear-gradient(135deg, rgba(239, 18, 98, 1) 0%, rgba(67, 97, 238, 1) 100%)' }}
-                                        >
-                                            <IconInstagram />
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link
-                                            href="#"
-                                            className="inline-flex h-8 w-8 items-center justify-center rounded-full p-0 transition hover:scale-110"
-                                            style={{ background: 'linear-gradient(135deg, rgba(239, 18, 98, 1) 0%, rgba(67, 97, 238, 1) 100%)' }}
-                                        >
-                                            <IconFacebookCircle />
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link
-                                            href="#"
-                                            className="inline-flex h-8 w-8 items-center justify-center rounded-full p-0 transition hover:scale-110"
-                                            style={{ background: 'linear-gradient(135deg, rgba(239, 18, 98, 1) 0%, rgba(67, 97, 238, 1) 100%)' }}
-                                        >
-                                            <IconTwitter fill={true} />
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link
-                                            href="#"
-                                            className="inline-flex h-8 w-8 items-center justify-center rounded-full p-0 transition hover:scale-110"
-                                            style={{ background: 'linear-gradient(135deg, rgba(239, 18, 98, 1) 0%, rgba(67, 97, 238, 1) 100%)' }}
-                                        >
-                                            <IconGoogle />
-                                        </Link>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div className="text-center dark:text-white">
-                                Already have an account ?&nbsp;
-                                <Link href="/auth/cover-login" className="uppercase text-primary underline transition hover:text-black dark:hover:text-white">
-                                    SIGN IN
-                                </Link>
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 sm:p-8">
+                    <form onSubmit={handleSubmit}>
+                        <div className="mb-4">
+                            <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                Full Name
+                            </label>
+                            <div className="relative">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <IconUser className="h-5 w-5 text-gray-400" />
+                                </div>
+                                <input
+                                    id="fullName"
+                                    name="fullName"
+                                    type="text"
+                                    placeholder="Enter your full name"
+                                    className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                    value={formData.fullName}
+                                    onChange={handleChange}
+                                    required
+                                />
                             </div>
                         </div>
-                        <p className="absolute bottom-6 w-full text-center dark:text-white">© {new Date().getFullYear()}. TDI Employee All Rights Reserved.</p>
-                    </div>
+
+                        <div className="mb-4">
+                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                Email
+                            </label>
+                            <div className="relative">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <IconMail className="h-5 w-5 text-gray-400" />
+                                </div>
+                                <input
+                                    id="email"
+                                    name="email"
+                                    type="email"
+                                    placeholder="Enter your email"
+                                    className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div className="mb-4">
+                            <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                Password
+                            </label>
+                            <div className="relative">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <IconLockDots className="h-5 w-5 text-gray-400" />
+                                </div>
+                                <input
+                                    id="password"
+                                    name="password"
+                                    type={showPassword ? "text" : "password"}
+                                    placeholder="Enter your password"
+                                    className="w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    required
+                                />
+                                <button
+                                    type="button"
+                                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                >
+                                    {showPassword ? (
+                                        <IconEyeOff className="h-5 w-5 text-gray-400" />
+                                    ) : (
+                                        <IconEye className="h-5 w-5 text-gray-400" />
+                                    )}
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="mb-4">
+                            <label htmlFor="passwordConfirm" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                Confirm Password
+                            </label>
+                            <div className="relative">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <IconLockDots className="h-5 w-5 text-gray-400" />
+                                </div>
+                                <input
+                                    id="passwordConfirm"
+                                    name="passwordConfirm"
+                                    type={showPasswordConfirm ? "text" : "password"}
+                                    placeholder="Confirm your password"
+                                    className="w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                    value={formData.passwordConfirm}
+                                    onChange={handleChange}
+                                    required
+                                />
+                                <button
+                                    type="button"
+                                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                                    onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
+                                >
+                                    {showPasswordConfirm ? (
+                                        <IconEyeOff className="h-5 w-5 text-gray-400" />
+                                    ) : (
+                                        <IconEye className="h-5 w-5 text-gray-400" />
+                                    )}
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="mb-4">
+                            <label htmlFor="studentId" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                Student ID
+                            </label>
+                            <div className="relative">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <IconUser className="h-5 w-5 text-gray-400" />
+                                </div>
+                                <input
+                                    id="studentId"
+                                    name="studentId"
+                                    type="text"
+                                    placeholder="Enter your student ID"
+                                    className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                    value={formData.studentId}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div className="mb-4">
+                            <label htmlFor="campus" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                Campus
+                            </label>
+                            <div className="relative">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <IconBookmark className="h-5 w-5 text-gray-400" />
+                                </div>
+                                <input
+                                    id="campus"
+                                    name="campus"
+                                    type="text"
+                                    placeholder="Enter your campus"
+                                    className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                    value={formData.campus}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div className="mb-6">
+                            <label htmlFor="division" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                Division
+                            </label>
+                            <select
+                                id="division"
+                                name="division"
+                                className="w-full py-2 px-3 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                value={formData.division}
+                                onChange={handleChange}
+                                required
+                            >
+                                <option value="">Select Division</option>
+                                {divisions.map((div) => (
+                                    <option key={div} value={div}>
+                                        {div}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {error && (
+                            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 rounded-md text-sm">
+                                {error}
+                            </div>
+                        )}
+
+                        <button
+                            type="submit"
+                            disabled={isLoading}
+                            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                        >
+                            {isLoading ? 'Creating account...' : 'Sign up'}
+                        </button>
+                    </form>
+                </div>
+
+                <div className="mt-6 text-center">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                        Already have an account?{' '}
+                        <Link href="/auth/cover-login" className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
+                            Sign in
+                        </Link>
+                    </p>
+                </div>
+
+                <div className="mt-8 text-center">
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                        &copy; {new Date().getFullYear()} TDI Employee. All rights reserved.
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        Made with Love by mpurwadi
+                    </p>
                 </div>
             </div>
         </div>
     );
 };
 
-export default CoverRegister;
+export default SimpleCoverRegister;

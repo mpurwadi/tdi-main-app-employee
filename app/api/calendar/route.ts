@@ -134,6 +134,44 @@ export async function GET(req: NextRequest) {
 
         events = events.concat(remoteEvents);
 
+        // Fetch holidays
+        try {
+            let holidayQuery = `
+                SELECT id, name, date, description, is_national
+                FROM holidays`;
+            
+            let holidayParams: any[] = [];
+            
+            if (startDate && endDate) {
+                holidayQuery += ' WHERE date BETWEEN $1 AND $2';
+                holidayParams.push(startDate, endDate);
+            }
+            
+            holidayQuery += ' ORDER BY date ASC';
+            
+            const holidayResult = await db.query(holidayQuery, holidayParams);
+            
+            // Format holidays as calendar events
+            const holidayEvents = holidayResult.rows.map(holiday => ({
+                id: `holiday-${holiday.id}`,
+                title: holiday.name,
+                start: holiday.date,
+                end: holiday.date,
+                className: holiday.is_national ? 'danger' : 'warning',
+                description: holiday.description || holiday.name,
+                type: 'holiday',
+                extendedProps: {
+                    isNational: holiday.is_national,
+                    description: holiday.description || ''
+                }
+            }));
+            
+            events = events.concat(holidayEvents);
+        } catch (error) {
+            console.error('Error fetching holidays:', error);
+            // Continue without holidays if there's an error
+        }
+
         return NextResponse.json(events, { status: 200 });
 
     } catch (error: any) {

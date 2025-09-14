@@ -1,0 +1,16 @@
+INSERT INTO holidays (name, date, description, is_national) VALUES
+('Tahun Baru', '2025-01-01', 'Perayaan Tahun Baru Masehi', true),
+('Tahun Baru Imlek', '2025-01-29', 'Perayaan Tahun Baru Imlek', true),
+('Hari Raya Nyepi', '2025-03-29', 'Hari Raya Nyepi (Tahun Baru Saka)', true),
+('Wafat Isa Almasih', '2025-04-18', 'Wafat Isa Almasih (Good Friday)', true),
+('Hari Buruh Internasional', '2025-05-01', 'Hari Buruh Internasional', true),
+('Kenaikan Isa Almasih', '2025-05-29', 'Kenaikan Isa Almasih', true),
+('Hari Lahir Pancasila', '2025-06-01', 'Hari Lahir Pancasila', true),
+('Hari Raya Idul Fitri', '2025-03-31', 'Hari Raya Idul Fitri (Lebaran)', true),
+('Hari Raya Idul Fitri', '2025-04-01', 'Hari Raya Idul Fitri (Lebaran)', true),
+('Hari Raya Waisak', '2025-05-12', 'Hari Raya Waisak', true),
+('Hari Raya Idul Adha', '2025-06-30', 'Hari Raya Idul Adha', true),
+('Tahun Baru Islam', '2025-06-20', 'Tahun Baru Islam', true),
+('Maulid Nabi Muhammad SAW', '2025-09-21', 'Maulid Nabi Muhammad SAW', true),
+('Hari Kemerdekaan RI', '2025-08-17', 'Hari Kemerdekaan Republik Indonesia', true),
+('Hari Natal', '2025-12-25', 'Perayaan Hari Natal', true);

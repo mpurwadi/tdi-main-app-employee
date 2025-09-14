@@ -212,6 +212,18 @@ const Sidebar = () => {
                                         </Link>
                                     </li>
                                     
+                                    {/* Holidays Management */}
+                                    <li className="nav-item">
+                                        <Link href="/admin/holidays" className="group">
+                                            <div className="flex items-center">
+                                                <IconMenuCalendar className="shrink-0 group-hover:!text-primary" />
+                                                <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">
+                                                    Holidays
+                                                </span>
+                                            </div>
+                                        </Link>
+                                    </li>
+                                    
                                     {/* Roles Management - Only visible to superadmins */}
                                     {userRole === 'superadmin' && (
                                         <li className="nav-item">

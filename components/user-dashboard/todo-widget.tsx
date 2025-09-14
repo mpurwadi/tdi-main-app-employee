@@ -29,7 +29,9 @@ const TodoWidget = () => {
     const fetchTodos = async () => {
         try {
             setLoading(true);
-            const response = await fetch('/api/todo');
+            const response = await fetch('/api/todo', {
+                credentials: 'include'
+            });
             if (!response.ok) {
                 throw new Error('Failed to fetch TODO items');
             }
@@ -60,6 +62,7 @@ const TodoWidget = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include',
                 body: JSON.stringify({
                     title: newTodo.title,
                     description: newTodo.description,
@@ -112,6 +115,7 @@ const TodoWidget = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include',
                 body: JSON.stringify({
                     id,
                     status
@@ -156,6 +160,7 @@ const TodoWidget = () => {
                 try {
                     const response = await fetch(`/api/todo?id=${id}`, {
                         method: 'DELETE',
+                        credentials: 'include'
                     });
 
                     if (!response.ok) {
