@@ -48,7 +48,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       }, { status: 404 });
     }
     
-    if (notification.userId !== userId) {
+    if (notification.userId.toString() !== userId) {
       return NextResponse.json({
         success: false,
         error: 'Unauthorized'

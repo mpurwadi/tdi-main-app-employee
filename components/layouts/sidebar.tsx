@@ -125,7 +125,7 @@ const Sidebar = () => {
                     {/* Quick Access Section - Moved to top and made static */}
                     <div className="border-b border-gray-200 dark:border-gray-700">
                         <h2 className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase">Quick Access</h2>
-                        <div className="grid grid-cols-3 gap-2 px-4 py-2">
+                        <div className="grid grid-cols-4 gap-2 px-4 py-2">
                             <Link 
                                 href="/apps/calendar" 
                                 className="flex flex-col items-center justify-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
@@ -141,6 +141,14 @@ const Sidebar = () => {
                             >
                                 <IconMenuTodo className="w-5 h-5 mb-1" />
                                 <span className="text-xs">Todo</span>
+                            </Link>
+                            <Link 
+                                href="/users/profile" 
+                                className="flex flex-col items-center justify-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
+                                title="Profile"
+                            >
+                                <IconMenuUsers className="w-5 h-5 mb-1" />
+                                <span className="text-xs">Profile</span>
                             </Link>
                             <Link 
                                 href="/auth/boxed-signin" 
@@ -284,10 +292,21 @@ const Sidebar = () => {
                                 </>
                             )}
 
-                            <h2 className="-mx-4 mb-1 flex items-center bg-white-light/30 px-7 py-3 font-extrabold uppercase dark:bg-dark dark:bg-opacity-[0.08]">
+                            <h2 className="py-3 px-7 text-xs font-bold uppercase text-black/70 dark:text-white/70 -mx-4 bg-white-light/30 dark:bg-dark/60">
                                 <IconMinus className="hidden h-5 w-4 flex-none" />
                                 <span>{t('User Profile')}</span>
                             </h2>
+
+                            <li className="nav-item">
+                                <Link href="/user-dashboard" className="group">
+                                    <div className="flex items-center">
+                                        <IconMenuDashboard className="shrink-0 group-hover:!text-primary" />
+                                        <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">
+                                            {t('Dashboard')}
+                                        </span>
+                                    </div>
+                                </Link>
+                            </li>
 
                             <li className="menu nav-item">
                                 <button type="button" className={`${currentMenu === 'users' ? 'active' : ''} nav-link group w-full`} onClick={() => toggleMenu('users')}>

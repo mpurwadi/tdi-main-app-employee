@@ -25,32 +25,19 @@ export async function GET(req: NextRequest) {
         const monthParam = url.searchParams.get('month');
         const yearParam = url.searchParams.get('year');
         
-        let query = '';
-        let params: any[] = [];
-        
-        if (monthParam && yearParam) {
-            // Filter by specific month and year
-            query = `SELECT id, clock_in_time, clock_out_time, latitude, longitude, manual_checkin_reason, manual_checkout_reason
-                     FROM attendance_records 
-                     WHERE user_id = $1 
-                     AND EXTRACT(MONTH FROM clock_in_time) = $2
-                     AND EXTRACT(YEAR FROM clock_in_time) = $3
-                     ORDER BY clock_in_time DESC`;
-            params = [userId, parseInt(monthParam), parseInt(yearParam)];
-        } else {
-            // Get records for current month by default
-            const currentDate = new Date();
-            const currentMonth = currentDate.getMonth() + 1; // JavaScript months are 0-indexed
-            const currentYear = currentDate.getFullYear();
-            
-            query = `SELECT id, clock_in_time, clock_out_time, latitude, longitude, manual_checkin_reason, manual_checkout_reason
-                     FROM attendance_records 
-                     WHERE user_id = $1 
-                     AND EXTRACT(MONTH FROM clock_in_time) = $2
-                     AND EXTRACT(YEAR FROM clock_in_time) = $3
-                     ORDER BY clock_in_time DESC`;
-            params = [userId, currentMonth, currentYear];
+        if (!monthParam || !yearParam) {
+            return NextResponse.json({ message: 'Month and year parameters are required' }, { status: 400 });
         }
+
+        // Filter by specific month and year
+        const query = `SELECT id, clock_in_time, clock_out_time, latitude, longitude, manual_checkin_reason, manual_checkout_reason
+                       FROM attendance_records 
+                       WHERE user_id = $1 
+                       AND EXTRACT(MONTH FROM clock_in_time) = $2
+                       AND EXTRACT(YEAR FROM clock_in_time) = $3
+                       ORDER BY clock_in_time DESC`;
+        
+        const params = [userId, parseInt(monthParam), parseInt(yearParam)];
 
         const result = await db.query(query, params);
 
@@ -68,7 +55,7 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ records }, { status: 200 });
 
     } catch (error: any) {
-        console.error('Attendance History Error:', error);
+        console.error('Attendance Export Error:', error);
         return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
     }
 }

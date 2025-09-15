@@ -34,7 +34,7 @@ let notifications = [
 export async function GET(request: NextRequest) {
   try {
     const auth = verifyAuth();
-    const userId = auth.userId;
+    const userId = parseInt(auth.userId);
     
     // Filter notifications for the current user
     const userNotifications = notifications.filter(notification => notification.userId === userId);
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
     // Create new notification
     const newNotification = {
       id: notifications.length + 1,
-      userId,
+      userId: parseInt(userId),
       title,
       message,
       time: new Date().toISOString(),

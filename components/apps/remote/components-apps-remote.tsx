@@ -33,6 +33,20 @@ const RemoteCheckin = () => {
 
         setMessage({ text: 'Requesting location permission...', type: 'success' });
 
+        // Check if we're on a mobile device
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        
+        // For mobile devices, we might need to use different options
+        const options = isMobile ? {
+            enableHighAccuracy: true,
+            timeout: 15000, // Increase timeout for mobile
+            maximumAge: 0
+        } : {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        };
+
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 setLatitude(position.coords.latitude);
@@ -44,12 +58,16 @@ const RemoteCheckin = () => {
                 switch (error.code) {
                     case 1: // PERMISSION_DENIED
                         errorMessage = 'Location access denied. Please enable location permissions in your browser settings.';
+                        // Provide specific instructions for mobile Chrome
+                        if (isMobile && /Chrome/i.test(navigator.userAgent)) {
+                            errorMessage += ' On Chrome mobile, go to Settings > Site Settings > Location and allow location access for this site.';
+                        }
                         break;
                     case 2: // POSITION_UNAVAILABLE
                         errorMessage = 'Location information is unavailable.';
                         break;
                     case 3: // TIMEOUT
-                        errorMessage = 'The request to get user location timed out.';
+                        errorMessage = 'The request to get user location timed out. Please ensure GPS is enabled on your device.';
                         break;
                     default:
                         errorMessage = `An unknown error occurred: ${error.message}`;
@@ -58,11 +76,7 @@ const RemoteCheckin = () => {
                 setMessage({ text: errorMessage, type: 'error' });
                 console.error('Geolocation error:', error);
             },
-            {
-                enableHighAccuracy: true,
-                timeout: 10000,
-                maximumAge: 0
-            }
+            options
         );
     };
 
@@ -161,6 +175,15 @@ const RemoteCheckin = () => {
                         <h5 className="font-semibold text-lg">{t('Check-in for Remote Work')}</h5>
                     </div>
                     <div className="mb-5">
+                        {/* Mobile-specific instructions */}
+                        {/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) && (
+                            <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900 rounded-lg">
+                                <p className="text-sm text-blue-800 dark:text-blue-200">
+                                    <strong>Mobile User:</strong> Ensure location services are enabled on your device and you allow location access when prompted.
+                                </p>
+                            </div>
+                        )}
+                        
                         <div className="mb-4">
                             <label className="block text-sm font-medium mb-2">{t('Your Location')}</label>
                             <div className="flex space-x-2">
@@ -384,7 +407,20 @@ const RemoteCheckin = () => {
                         <li>{t('Your location is used only for verification purposes')}</li>
                         <li>{t('You can only check in once per day')}</li>
                         <li>{t('Make sure you have a stable internet connection when checking in')}</li>
+                        <li>{t('For mobile users: Enable location services on your device and allow location access when prompted')}</li>
+                        <li>{t('On mobile Chrome: If prompted, select "Allow" for location access. You can change this later in browser settings.')}</li>
                     </ul>
+                    {/* Mobile-specific instructions */}
+                    {/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) && (
+                        <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900 rounded-lg">
+                            <h4 className="font-semibold text-yellow-800 dark:text-yellow-200">Mobile Device Instructions:</h4>
+                            <ul className="mt-2 text-yellow-700 dark:text-yellow-300">
+                                <li>iOS: Settings > Safari > Location > Allow</li>
+                                <li>Android Chrome: Settings > Site Settings > Location > Allow</li>
+                                <li>Ensure GPS is enabled in your device settings</li>
+                            </ul>
+                        </div>
+                    )}
                 </div>
             </div>
 

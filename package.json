@@ -4,6 +4,7 @@
     "private": true,
     "scripts": {
         "dev": "next dev --hostname 0.0.0.0 --port 3000",
+        "dev-https": "HTTPS=true node server.js",
         "build": "next build",
         "start": "next start",
         "lint": "next lint"
@@ -86,7 +87,9 @@
         "@types/react-redux": "^7.1.32",
         "@types/react-text-mask": "^5.4.11",
         "@types/sortablejs": "^1.15.0",
+        "@vitejs/plugin-basic-ssl": "^2.1.0",
         "autoprefixer": "^10.4.17",
+        "express": "^5.1.0",
         "postcss": "^8.4.35",
         "prettier": "^3.3.3",
         "prettier-plugin-tailwindcss": "^0.6.8",

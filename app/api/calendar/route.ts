@@ -66,7 +66,7 @@ export async function GET(req: NextRequest) {
 
         // Fetch attendance records (absence data)
         let attendanceQuery = `
-            SELECT id, clock_in_time, check_out_time 
+            SELECT id, clock_in_time, clock_out_time 
             FROM attendance_records 
             WHERE user_id = $1`;
         let attendanceParams: any[] = [userId];
@@ -81,7 +81,7 @@ export async function GET(req: NextRequest) {
         // Format attendance records as calendar events
         const attendanceEvents = attendanceResult.rows.map(record => {
             const clockInDate = new Date(record.clock_in_time);
-            const clockOutDate = record.check_out_time ? new Date(record.check_out_time) : null;
+            const clockOutDate = record.clock_out_time ? new Date(record.clock_out_time) : null;
             
             return {
                 id: `attendance-${record.id}`,
@@ -93,7 +93,7 @@ export async function GET(req: NextRequest) {
                 type: 'attendance',
                 extendedProps: {
                     clockIn: record.clock_in_time,
-                    clockOut: record.check_out_time
+                    clockOut: record.clock_out_time
                 }
             };
         });

@@ -30,7 +30,6 @@ interface TodoItem {
     title: string;
     description: string;
     descriptionText: string;
-    assignee: string;
     tag: string;
     priority: string;
     status: string;
@@ -46,7 +45,6 @@ const ComponentsAppsTodoList = () => {
         title: '',
         description: '',
         descriptionText: '',
-        assignee: '',
         path: '',
         tag: '',
         priority: 'low',
@@ -170,7 +168,7 @@ const ComponentsAppsTodoList = () => {
         setIsShowTaskMenu(false);
     };
 
-    const taskComplete = (task: TodoItem = null) => {
+    const taskComplete = (task: TodoItem | null = null) => {
         if (task) {
             let item = filteredTasks.find((d: any) => d.id === task.id);
             if (item) {
@@ -181,7 +179,7 @@ const ComponentsAppsTodoList = () => {
         }
     };
 
-    const setImportant = (task: TodoItem = null) => {
+    const setImportant = (task: TodoItem | null = null) => {
         if (task) {
             let item = filteredTasks.find((d: any) => d.id === task.id);
             if (item) {
@@ -192,7 +190,7 @@ const ComponentsAppsTodoList = () => {
         }
     };
 
-    const viewTask = (item: TodoItem = null) => {
+    const viewTask = (item: TodoItem | null = null) => {
         if (item) {
             setSelectedTask(item);
             setTimeout(() => {
@@ -201,7 +199,7 @@ const ComponentsAppsTodoList = () => {
         }
     };
 
-    const addEditTask = (task: TodoItem = null) => {
+    const addEditTask = (task: TodoItem | null = null) => {
         setIsShowTaskMenu(false);
         let json = JSON.parse(JSON.stringify(defaultParams));
         setParams(json);
@@ -212,7 +210,7 @@ const ComponentsAppsTodoList = () => {
         setAddTaskModal(true);
     };
 
-    const deleteTask = async (task: TodoItem, type: string = '') => {
+    const deleteTask = async (task: TodoItem | null, type: string = '') => {
         if (!task) return;
         
         if (type === 'delete') {
@@ -636,13 +634,7 @@ const ComponentsAppsTodoList = () => {
                                                                                           ? 'badge-outline-warning hover:bg-warning'
                                                                                           : task.priority === 'high'
                                                                                             ? 'badge-outline-danger hover:bg-danger'
-                                                                                            : task.priority === 'medium' && isPriorityMenu === task.id
-                                                                                              ? 'bg-primary text-white'
-                                                                                              : task.priority === 'low' && isPriorityMenu === task.id
-                                                                                                ? 'bg-warning text-white'
-                                                                                                : task.priority === 'high' && isPriorityMenu === task.id
-                                                                                                  ? 'bg-danger text-white'
-                                                                                                  : ''
+                                                                                            : ''
                                                                                 }`}
                                                                             >
                                                                                 {task.priority}
@@ -683,11 +675,7 @@ const ComponentsAppsTodoList = () => {
                                                                                         ? 'badge-outline-success hover:bg-success'
                                                                                         : task.tag === 'update'
                                                                                           ? 'badge-outline-info hover:bg-info'
-                                                                                          : task.tag === 'team' && isTagMenu === task.id
-                                                                                            ? 'bg-success text-white '
-                                                                                            : task.tag === 'update' && isTagMenu === task.id
-                                                                                              ? 'bg-info text-white '
-                                                                                              : ''
+                                                                                          : ''
                                                                                 }`}
                                                                             >
                                                                                 {task.tag}
@@ -721,27 +709,6 @@ const ComponentsAppsTodoList = () => {
                                                     </td>
                                                     <td className="w-1">
                                                         <div className="flex w-max items-center justify-between">
-                                                            <div className="flex-shrink-0 ltr:mr-2.5 rtl:ml-2.5">
-                                                                {task.path && (
-                                                                    <div>
-                                                                        <img src={`/assets/images/${task.path}`} className="h-8 w-8 rounded-full object-cover" alt="avatar" />
-                                                                    </div>
-                                                                )}
-                                                                {!task.path && task.assignee ? (
-                                                                    <div className="grid h-8 w-8 place-content-center rounded-full bg-primary text-sm font-semibold text-white">
-                                                                        {task.assignee.charAt(0) + '' + task.assignee.charAt(task.assignee.indexOf(' ') + 1)}
-                                                                    </div>
-                                                                ) : (
-                                                                    ''
-                                                                )}
-                                                                {!task.path && !task.assignee ? (
-                                                                    <div className="grid h-8 w-8 place-content-center rounded-full border border-gray-300 dark:border-gray-800">
-                                                                        <IconUser className="h-4.5 w-4.5" />
-                                                                    </div>
-                                                                ) : (
-                                                                    ''
-                                                                )}
-                                                            </div>
                                                             <div className="dropdown">
                                                                 <Dropdown
                                                                     offset={[0, 5]}
@@ -846,17 +813,6 @@ const ComponentsAppsTodoList = () => {
                                                 <div className="mb-5">
                                                     <label htmlFor="title">Title</label>
                                                     <input id="title" type="text" placeholder="Enter Task Title" className="form-input" value={params.title} onChange={(e) => changeValue(e)} />
-                                                </div>
-                                                <div className="mb-5">
-                                                    <label htmlFor="assignee">Assignee</label>
-                                                    <select id="assignee" className="form-select" value={params.assignee} onChange={(e) => changeValue(e)}>
-                                                        <option value="">Select Assignee</option>
-                                                        <option value="John Smith">John Smith</option>
-                                                        <option value="Kia Vega">Kia Vega</option>
-                                                        <option value="Sandy Doe">Sandy Doe</option>
-                                                        <option value="Jane Foster">Jane Foster</option>
-                                                        <option value="Donna Frank">Donna Frank</option>
-                                                    </select>
                                                 </div>
                                                 <div className="mb-5 flex justify-between gap-4">
                                                     <div className="flex-1">

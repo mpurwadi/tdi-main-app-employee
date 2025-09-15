@@ -1,54 +1,34 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
-import { Html5QrcodeScanner } from 'html5-qrcode';
+import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import { useRouter } from 'next/navigation';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 const AbsenceComponent = () => {
     const router = useRouter();
-    const qrCodeScannerRef = useRef<Html5QrcodeScanner | null>(null);
-    const [scanResult, setScanResult] = useState<string | null>(null);
     const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null);
     const [distance, setDistance] = useState<number | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [isScanning, setIsScanning] = useState(true);
-    const [attendanceStatus, setAttendanceStatus] = useState<string | null>(null);
-    const [isSecureContext, setIsSecureContext] = useState(true);
-    const [cameraPermission, setCameraPermission] = useState<'granted' | 'denied' | 'prompt' | null>(null);
     const [locationPermission, setLocationPermission] = useState<'granted' | 'denied' | 'prompt' | null>(null);
     const [showLocationInstructions, setShowLocationInstructions] = useState(false);
-    const [useManualCheckIn, setUseManualCheckIn] = useState(false);
-    const [officeCode, setOfficeCode] = useState('');
+    const [isCheckedIn, setIsCheckedIn] = useState(false);
+    const [checkInTime, setCheckInTime] = useState<string | null>(null);
+    const [attendanceHistory, setAttendanceHistory] = useState<any[]>([]);
+    const [showManualCheckIn, setShowManualCheckIn] = useState(false);
+    const [manualReason, setManualReason] = useState('');
+    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // 1-12
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
     // Office coordinates for geofencing (example - replace with actual office location)
-    const OFFICE_LATITUDE = -6.200000; // Example: Jakarta
-    const OFFICE_LONGITUDE = 106.816666; // Example: Jakarta
-    const GEOFENCE_RADIUS_METERS = 100; // 100 meters
-    const OFFICE_QR_CODE = 'TDI_OFFICE_QR_CODE'; // Static QR code for the office
+    const OFFICE_LATITUDE = -6.9248277; // New coordinates
+    const OFFICE_LONGITUDE = 107.7307581; // New coordinates
+    const GEOFENCE_RADIUS_METERS = 400; // 400 meters
 
     useEffect(() => {
-        // Check if we're in a secure context or running on localhost
-        // For localhost development, we allow camera access even on HTTP
-        const isLocalhost = window.location.hostname === 'localhost' || 
-                           window.location.hostname === '127.0.0.1' || 
-                           window.location.hostname.startsWith('192.168.') ||
-                           window.location.hostname.startsWith('10.') ||
-                           window.location.hostname.startsWith('172.');
-        setIsSecureContext(window.isSecureContext || isLocalhost);
-        
-        // Check camera permission status
+        // Check location permission status
         if (navigator.permissions) {
-            navigator.permissions.query({ name: 'camera' as PermissionName }).then((permissionStatus) => {
-                setCameraPermission(permissionStatus.state);
-                permissionStatus.onchange = () => {
-                    setCameraPermission(permissionStatus.state);
-                };
-            }).catch((err) => {
-                console.warn('Camera permission check failed:', err);
-            });
-            
-            // Check location permission status
             navigator.permissions.query({ name: 'geolocation' as PermissionName }).then((permissionStatus) => {
                 setLocationPermission(permissionStatus.state);
                 permissionStatus.onchange = () => {
@@ -59,105 +39,63 @@ const AbsenceComponent = () => {
             });
         }
 
-        // Initialize QR code scanner only in secure context or localhost
-        const isLocalhost = window.location.hostname === 'localhost' || 
-                           window.location.hostname === '127.0.0.1' || 
-                           window.location.hostname.startsWith('192.168.') ||
-                           window.location.hostname.startsWith('10.') ||
-                           window.location.hostname.startsWith('172.');
-        
-        if (!useManualCheckIn && (window.isSecureContext || isLocalhost) && isScanning && !qrCodeScannerRef.current) {
-            initializeScanner();
-        }
+        // Set default month and year to current month
+        const currentDate = new Date();
+        setSelectedMonth(currentDate.getMonth() + 1); // JavaScript months are 0-indexed
+        setSelectedYear(currentDate.getFullYear());
 
-        return () => {
-            if (qrCodeScannerRef.current) {
-                qrCodeScannerRef.current.clear().catch(error => {
-                    console.error("Failed to clear html5QrcodeScanner", error);
-                });
-                qrCodeScannerRef.current = null;
+        // Check current attendance status
+        checkAttendanceStatus();
+        
+        // Load attendance history for current month
+        loadAttendanceHistory(currentDate.getMonth() + 1, currentDate.getFullYear());
+    }, []);
+
+    const checkAttendanceStatus = async () => {
+        try {
+            const response = await fetch('/api/attendance/status');
+            if (response.ok) {
+                const data = await response.json();
+                setIsCheckedIn(data.isCheckedIn);
+                setCheckInTime(data.checkInTime);
             }
-        };
-    }, [isScanning, useManualCheckIn]);
-
-    const initializeScanner = () => {
-        // For localhost development, we allow camera access even on HTTP
-        const isLocalhost = window.location.hostname === 'localhost' || 
-                           window.location.hostname === '127.0.0.1' || 
-                           window.location.hostname.startsWith('192.168.') ||
-                           window.location.hostname.startsWith('10.') ||
-                           window.location.hostname.startsWith('172.');
-        
-        if (!window.isSecureContext && !isLocalhost) {
-            setError('Camera access requires a secure context (HTTPS or localhost). Please access this page via HTTPS or localhost.');
-            setIsScanning(false);
-            return;
-        }
-
-        qrCodeScannerRef.current = new Html5QrcodeScanner(
-            "qr-code-reader-absence",
-            {
-                fps: 10,
-                qrbox: { width: 250, height: 250 },
-                disableFlip: false,
-            },
-            /* verbose= */ false
-        );
-
-        qrCodeScannerRef.current.render(onScanSuccess, onScanError);
-    };
-
-    const onScanSuccess = (decodedText: string, decodedResult: any) => {
-        // Handle the scanned QR code
-        setScanResult(decodedText);
-        setIsScanning(false);
-        checkLocationAndSubmit(decodedText);
-    };
-
-    const onScanError = (errorMessage: string) => {
-        // Handle scan errors
-        console.warn(`QR Code Scan Error: ${errorMessage}`);
-        // setError(`QR Scan Error: ${errorMessage}`); // Don't show too many transient errors
-    };
-
-    const startScanning = () => {
-        // For localhost development, we allow camera access even on HTTP
-        const isLocalhost = window.location.hostname === 'localhost' || 
-                           window.location.hostname === '127.0.0.1' || 
-                           window.location.hostname.startsWith('192.168.') ||
-                           window.location.hostname.startsWith('10.') ||
-                           window.location.hostname.startsWith('172.');
-        
-        if (!window.isSecureContext && !isLocalhost) {
-            setError('Camera access requires a secure context (HTTPS or localhost). Please access this page via HTTPS or localhost.');
-            return;
-        }
-        
-        setUseManualCheckIn(false);
-        setIsScanning(true);
-        setScanResult(null);
-        setError(null);
-        setAttendanceStatus(null);
-        setLocation(null);
-        setDistance(null);
-        setShowLocationInstructions(false);
-        setOfficeCode('');
-        
-        // Reinitialize scanner if needed
-        if (!qrCodeScannerRef.current) {
-            initializeScanner();
+        } catch (err) {
+            console.error('Failed to check attendance status:', err);
         }
     };
 
-    const toggleCheckInMethod = () => {
-        setUseManualCheckIn(!useManualCheckIn);
-        setScanResult(null);
-        setError(null);
-        setAttendanceStatus(null);
-        setLocation(null);
-        setDistance(null);
-        setShowLocationInstructions(false);
-        setOfficeCode('');
+    const loadAttendanceHistory = async (month?: number, year?: number) => {
+        try {
+            // If no month/year provided, use current month/year
+            const targetMonth = month || selectedMonth;
+            const targetYear = year || selectedYear;
+            
+            const response = await fetch(`/api/attendance/history?month=${targetMonth}&year=${targetYear}`);
+            if (response.ok) {
+                const data = await response.json();
+                // Take only the last 5 records
+                setAttendanceHistory(data.records.slice(0, 5));
+            }
+        } catch (err) {
+            console.error('Failed to load attendance history:', err);
+        }
+    };
+
+    // Haversine formula to calculate distance between two lat/lon points
+    const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+        const R = 6371e3; // metres
+        const φ1 = lat1 * Math.PI / 180; // φ, λ in radians
+        const φ2 = lat2 * Math.PI / 180;
+        const Δφ = (lat2 - lat1) * Math.PI / 180;
+        const Δλ = (lon2 - lon1) * Math.PI / 180;
+
+        const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+            Math.cos(φ1) * Math.cos(φ2) *
+            Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        const distance = R * c; // in metres
+        return distance;
     };
 
     const requestLocationPermission = () => {
@@ -184,71 +122,7 @@ const AbsenceComponent = () => {
         }
     };
 
-    const handleManualCheckIn = async () => {
-        if (!officeCode.trim()) {
-            setError('Please enter the office code');
-            return;
-        }
-
-        setLoading(true);
-        setError(null);
-
-        try {
-            const response = await fetch('/api/attendance/check-in', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ 
-                    officeCode: officeCode.trim(),
-                    checkInType: 'manual'
-                }),
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                setAttendanceStatus('success');
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Attendance Recorded!',
-                    text: data.message || 'Your attendance has been successfully recorded.',
-                    padding: '2em',
-                    customClass: {
-                        container: 'sweet-alerts'
-                    },
-                });
-            } else {
-                setAttendanceStatus('error');
-                setError(data.message || 'Failed to record attendance.');
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Attendance Failed',
-                    text: data.message || 'Failed to record attendance.',
-                    padding: '2em',
-                    customClass: {
-                        container: 'sweet-alerts'
-                    },
-                });
-            }
-        } catch (err: any) {
-            setAttendanceStatus('error');
-            setError(`Network Error: ${err.message}`);
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: `An unexpected error occurred: ${err.message}`,
-                padding: '2em',
-                customClass: {
-                    container: 'sweet-alerts'
-                },
-            });
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const checkLocationAndSubmit = (qrData: string) => {
+    const getCurrentLocation = () => {
         setLoading(true);
         setError(null);
 
@@ -281,7 +155,7 @@ const AbsenceComponent = () => {
 
                 if (calculatedDistance <= GEOFENCE_RADIUS_METERS) {
                     // Location is within geofence, proceed with attendance submission
-                    await submitAttendance(qrData, latitude, longitude);
+                    await submitAttendance(latitude, longitude);
                 } else {
                     setError(`You are ${calculatedDistance.toFixed(2)} meters away from the office. Must be within ${GEOFENCE_RADIUS_METERS} meters.`);
                     Swal.fire({
@@ -364,53 +238,39 @@ const AbsenceComponent = () => {
         );
     };
 
-    // Haversine formula to calculate distance between two lat/lon points
-    const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
-        const R = 6371e3; // metres
-        const φ1 = lat1 * Math.PI / 180; // φ, λ in radians
-        const φ2 = lat2 * Math.PI / 180;
-        const Δφ = (lat2 - lat1) * Math.PI / 180;
-        const Δλ = (lon2 - lon1) * Math.PI / 180;
-
-        const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-            Math.cos(φ1) * Math.cos(φ2) *
-            Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-        const distance = R * c; // in metres
-        return distance;
-    };
-
-    const submitAttendance = async (qrData: string, latitude: number, longitude: number) => {
+    const submitAttendance = async (latitude: number, longitude: number) => {
         try {
+            const action = isCheckedIn ? 'check-out' : 'check-in';
             const response = await fetch('/api/attendance/check-in', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ qrData, latitude, longitude }),
+                body: JSON.stringify({ latitude, longitude, action }),
             });
 
             const data = await response.json();
 
             if (response.ok) {
-                setAttendanceStatus('success');
                 Swal.fire({
                     icon: 'success',
-                    title: 'Attendance Recorded!',
-                    text: data.message || 'Your attendance has been successfully recorded.',
+                    title: isCheckedIn ? 'Check-out Recorded!' : 'Check-in Recorded!',
+                    text: data.message || (isCheckedIn ? 'Your check-out has been successfully recorded.' : 'Your check-in has been successfully recorded.'),
                     padding: '2em',
                     customClass: {
                         container: 'sweet-alerts'
                     },
                 });
+                
+                // Refresh attendance status and history
+                await checkAttendanceStatus();
+                await loadAttendanceHistory();
             } else {
-                setAttendanceStatus('error');
-                setError(data.message || 'Failed to record attendance.');
+                setError(data.message || (isCheckedIn ? 'Failed to record check-out.' : 'Failed to record check-in.'));
                 Swal.fire({
                     icon: 'error',
-                    title: 'Attendance Failed',
-                    text: data.message || 'Failed to record attendance.',
+                    title: isCheckedIn ? 'Check-out Failed' : 'Check-in Failed',
+                    text: data.message || (isCheckedIn ? 'Failed to record check-out.' : 'Failed to record check-in.'),
                     padding: '2em',
                     customClass: {
                         container: 'sweet-alerts'
@@ -418,7 +278,6 @@ const AbsenceComponent = () => {
                 });
             }
         } catch (err: any) {
-            setAttendanceStatus('error');
             setError(`Network Error: ${err.message}`);
             Swal.fire({
                 icon: 'error',
@@ -432,6 +291,157 @@ const AbsenceComponent = () => {
         }
     };
 
+    const submitManualCheckIn = async () => {
+        if (!manualReason.trim()) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Reason Required',
+                text: 'Please provide a reason for manual check-in.',
+                padding: '2em',
+                customClass: {
+                    container: 'sweet-alerts'
+                },
+            });
+            return;
+        }
+
+        try {
+            const action = isCheckedIn ? 'check-out' : 'check-in';
+            const response = await fetch('/api/attendance/check-in', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    latitude: OFFICE_LATITUDE, 
+                    longitude: OFFICE_LONGITUDE, 
+                    action,
+                    manual: true,
+                    reason: manualReason
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                Swal.fire({
+                    icon: 'success',
+                    title: isCheckedIn ? 'Manual Check-out Recorded!' : 'Manual Check-in Recorded!',
+                    text: data.message || (isCheckedIn ? 'Your manual check-out has been successfully recorded.' : 'Your manual check-in has been successfully recorded.'),
+                    padding: '2em',
+                    customClass: {
+                        container: 'sweet-alerts'
+                    },
+                });
+                
+                // Refresh attendance status and history
+                await checkAttendanceStatus();
+                await loadAttendanceHistory();
+                
+                // Reset form
+                setManualReason('');
+                setShowManualCheckIn(false);
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: isCheckedIn ? 'Manual Check-out Failed' : 'Manual Check-in Failed',
+                    text: data.message || (isCheckedIn ? 'Failed to record manual check-out.' : 'Failed to record manual check-in.'),
+                    padding: '2em',
+                    customClass: {
+                        container: 'sweet-alerts'
+                    },
+                });
+            }
+        } catch (err: any) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: `An unexpected error occurred: ${err.message}`,
+                padding: '2em',
+                customClass: {
+                    container: 'sweet-alerts'
+                },
+            });
+        }
+    };
+
+    const exportToPDF = async (month: number, year: number) => {
+        try {
+            // Fetch attendance records for the selected month
+            const response = await fetch(`/api/attendance/export?month=${month}&year=${year}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch attendance data');
+            }
+            
+            const data = await response.json();
+            const records = data.records;
+
+            // Create PDF document
+            const doc = new jsPDF() as any;
+            
+            // Add title
+            doc.setFontSize(18);
+            doc.text(`Attendance Report - ${getMonthName(month)} ${year}`, 14, 20);
+            
+            // Add user info (in a real app, you'd get this from auth)
+            doc.setFontSize(12);
+            doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 30);
+            
+            // Prepare table data
+            const tableData = records.map((record: any) => [
+                new Date(record.clockInTime).toLocaleDateString(),
+                record.clockInTime ? new Date(record.clockInTime).toLocaleTimeString() : '-',
+                record.clockOutTime ? new Date(record.clockOutTime).toLocaleTimeString() : '-',
+                record.manualCheckinReason || record.manualCheckoutReason ? 'Yes' : 'No'
+            ]);
+            
+            // Add table using the imported autotable function
+            autoTable(doc, {
+                startY: 40,
+                head: [['Date', 'Check-in Time', 'Check-out Time', 'Manual Entry']],
+                body: tableData,
+                theme: 'striped',
+                styles: {
+                    fontSize: 10
+                },
+                headStyles: {
+                    fillColor: [67, 97, 238] // Primary color
+                }
+            });
+            
+            // Save the PDF
+            doc.save(`attendance-report-${year}-${month}.pdf`);
+            
+            Swal.fire({
+                icon: 'success',
+                title: 'Export Successful!',
+                text: `Attendance report for ${getMonthName(month)} ${year} has been exported to PDF.`,
+                padding: '2em',
+                customClass: {
+                    container: 'sweet-alerts'
+                },
+            });
+        } catch (error: any) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Export Failed',
+                text: `Failed to export attendance report: ${error.message}`,
+                padding: '2em',
+                customClass: {
+                    container: 'sweet-alerts'
+                },
+            });
+        }
+    };
+
+    const getMonthName = (month: number) => {
+        const months = [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+        ];
+        return months[month - 1];
+    };
+
     // Format distance with appropriate units
     const formatDistance = (distance: number) => {
         if (distance < 1000) {
@@ -443,89 +453,59 @@ const AbsenceComponent = () => {
 
     return (
         <div className="panel">
-            <h5 className="mb-5 text-lg font-semibold">Absensi Karyawan</h5>
-            <p className="mb-4">Scan QR Code kantor dan pastikan Anda berada dalam radius 100 meter dari kantor.</p>
-            
-            {/* Toggle check-in method */}
-            <div className="mb-4 flex justify-center">
-                <button 
-                    type="button" 
-                    className="btn btn-outline-primary"
-                    onClick={toggleCheckInMethod}
-                >
-                    {useManualCheckIn ? 'Switch to QR Scan' : 'Switch to Manual Check-in'}
-                </button>
+            <div className="mb-5 flex items-center justify-between">
+                <h5 className="text-lg font-semibold">Absensi Karyawan</h5>
+                <div className="flex gap-2">
+                    <button 
+                        className="btn btn-outline-primary"
+                        onClick={() => setShowManualCheckIn(!showManualCheckIn)}
+                    >
+                        {showManualCheckIn ? 'Cancel Manual' : 'Manual Check-in'}
+                    </button>
+                </div>
             </div>
             
-            {/* Security context warning */}
-            {!isSecureContext && !useManualCheckIn && (
-                <div className="mb-4 p-3 rounded-lg bg-warning/10 text-warning">
-                    <div className="flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                        </svg>
-                        <span><strong>Secure Context Required:</strong> Camera access requires a secure context (HTTPS or localhost)</span>
-                    </div>
-                    <div className="mt-2">
-                        <p>Please access this application via:</p>
-                        <ul className="list-disc pl-5 mt-1">
-                            <li><code>https://</code> protocol (not <code>http://</code>)</li>
-                            <li>or <code>localhost</code> for local development (camera access is allowed on HTTP for localhost)</li>
-                        </ul>
-                    </div>
-                </div>
-            )}
-
+            <p className="mb-4">Pastikan Anda berada dalam radius 400 meter dari kantor untuk melakukan absensi.</p>
+            
             {/* Manual Check-in Form */}
-            {useManualCheckIn && (
+            {showManualCheckIn && (
                 <div className="mb-6 panel">
-                    <h3 className="text-lg font-bold mb-4">Manual Check-in</h3>
-                    <p className="mb-4">Enter the office code to check in without location detection or QR scanning.</p>
+                    <h3 className="text-lg font-bold mb-4">Manual Check-in/Check-out</h3>
+                    <p className="mb-4">Please provide a reason for manual check-in/check-out.</p>
                     
                     <div className="mb-4">
-                        <label htmlFor="officeCode" className="block text-sm font-medium mb-1">Office Code</label>
-                        <input
-                            type="text"
-                            id="officeCode"
+                        <label htmlFor="manualReason" className="block text-sm font-medium mb-1">Reason</label>
+                        <textarea
+                            id="manualReason"
                             className="form-input"
-                            value={officeCode}
-                            onChange={(e) => setOfficeCode(e.target.value)}
-                            placeholder="Enter office code"
+                            value={manualReason}
+                            onChange={(e) => setManualReason(e.target.value)}
+                            placeholder="Enter reason for manual check-in/check-out"
+                            rows={3}
                         />
-                        <p className="text-sm text-gray-500 mt-1">Office code: {OFFICE_QR_CODE}</p>
                     </div>
                     
-                    {error && (
-                        <div className="p-3.5 rounded-md bg-danger-light text-danger mb-4">
-                            {error}
-                        </div>
-                    )}
-                    
-                    {loading && (
-                        <div className="p-3.5 rounded-md bg-info-light text-info mb-4 flex items-center">
-                            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-info" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                            Processing attendance... Please wait.
-                        </div>
-                    )}
-                    
-                    <div className="flex justify-end">
+                    <div className="flex justify-end gap-2">
                         <button
                             type="button"
-                            className="btn btn-primary"
-                            onClick={handleManualCheckIn}
-                            disabled={loading}
+                            className="btn btn-outline-secondary"
+                            onClick={() => setShowManualCheckIn(false)}
                         >
-                            {loading ? 'Checking In...' : 'Check In'}
+                            Cancel
+                        </button>
+                        <button
+                            type="button"
+                            className={`btn ${isCheckedIn ? 'btn-danger' : 'btn-primary'}`}
+                            onClick={submitManualCheckIn}
+                        >
+                            {isCheckedIn ? 'Manual Check Out' : 'Manual Check In'}
                         </button>
                     </div>
                 </div>
             )}
-
+            
             {/* Location permission instructions */}
-            {showLocationInstructions && !useManualCheckIn && (
+            {showLocationInstructions && (
                 <div className="mb-4 p-4 rounded-lg bg-info/10 text-info">
                     <div className="flex items-center justify-between">
                         <h4 className="font-bold text-lg">Enable Location Access</h4>
@@ -580,13 +560,13 @@ const AbsenceComponent = () => {
                 </div>
             </div>
 
-            {error && !useManualCheckIn && (
+            {error && (
                 <div className="p-3.5 rounded-md bg-danger-light text-danger mb-4">
                     {error}
                 </div>
             )}
 
-            {loading && !useManualCheckIn && (
+            {loading && (
                 <div className="p-3.5 rounded-md bg-info-light text-info mb-4 flex items-center">
                     <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-info" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -596,7 +576,7 @@ const AbsenceComponent = () => {
                 </div>
             )}
 
-            {distance !== null && !useManualCheckIn && (
+            {distance !== null && (
                 <div className={`p-3 rounded-lg mb-4 ${
                     distance <= GEOFENCE_RADIUS_METERS 
                         ? 'bg-success/10 text-success' 
@@ -623,131 +603,115 @@ const AbsenceComponent = () => {
                 </div>
             )}
 
-            {!useManualCheckIn && (
-                <>
-                    {!scanResult ? (
-                        <div>
-                            {isScanning ? (
-                                <div>
-                                    {isSecureContext ? (
-                                        <>
-                                            <div id="qr-code-reader-absence" style={{ width: '100%', maxWidth: '500px', margin: '0 auto' }}></div>
-                                            <p className="text-center text-gray-500 mt-2">Point your camera at the QR code</p>
-                                        </>
-                                    ) : (
-                                        <div className="text-center py-8">
-                                            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-warning/10 text-warning mb-3">
-                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                                                </svg>
-                                            </div>
-                                            <p className="text-warning text-lg font-bold">Secure Context Required</p>
-                                            <p className="text-gray-500 mt-2">Camera access is only available in secure contexts (HTTPS or localhost)</p>
-                                            <button 
-                                                type="button" 
-                                                className="btn btn-primary mt-4"
-                                                onClick={() => window.location.reload()}
-                                            >
-                                                Refresh Page
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
-                            ) : (
-                                <div className="text-center py-8">
-                                    <p className="text-gray-500 mb-4">Scanner is not active</p>
-                                    <button 
-                                        type="button" 
-                                        className="btn btn-primary"
-                                        onClick={startScanning}
-                                    >
-                                        Start QR Scanner
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    ) : (
-                        <div className="text-center">
-                            <div className="mb-4">
-                                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-success/10 text-success mb-3">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                    </svg>
-                                </div>
-                                <p className="text-success text-lg font-bold">QR Code Scanned Successfully!</p>
-                                <p className="text-sm text-gray-500 mt-1">Code: {scanResult}</p>
-                            </div>
-                            
-                            {location && (
-                                <div className="mb-4 p-3 rounded-lg bg-info/10 text-info">
-                                    <p className="font-medium">Your Location:</p>
-                                    <p>Latitude: {location.latitude.toFixed(6)}</p>
-                                    <p>Longitude: {location.longitude.toFixed(6)}</p>
-                                </div>
-                            )}
-                            
-                            {attendanceStatus === 'success' ? (
-                                <div className="mt-4">
-                                    <button 
-                                        type="button" 
-                                        className="btn btn-primary"
-                                        onClick={startScanning}
-                                    >
-                                        Scan Another QR Code
-                                    </button>
-                                </div>
-                            ) : attendanceStatus === 'error' ? (
-                                <div className="mt-4">
-                                    <button 
-                                        type="button" 
-                                        className="btn btn-primary"
-                                        onClick={startScanning}
-                                    >
-                                        Try Again
-                                    </button>
-                                </div>
-                            ) : (
-                                <p className="mt-4">Checking location and submitting attendance...</p>
-                            )}
-                        </div>
-                    )}
-                </>
+            {isCheckedIn && checkInTime && (
+                <div className="mb-4 p-3 rounded-lg bg-info/10 text-info">
+                    <p className="font-medium">You checked in today at:</p>
+                    <p>{new Date(checkInTime).toLocaleString()}</p>
+                </div>
             )}
 
-            {useManualCheckIn && attendanceStatus === 'success' && (
-                <div className="text-center mt-6">
-                    <div className="mb-4">
-                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-success/10 text-success mb-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+            <div className="flex flex-col items-center mb-6">
+                <button
+                    type="button"
+                    className={`btn ${isCheckedIn ? 'btn-danger' : 'btn-primary'} w-full max-w-xs`}
+                    onClick={getCurrentLocation}
+                    disabled={loading}
+                >
+                    {loading ? (
+                        <>
+                            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
-                        </div>
-                        <p className="text-success text-lg font-bold">Manual Check-in Successful!</p>
-                    </div>
-                    <button 
-                        type="button" 
-                        className="btn btn-primary"
-                        onClick={toggleCheckInMethod}
-                    >
-                        Back to QR Scan
-                    </button>
-                </div>
-            )}
+                            Processing...
+                        </>
+                    ) : isCheckedIn ? (
+                        'Check Out'
+                    ) : (
+                        'Check In'
+                    )}
+                </button>
+                
+                <p className="text-gray-500 text-sm mt-3 text-center">
+                    {isCheckedIn 
+                        ? 'Click to record your check-out time' 
+                        : 'Click to record your check-in time. Make sure you are within the geofence area.'}
+                </p>
+            </div>
 
-            {useManualCheckIn && attendanceStatus === 'error' && (
-                <div className="text-center mt-6">
-                    <button 
-                        type="button" 
-                        className="btn btn-primary"
-                        onClick={() => {
-                            setAttendanceStatus(null);
-                            setError(null);
-                        }}
-                    >
-                        Try Again
-                    </button>
+            {/* Attendance History */}
+            <div className="panel">
+                <div className="mb-5 flex items-center justify-between">
+                    <h5 className="text-lg font-semibold">Recent Attendance</h5>
+                    <div className="flex items-center gap-2">
+                        <select 
+                            className="form-select"
+                            value={selectedMonth}
+                            onChange={(e) => {
+                                const newMonth = parseInt(e.target.value);
+                                setSelectedMonth(newMonth);
+                                loadAttendanceHistory(newMonth, selectedYear);
+                            }}
+                        >
+                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(month => (
+                                <option key={month} value={month}>{getMonthName(month)}</option>
+                            ))}
+                        </select>
+                        <select 
+                            className="form-select"
+                            value={selectedYear}
+                            onChange={(e) => {
+                                const newYear = parseInt(e.target.value);
+                                setSelectedYear(newYear);
+                                loadAttendanceHistory(selectedMonth, newYear);
+                            }}
+                        >
+                            {[2023, 2024, 2025, 2026].map(year => (
+                                <option key={year} value={year}>{year}</option>
+                            ))}
+                        </select>
+                        <button 
+                            className="btn btn-primary"
+                            onClick={() => exportToPDF(selectedMonth, selectedYear)}
+                        >
+                            Export PDF
+                        </button>
+                    </div>
                 </div>
-            )}
+                
+                {attendanceHistory.length > 0 ? (
+                    <div className="table-responsive">
+                        <table className="table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Check-in Time</th>
+                                    <th>Check-out Time</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {attendanceHistory.map((record) => (
+                                    <tr key={record.id}>
+                                        <td>{new Date(record.clockInTime).toLocaleDateString()}</td>
+                                        <td>{record.clockInTime ? new Date(record.clockInTime).toLocaleTimeString() : '-'}</td>
+                                        <td>{record.clockOutTime ? new Date(record.clockOutTime).toLocaleTimeString() : '-'}</td>
+                                        <td>
+                                            <span className={`badge ${record.clockOutTime ? 'badge-outline-success' : 'badge-outline-warning'}`}>
+                                                {record.clockOutTime ? 'Completed' : 'In Progress'}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                ) : (
+                    <div className="text-center py-8">
+                        <p className="text-gray-500">No attendance records found.</p>
+                    </div>
+                )}
+            </div>
         </div>
     );
 };
