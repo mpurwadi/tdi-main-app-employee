@@ -10,3 +10,13 @@ const themeConfig = {
 };
 
 export default themeConfig;
+
+// Also export individual properties for better tree-shaking
+export const locale = themeConfig.locale;
+export const theme = themeConfig.theme;
+export const menu = themeConfig.menu;
+export const layout = themeConfig.layout;
+export const rtlClass = themeConfig.rtlClass;
+export const animation = themeConfig.animation;
+export const navbar = themeConfig.navbar;
+export const semidark = themeConfig.semidark;

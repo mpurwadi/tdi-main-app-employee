@@ -1,24 +1,15 @@
 
-import { Pool } from 'pg';
-
 export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { verifyAuth } from '@/lib/auth';
-
-const pool = new Pool({
-    user: 'mpurwadi',
-    host: 'localhost',
-    database: 'opsapps',
-    password: 'pratista17',
-    port: 5432,
-});
+import { db } from '@/lib/db';
 
 // GET current user's profile
 export async function GET(request: Request) {
     try {
         const auth = verifyAuth(); // Ensures user is authenticated
 
-        const userResult = await pool.query('SELECT id, full_name, email, student_id, campus, division, role FROM users WHERE id = $1', [auth.userId]);
+        const userResult = await db.query('SELECT id, full_name, email, student_id, campus, division, role FROM users WHERE id = $1', [auth.userId]);
 
         if (userResult.rows.length === 0) {
             return NextResponse.json({ message: 'User not found' }, { status: 404 });
@@ -51,7 +42,7 @@ export async function PUT(request: Request) {
         `;
         const values = [fullName, studentId, campus, auth.userId, division];
 
-        const updatedUser = await pool.query(query, values);
+        const updatedUser = await db.query(query, values);
 
         if (updatedUser.rowCount === 0) {
             return NextResponse.json({ message: 'User not found or update failed' }, { status: 404 });

@@ -3,14 +3,18 @@ import { Pool } from 'pg';
 export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { verifyAuth, isAdmin } from '@/lib/auth';
+import { config } from 'dotenv';
 
-// Database connection pool
+// Load environment variables
+config();
+
+// Database connection pool using environment variables
 const pool = new Pool({
-    user: 'mpurwadi',
-    host: 'localhost',
-    database: 'opsapps',
-    password: 'pratista17',
-    port: 5432,
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'postgres',
+    password: process.env.DB_PASSWORD || '456456',
+    database: process.env.DB_NAME || 'opsapps',
+    port: parseInt(process.env.DB_PORT || '5432', 10),
 });
 
 // Get all pending logbook entries for admin approval

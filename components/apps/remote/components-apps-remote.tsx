@@ -1,20 +1,62 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import dynamic from 'next/dynamic';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
+// Dynamically import react-leaflet components to avoid SSR issues
+const MapContainer = dynamic(
+  () => import('react-leaflet').then((mod) => mod.MapContainer),
+  { ssr: false }
+);
+
+const TileLayer = dynamic(
+  () => import('react-leaflet').then((mod) => mod.TileLayer),
+  { ssr: false }
+);
+
+const Marker = dynamic(
+  () => import('react-leaflet').then((mod) => mod.Marker),
+  { ssr: false }
+);
+
+const Popup = dynamic(
+  () => import('react-leaflet').then((mod) => mod.Popup),
+  { ssr: false }
+);
+
 // Fix for default marker icons in Leaflet
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-});
+if (typeof window !== 'undefined') {
+  delete (L.Icon.Default.prototype as any)._getIconUrl;
+  L.Icon.Default.mergeOptions({
+    iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+    iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+  });
+}
+
+// Add error handling for the translation hook
+let useTranslationHook;
+try {
+    useTranslationHook = require('react-i18next').useTranslation;
+} catch (e) {
+    // Fallback if useTranslation is not available
+    useTranslationHook = () => ({ t: (key: string) => key });
+}
 
 const RemoteCheckin = () => {
-    const { t } = useTranslation();
+    // Add error handling for the translation hook with extra safety
+    let t;
+    try {
+        ({ t } = useTranslationHook());
+        // Ensure t is actually a function
+        if (typeof t !== 'function') {
+            t = (key: string) => key;
+        }
+    } catch (e) {
+        // Fallback function if useTranslation fails
+        t = (key: string) => key;
+    }
     const [latitude, setLatitude] = useState<number | null>(null);
     const [longitude, setLongitude] = useState<number | null>(null);
     const [workLocation, setWorkLocation] = useState('');
@@ -23,20 +65,28 @@ const RemoteCheckin = () => {
     const [history, setHistory] = useState<any[]>([]);
     const [historyLoading, setHistoryLoading] = useState(true);
     const [selectedHistoryMap, setSelectedHistoryMap] = useState<any | null>(null);
+    const [isClient, setIsClient] = useState(false);
+
+    // Check if we're on a mobile device
+    const isMobileDevice = () => {
+        if (typeof navigator !== 'undefined') {
+            return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        }
+        return false;
+    };
 
     // Get user's location
     const getLocation = () => {
-        if (!navigator.geolocation) {
+        // Check if geolocation is available
+        if (typeof navigator === 'undefined' || !navigator.geolocation) {
             setMessage({ text: 'Geolocation is not supported by your browser', type: 'error' });
             return;
         }
 
         setMessage({ text: 'Requesting location permission...', type: 'success' });
 
-        // Check if we're on a mobile device
-        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-        
         // For mobile devices, we might need to use different options
+        const isMobile = isMobileDevice();
         const options = isMobile ? {
             enableHighAccuracy: true,
             timeout: 15000, // Increase timeout for mobile
@@ -59,7 +109,7 @@ const RemoteCheckin = () => {
                     case 1: // PERMISSION_DENIED
                         errorMessage = 'Location access denied. Please enable location permissions in your browser settings.';
                         // Provide specific instructions for mobile Chrome
-                        if (isMobile && /Chrome/i.test(navigator.userAgent)) {
+                        if (isMobile && typeof navigator !== 'undefined' && /Chrome/i.test(navigator.userAgent)) {
                             errorMessage += ' On Chrome mobile, go to Settings > Site Settings > Location and allow location access for this site.';
                         }
                         break;
@@ -157,10 +207,176 @@ const RemoteCheckin = () => {
 
     // Initialize
     useEffect(() => {
+        setIsClient(true);
         // Don't automatically request location on page load
         // User must explicitly click the "Get Location" button
         fetchHistory();
     }, []);
+
+    // Only render map components on the client side
+    if (!isClient) {
+        return (
+            <div>
+                <div className="flex items-center justify-between mb-5">
+                    <h5 className="font-semibold text-lg">{t('Remote Check-in')}</h5>
+                </div>
+
+                <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+                    {/* Check-in Card */}
+                    <div className="panel">
+                        <div className="flex items-center justify-between mb-5">
+                            <h5 className="font-semibold text-lg">{t('Check-in for Remote Work')}</h5>
+                        </div>
+                        <div className="mb-5">
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium mb-2">{t('Your Location')}</label>
+                                <div className="flex space-x-2">
+                                    <button
+                                        type="button"
+                                        className="btn btn-primary"
+                                        onClick={getLocation}
+                                        disabled={loading}
+                                    >
+                                        {loading ? (
+                                            <span className="flex items-center">
+                                                <span className="mr-2 animate-spin border-2 border-white border-l-transparent rounded-full w-4 h-4"></span>
+                                                {t('Getting Location...')}
+                                            </span>
+                                        ) : (
+                                            t('Get Location')
+                                        )}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="btn btn-secondary"
+                                        onClick={getLocation}
+                                        disabled={loading}
+                                    >
+                                        {t('Refresh Location')}
+                                    </button>
+                                </div>
+                            </div>
+
+                            {latitude !== null && longitude !== null && (
+                                <div className="mb-4">
+                                    <div className="flex justify-between items-center mb-2">
+                                        <label className="block text-sm font-medium">{t('Location Coordinates')}</label>
+                                    </div>
+                                    <div className="p-3 bg-gray-100 rounded mb-2">
+                                        <p className="text-sm">
+                                            <strong>{t('Latitude')}:</strong> {latitude.toFixed(6)}
+                                        </p>
+                                        <p className="text-sm">
+                                            <strong>{t('Longitude')}:</strong> {longitude.toFixed(6)}
+                                        </p>
+                                    </div>
+                                    
+                                    <div className="h-80 rounded-lg overflow-hidden border border-gray-200 flex items-center justify-center">
+                                        <p>Loading map...</p>
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium mb-2">{t('Work Location')}</label>
+                                <input
+                                    type="text"
+                                    placeholder={t('e.g., Home Office, Co-working Space')}
+                                    className="form-input"
+                                    value={workLocation}
+                                    onChange={(e) => setWorkLocation(e.target.value)}
+                                />
+                            </div>
+
+                            <button
+                                type="button"
+                                className="btn btn-success w-full"
+                                onClick={handleCheckin}
+                                disabled={loading || !latitude || !longitude}
+                            >
+                                {loading ? (
+                                    <span className="flex items-center justify-center">
+                                        <span className="mr-2 animate-spin border-2 border-white border-l-transparent rounded-full w-4 h-4"></span>
+                                        {t('Checking in...')}
+                                    </span>
+                                ) : (
+                                    t('Check-in for Remote Work')
+                                )}
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* History Card */}
+                    <div className="panel">
+                        <div className="flex items-center justify-between mb-5">
+                            <h5 className="font-semibold text-lg">{t('Check-in History')}</h5>
+                        </div>
+                        <div className="table-responsive">
+                            {historyLoading ? (
+                                <div className="flex justify-center items-center h-40">
+                                    <span className="animate-spin border-2 border-black border-l-transparent rounded-full w-6 h-6"></span>
+                                </div>
+                            ) : history.length === 0 ? (
+                                <div className="text-center py-8">
+                                    <p className="text-gray-500">{t('No check-in history found')}</p>
+                                </div>
+                            ) : (
+                                <div className="space-y-4">
+                                    {history.map((record) => (
+                                        <div key={record.id} className="border-b border-gray-200 dark:border-gray-700 pb-4 last:border-0 last:pb-0">
+                                            <div className="flex justify-between items-start">
+                                                <div>
+                                                    <span className="text-sm text-gray-500 dark:text-gray-400">{formatDate(record.checkinTime)}</span>
+                                                    <h4 className="text-lg font-semibold text-gray-900 dark:text-white mt-1 mb-2">{record.workLocation || t('Remote Work')}</h4>
+                                                    <p className="text-gray-600 dark:text-gray-400 text-sm">
+                                                        {formatCoordinates(record.latitude, record.longitude)}
+                                                    </p>
+                                                </div>
+                                                <button 
+                                                    type="button" 
+                                                    className="btn btn-primary btn-sm"
+                                                    onClick={() => setSelectedHistoryMap(record)}
+                                                >
+                                                    {t('View on Map')}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Message Display */}
+                {message && (
+                    <div
+                        className={`mt-5 p-4 rounded ${
+                            message.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                        }`}
+                    >
+                        {message.text}
+                    </div>
+                )}
+
+                <div className="panel mt-6">
+                    <div className="flex items-center justify-between mb-5">
+                        <h5 className="font-semibold text-lg">{t('Remote Work Information')}</h5>
+                    </div>
+                    <div className="prose max-w-full">
+                        <p>{t('Remember to check in for remote work each day to track your work location.')}</p>
+                        <ul>
+                            <li>{t('Your location is used only for verification purposes')}</li>
+                            <li>{t('You can only check in once per day')}</li>
+                            <li>{t('Make sure you have a stable internet connection when checking in')}</li>
+                            <li>{t('For mobile users: Enable location services on your device and allow location access when prompted')}</li>
+                            <li>{t('On mobile Chrome: If prompted, select "Allow" for location access. You can change this later in browser settings.')}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div>
@@ -176,7 +392,7 @@ const RemoteCheckin = () => {
                     </div>
                     <div className="mb-5">
                         {/* Mobile-specific instructions */}
-                        {/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) && (
+                        {isMobileDevice() && (
                             <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900 rounded-lg">
                                 <p className="text-sm text-blue-800 dark:text-blue-200">
                                     <strong>Mobile User:</strong> Ensure location services are enabled on your device and you allow location access when prompted.
@@ -411,12 +627,12 @@ const RemoteCheckin = () => {
                         <li>{t('On mobile Chrome: If prompted, select "Allow" for location access. You can change this later in browser settings.')}</li>
                     </ul>
                     {/* Mobile-specific instructions */}
-                    {/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) && (
+                    {isMobileDevice() && (
                         <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900 rounded-lg">
                             <h4 className="font-semibold text-yellow-800 dark:text-yellow-200">Mobile Device Instructions:</h4>
                             <ul className="mt-2 text-yellow-700 dark:text-yellow-300">
-                                <li>iOS: Settings > Safari > Location > Allow</li>
-                                <li>Android Chrome: Settings > Site Settings > Location > Allow</li>
+                                <li>iOS: Settings &gt; Safari &gt; Location &gt; Allow</li>
+                                <li>Android Chrome: Settings &gt; Site Settings &gt; Location &gt; Allow</li>
                                 <li>Ensure GPS is enabled in your device settings</li>
                             </ul>
                         </div>

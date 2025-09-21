@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { db } from '@/lib/db';
 
+// Force dynamic rendering for this route to avoid static generation issues with cookies
+export const dynamic = 'force-dynamic';
+
 const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-key';
 
 // Helper function to verify authentication

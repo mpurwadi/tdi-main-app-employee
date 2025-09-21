@@ -19,12 +19,13 @@ const UserApprovalComponent = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState<string>('');
+    const [statusFilter, setStatusFilter] = useState<string>('pending');
 
     const fetchPendingUsers = async () => {
         setLoading(true);
         setError(null);
         try {
-            let url = '/api/admin/users?status=pending';
+            let url = `/api/admin/users?status=${statusFilter}`;
             if (searchTerm) {
                 url += `&search=${encodeURIComponent(searchTerm)}`;
             }
@@ -45,7 +46,7 @@ const UserApprovalComponent = () => {
 
     useEffect(() => {
         fetchPendingUsers();
-    }, [searchTerm]);
+    }, [searchTerm, statusFilter]);
 
     const handleUpdateStatus = async (userId: number, status: 'approved' | 'rejected' | 'suspended') => {
         try {
@@ -73,7 +74,7 @@ const UserApprovalComponent = () => {
     };
 
     if (loading) {
-        return <div>Loading pending users...</div>;
+        return <div>Loading users...</div>;
     }
 
     if (error) {
@@ -82,23 +83,41 @@ const UserApprovalComponent = () => {
 
     return (
         <div className="panel">
-            <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold">User Approval</h2>
-                <div className="sm:w-1/3">
-                    <input
-                        type="text"
-                        placeholder="Search pending users..."
-                        className="form-input"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                <h2 className="text-xl font-bold">User Management</h2>
+                <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                    <div className="sm:w-1/3">
+                        <input
+                            type="text"
+                            placeholder="Search users..."
+                            className="form-input"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+                    <div>
+                        <select
+                            className="form-select"
+                            value={statusFilter}
+                            onChange={(e) => setStatusFilter(e.target.value)}
+                        >
+                            <option value="pending">Pending</option>
+                            <option value="approved">Active</option>
+                            <option value="suspended">Suspended</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                    </div>
                 </div>
             </div>
             
             {users.length === 0 ? (
                 <div className="text-center py-8">
-                    <p className="text-lg">No pending user registrations.</p>
-                    <p className="text-gray-500 mt-2">All caught up! There are no users waiting for approval.</p>
+                    <p className="text-lg">No users found.</p>
+                    <p className="text-gray-500 mt-2">
+                        {statusFilter === 'pending' 
+                            ? 'All caught up! There are no users waiting for approval.' 
+                            : `No users with status "${statusFilter}" found.`}
+                    </p>
                 </div>
             ) : (
                 <div className="table-responsive">
@@ -124,27 +143,76 @@ const UserApprovalComponent = () => {
                                     <td>{user.division}</td>
                                     <td>{new Date(user.created_at).toLocaleDateString()}</td>
                                     <td className="text-center space-x-2">
-                                        <button 
-                                            type="button" 
-                                            className="btn btn-sm btn-outline-success"
-                                            onClick={() => handleUpdateStatus(user.id, 'approved')}
-                                        >
-                                            Approve
-                                        </button>
-                                        <button 
-                                            type="button" 
-                                            className="btn btn-sm btn-outline-warning"
-                                            onClick={() => handleUpdateStatus(user.id, 'suspended')}
-                                        >
-                                            Suspend
-                                        </button>
-                                        <button 
-                                            type="button" 
-                                            className="btn btn-sm btn-outline-danger"
-                                            onClick={() => handleUpdateStatus(user.id, 'rejected')}
-                                        >
-                                            Reject
-                                        </button>
+                                        {user.status === 'pending' && (
+                                            <>
+                                                <button 
+                                                    type="button" 
+                                                    className="btn btn-sm btn-outline-success"
+                                                    onClick={() => handleUpdateStatus(user.id, 'approved')}
+                                                >
+                                                    Approve
+                                                </button>
+                                                <button 
+                                                    type="button" 
+                                                    className="btn btn-sm btn-outline-warning"
+                                                    onClick={() => handleUpdateStatus(user.id, 'suspended')}
+                                                >
+                                                    Suspend
+                                                </button>
+                                                <button 
+                                                    type="button" 
+                                                    className="btn btn-sm btn-outline-danger"
+                                                    onClick={() => handleUpdateStatus(user.id, 'rejected')}
+                                                >
+                                                    Reject
+                                                </button>
+                                            </>
+                                        )}
+                                        {user.status === 'approved' && (
+                                            <>
+                                                <button 
+                                                    type="button" 
+                                                    className="btn btn-sm btn-outline-warning"
+                                                    onClick={() => handleUpdateStatus(user.id, 'suspended')}
+                                                >
+                                                    Suspend
+                                                </button>
+                                                <button 
+                                                    type="button" 
+                                                    className="btn btn-sm btn-outline-danger"
+                                                    onClick={() => handleUpdateStatus(user.id, 'rejected')}
+                                                >
+                                                    Reject
+                                                </button>
+                                            </>
+                                        )}
+                                        {user.status === 'suspended' && (
+                                            <>
+                                                <button 
+                                                    type="button" 
+                                                    className="btn btn-sm btn-outline-success"
+                                                    onClick={() => handleUpdateStatus(user.id, 'approved')}
+                                                >
+                                                    Activate
+                                                </button>
+                                                <button 
+                                                    type="button" 
+                                                    className="btn btn-sm btn-outline-danger"
+                                                    onClick={() => handleUpdateStatus(user.id, 'rejected')}
+                                                >
+                                                    Reject
+                                                </button>
+                                            </>
+                                        )}
+                                        {user.status === 'rejected' && (
+                                            <button 
+                                                type="button" 
+                                                className="btn btn-sm btn-outline-success"
+                                                onClick={() => handleUpdateStatus(user.id, 'approved')}
+                                            >
+                                                Reapprove
+                                            </button>
+                                        )}
                                     </td>
                                 </tr>
                             ))}

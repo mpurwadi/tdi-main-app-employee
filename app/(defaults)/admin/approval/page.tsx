@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 import React from 'react';
 
 export const metadata = {
-    title: 'User Approval',
+    title: 'User Management',
 };
 
 const UserApprovalPage = () => {

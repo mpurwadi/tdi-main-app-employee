@@ -3,11 +3,25 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const AdminNewsManagement = () => {
-    const { t } = useTranslation();
+    // Add error handling for the translation hook with safer approach
+    let t;
+    try {
+        ({ t } = useTranslation());
+        // Ensure t is actually a function
+        if (typeof t !== 'function') {
+            t = (key: string) => key;
+        }
+    } catch (e) {
+        // Fallback function if useTranslation fails
+        t = (key: string) => key;
+    }
+    
     const [newsItems, setNewsItems] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+    
+    // Rest of the component remains the same...
     
     // Form state
     const [isEditing, setIsEditing] = useState(false);

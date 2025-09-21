@@ -1,17 +1,21 @@
 import { Pool } from 'pg';
 import { NextResponse } from 'next/server';
 import { verifyAuth, isAdmin } from '@/lib/auth';
+import { config } from 'dotenv';
 
-// Database connection pool
+// Load environment variables
+config();
+
+// Database connection pool using environment variables
 const pool = new Pool({
-    user: 'mpurwadi',
-    host: 'localhost',
-    database: 'opsapps',
-    password: 'pratista17',
-    port: 5432,
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'postgres',
+    password: process.env.DB_PASSWORD || '456456',
+    database: process.env.DB_NAME || 'opsapps',
+    port: parseInt(process.env.DB_PORT || '5432', 10),
 });
 
-// Get all users or pending users
+// Get all users or users with specific status/role
 export async function GET(request: Request) {
     try {
         const auth = verifyAuth();
@@ -21,20 +25,37 @@ export async function GET(request: Request) {
 
         const { searchParams } = new URL(request.url);
         const status = searchParams.get('status');
+        const role = searchParams.get('role');
         const search = searchParams.get('search');
 
         let query = "SELECT id, full_name, email, student_id, campus, division, status, role, created_at, updated_at FROM users";
         let params: any[] = [];
+        let conditions: string[] = [];
+        let paramIndex = 1;
         
         if (status) {
-            query += " WHERE status = $1";
+            conditions.push(`status = $${paramIndex}`);
             params.push(status);
-        } else if (search) {
-            query += " WHERE full_name ILIKE $1 OR email ILIKE $1 OR student_id ILIKE $1";
-            params.push(`%${search}%`);
+            paramIndex++;
         }
         
-        query += " ORDER BY created_at DESC";
+        if (role) {
+            conditions.push(`role = ${paramIndex}`);
+            params.push(role);
+            paramIndex++;
+        }
+        
+        if (search) {
+            conditions.push(`(full_name ILIKE $${paramIndex} OR email ILIKE $${paramIndex} OR student_id ILIKE $${paramIndex})`);
+            params.push(`%${search}%`);
+            paramIndex++;
+        }
+        
+        if (conditions.length > 0) {
+            query += " WHERE " + conditions.join(" AND ");
+        }
+        
+        query += " ORDER BY full_name";
 
         const result = await pool.query(query, params);
 

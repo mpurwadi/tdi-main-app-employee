@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { db } from '@/lib/db';
 
+// Force dynamic rendering for this route to avoid static generation issues with cookies
+export const dynamic = 'force-dynamic';
+
 const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-key';
 
 // Helper function to verify admin access
@@ -78,6 +81,28 @@ export async function GET(req: NextRequest) {
             "SELECT COUNT(*) as count FROM users WHERE created_at >= CURRENT_DATE - INTERVAL '7 days'"
         );
         stats.recentUsers = parseInt(recentUsersResult.rows[0].count);
+
+        // Ticket statistics
+        // Total tickets
+        const ticketsResult = await db.query('SELECT COUNT(*) as count FROM tickets');
+        stats.totalTickets = parseInt(ticketsResult.rows[0].count);
+
+        // Open tickets
+        const openTicketsResult = await db.query("SELECT COUNT(*) as count FROM tickets WHERE status = 'open'");
+        stats.openTickets = parseInt(openTicketsResult.rows[0].count);
+
+        // Unassigned tickets
+        const unassignedTicketsResult = await db.query('SELECT COUNT(*) as count FROM tickets WHERE assigned_to IS NULL');
+        stats.unassignedTickets = parseInt(unassignedTicketsResult.rows[0].count);
+
+        // Tickets by status
+        const ticketsByStatusResult = await db.query(
+            "SELECT status, COUNT(*) as count FROM tickets GROUP BY status"
+        );
+        stats.ticketsByStatus = ticketsByStatusResult.rows.reduce((acc: any, row: any) => {
+            acc[row.status] = parseInt(row.count);
+            return acc;
+        }, {});
 
         return NextResponse.json({ 
             success: true,

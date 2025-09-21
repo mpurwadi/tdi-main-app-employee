@@ -137,6 +137,17 @@ const AttendanceReport = () => {
 
     const handleExportToPDF = () => {
         try {
+            // Create a sorted copy of the attendance data
+            const sortedData = [...attendanceData].sort((a, b) => {
+                // First sort by full name
+                const nameComparison = a.fullName.localeCompare(b.fullName);
+                if (nameComparison !== 0) {
+                    return nameComparison;
+                }
+                // If names are equal, sort by clock in time
+                return new Date(a.clockInTime).getTime() - new Date(b.clockInTime).getTime();
+            });
+
             // Create PDF document
             const doc = new jsPDF();
 
@@ -149,7 +160,7 @@ const AttendanceReport = () => {
             doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 32);
 
             // Prepare table data
-            const tableData = attendanceData.map(record => [
+            const tableData = sortedData.map(record => [
                 record.fullName,
                 record.studentId,
                 record.division || 'N/A',

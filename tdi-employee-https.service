@@ -1,0 +1,20 @@
+[Unit]
+Description=TDI Main App Employee Service
+After=network.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/root/app/tdi-main-app-employee
+Environment=NODE_ENV=production
+Environment=PORT=3443
+Environment=HTTPS=true
+ExecStart=/usr/bin/node server.js
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

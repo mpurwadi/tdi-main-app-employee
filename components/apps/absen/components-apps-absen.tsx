@@ -22,8 +22,8 @@ const AbsenceComponent = () => {
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
     // Office coordinates for geofencing (example - replace with actual office location)
-    const OFFICE_LATITUDE = -6.9248277; // New coordinates
-    const OFFICE_LONGITUDE = 107.7307581; // New coordinates
+    const OFFICE_LATITUDE = -6.9248406; // Updated coordinates
+    const OFFICE_LONGITUDE = 107.6586951; // Updated coordinates
     const GEOFENCE_RADIUS_METERS = 400; // 400 meters
 
     useEffect(() => {

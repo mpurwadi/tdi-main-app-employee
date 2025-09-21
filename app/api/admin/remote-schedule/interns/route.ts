@@ -3,6 +3,9 @@ import { Pool } from 'pg';
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAuth, isAdmin } from '@/lib/auth';
 
+// Force dynamic rendering for this route to avoid static generation issues with cookies
+export const dynamic = 'force-dynamic';
+
 // Database connection pool
 const pool = new Pool({
     user: process.env.DB_USER || 'mpurwadi',

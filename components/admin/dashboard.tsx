@@ -59,7 +59,38 @@ const AdminDashboard = () => {
         }
     };
 
+    // Chart options for tickets by status
+    const ticketsByStatusChartOptions: any = {
+        chart: {
+            type: 'donut',
+            height: 350,
+        },
+        labels: stats?.ticketsByStatus ? Object.keys(stats.ticketsByStatus).map(status => status.charAt(0).toUpperCase() + status.slice(1).replace('-', ' ')) : [],
+        colors: ['#4361ee', '#3498db', '#2ecc71', '#f1c40f', '#e74c3c', '#9b59b6'],
+        legend: {
+            position: 'bottom',
+        },
+        responsive: [{
+            breakpoint: 480,
+            options: {
+                chart: {
+                    width: 200
+                },
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }],
+        dataLabels: {
+            enabled: true,
+            formatter: function (val: number) {
+                return val.toFixed(1) + '%';
+            }
+        }
+    };
+
     const usersByDivisionChartData = stats?.usersByDivision?.map((item: any) => parseInt(item.count)) || [];
+    const ticketsByStatusChartData = stats?.ticketsByStatus ? Object.values(stats.ticketsByStatus).map(count => parseInt(count as string)) : [];
 
     if (loading) {
         return (
@@ -85,7 +116,7 @@ const AdminDashboard = () => {
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-6">
                 <div className="panel">
                     <div className="flex items-center">
                         <div className="rounded-full bg-primary/10 p-3 text-primary dark:bg-primary dark:text-white-light">
@@ -141,6 +172,20 @@ const AdminDashboard = () => {
                         </div>
                     </div>
                 </div>
+                
+                <div className="panel">
+                    <div className="flex items-center">
+                        <div className="rounded-full bg-pink/10 p-3 text-pink dark:bg-pink dark:text-white-light">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+                            </svg>
+                        </div>
+                        <div className="ltr:ml-4 rtl:mr-4">
+                            <h3 className="text-lg font-semibold">Total Tickets</h3>
+                            <p className="text-2xl font-bold">{stats?.totalTickets || 0}</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             {/* Charts */}
@@ -162,18 +207,93 @@ const AdminDashboard = () => {
                 </div>
 
                 <div className="panel">
-                    <h2 className="text-xl font-bold mb-4">System Overview</h2>
-                    <div className="space-y-4">
-                        <div className="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-800 rounded">
-                            <span>News & Announcements</span>
-                            <span className="font-bold">{stats?.totalNewsAnnouncements || 0}</span>
+                    <h2 className="text-xl font-bold mb-4">Tickets by Status</h2>
+                    {ticketsByStatusChartData.length > 0 ? (
+                        <ReactApexChart
+                            options={ticketsByStatusChartOptions}
+                            series={ticketsByStatusChartData}
+                            type="donut"
+                            height={350}
+                        />
+                    ) : (
+                        <div className="flex justify-center items-center h-64">
+                            <p>No ticket data available</p>
                         </div>
-                        <div className="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-800 rounded">
-                            <span>Recently Joined Users (7 days)</span>
-                            <span className="font-bold">{stats?.recentUsers || 0}</span>
-                        </div>
+                    )}
+                </div>
+            </div>
+            
+            {/* System Overview */}
+            <div className="panel mt-6">
+                <h2 className="text-xl font-bold mb-4">System Overview</h2>
+                <div className="space-y-4">
+                    <div className="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-800 rounded">
+                        <span>News & Announcements</span>
+                        <span className="font-bold">{stats?.totalNewsAnnouncements || 0}</span>
+                    </div>
+                    <div className="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-800 rounded">
+                        <span>Recently Joined Users (7 days)</span>
+                        <span className="font-bold">{stats?.recentUsers || 0}</span>
+                    </div>
+                    <div className="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-800 rounded">
+                        <span>Unassigned Tickets</span>
+                        <span className="font-bold">{stats?.unassignedTickets || 0}</span>
                     </div>
                 </div>
+            </div>
+            
+            {/* Ticket Summary */}
+            <div className="panel mt-6">
+                <h2 className="text-xl font-bold mb-4">Ticket Summary</h2>
+                {stats?.ticketsByStatus && Object.keys(stats.ticketsByStatus).length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        {Object.entries(stats.ticketsByStatus).map(([status, count]: [string, any]) => {
+                            // Define color schemes for different statuses
+                            let bgColor = 'bg-gray-50';
+                            let textColor = 'text-gray-800';
+                            
+                            switch (status.toLowerCase()) {
+                                case 'open':
+                                    bgColor = 'bg-blue-50';
+                                    textColor = 'text-blue-800';
+                                    break;
+                                case 'in-progress':
+                                case 'inprogress':
+                                    bgColor = 'bg-yellow-50';
+                                    textColor = 'text-yellow-800';
+                                    break;
+                                case 'resolved':
+                                    bgColor = 'bg-green-50';
+                                    textColor = 'text-green-800';
+                                    break;
+                                case 'closed':
+                                    bgColor = 'bg-gray-50';
+                                    textColor = 'text-gray-800';
+                                    break;
+                                case 'pending':
+                                    bgColor = 'bg-orange-50';
+                                    textColor = 'text-orange-800';
+                                    break;
+                                default:
+                                    bgColor = 'bg-purple-50';
+                                    textColor = 'text-purple-800';
+                            }
+                            
+                            return (
+                                <div key={status} className={`p-4 ${bgColor} rounded-lg`}>
+                                    <h3 className={`font-semibold ${textColor} capitalize`}>
+                                        {status.replace('-', ' ')}
+                                    </h3>
+                                    <p className="text-2xl font-bold">{count}</p>
+                                </div>
+                            );
+                        })}
+                    </div>
+                ) : (
+                    <div className="text-center py-8 text-gray-500">
+                        <p>No tickets found</p>
+                    </div>
+                )}
             </div>
         </div>
     );

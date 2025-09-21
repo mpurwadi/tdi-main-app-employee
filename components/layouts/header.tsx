@@ -19,6 +19,7 @@ import IconUser from '@/components/icon/icon-user';
 import IconMail from '@/components/icon/icon-mail';
 import IconLockDots from '@/components/icon/icon-lock-dots';
 import IconLogout from '@/components/icon/icon-logout';
+import IconSettings from '@/components/icon/icon-settings';
 import IconMenuDashboard from '@/components/icon/menu/icon-menu-dashboard';
 import IconCaretDown from '@/components/icon/icon-caret-down';
 import IconMenuApps from '@/components/icon/menu/icon-menu-apps';
@@ -28,6 +29,9 @@ import IconMenuDatatables from '@/components/icon/menu/icon-menu-datatables';
 import IconMenuForms from '@/components/icon/menu/icon-menu-forms';
 import IconMenuPages from '@/components/icon/menu/icon-menu-pages';
 import IconMenuMore from '@/components/icon/menu/icon-menu-more';
+import IconMenuCalendar from '@/components/icon/menu/icon-menu-calendar';
+import IconMenuTodo from '@/components/icon/menu/icon-menu-todo';
+import IconMenuUsers from '@/components/icon/menu/icon-menu-users';
 import { usePathname, useRouter } from 'next/navigation';
 import { getTranslation } from '@/i18n';
 import { fetchNotifications, markNotificationAsRead } from '@/services/notificationService';
@@ -36,666 +40,266 @@ const Header = () => {
     const pathname = usePathname();
     const dispatch = useDispatch();
     const router = useRouter();
-    const { t, i18n } = getTranslation();
-
-    useEffect(() => {
-        const selector = document.querySelector('ul.horizontal-menu a[href="' + window.location.pathname + '"]');
-        if (selector) {
-            const all: any = document.querySelectorAll('ul.horizontal-menu .nav-link.active');
-            for (let i = 0; i < all.length; i++) {
-                all[0]?.classList.remove('active');
-            }
-
-            let allLinks = document.querySelectorAll('ul.horizontal-menu a.active');
-            for (let i = 0; i < allLinks.length; i++) {
-                const element = allLinks[i];
-                element?.classList.remove('active');
-            }
-            selector?.classList.add('active');
-
-            const ul: any = selector.closest('ul.sub-menu');
-            if (ul) {
-                let ele: any = ul.closest('li.menu').querySelectorAll('.nav-link');
-                if (ele) {
-                    ele = ele[0];
-                    setTimeout(() => {
-                        ele?.classList.add('active');
-                    });
-                }
-            }
+    
+    // Add enhanced error handling for the translation
+    let t, i18n;
+    try {
+        const translationResult = getTranslation();
+        t = translationResult.t;
+        i18n = translationResult.i18n;
+        
+        // Ensure t is actually a function
+        if (typeof t !== 'function') {
+            t = (key: string) => key;
         }
-    }, [pathname]);
-
-    const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl';
+        
+        // Ensure i18n is properly structured
+        if (!i18n || typeof i18n !== 'object') {
+            i18n = {
+                language: 'en',
+                changeLanguage: () => {}
+            };
+        }
+    } catch (e) {
+        // Comprehensive fallback if getTranslation fails
+        t = (key: string) => key;
+        i18n = {
+            language: 'en',
+            changeLanguage: () => {}
+        };
+    }
 
     const themeConfig = useSelector((state: IRootState) => state.themeConfig);
-    const setLocale = (flag: string) => {
-        if (flag.toLowerCase() === 'ae') {
-            dispatch(toggleRTL('rtl'));
-        } else {
-            dispatch(toggleRTL('ltr'));
-        }
-        router.refresh();
-    };
-
-    function createMarkup(messages: any) {
-        return { __html: messages };
-    }
-    const [messages, setMessages] = useState([
-        {
-            id: 1,
-            image: '<span class="grid place-content-center w-9 h-9 rounded-full bg-success-light dark:bg-success text-success dark:text-success-light"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></span>',
-            title: 'Congratulations!',
-            message: 'Your OS has been updated.',
-            time: '1hr',
-        },
-        {
-            id: 2,
-            image: '<span class="grid place-content-center w-9 h-9 rounded-full bg-info-light dark:bg-info text-info dark:text-info-light"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></span>',
-            title: 'Did you know?',
-            message: 'You can switch between artboards.',
-            time: '2hr',
-        },
-        {
-            id: 3,
-            image: '<span class="grid place-content-center w-9 h-9 rounded-full bg-danger-light dark:bg-danger text-danger dark:text-danger-light"> <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>',
-            title: 'Something went wrong!',
-            message: 'Send Reposrt',
-            time: '2days',
-        },
-        {
-            id: 4,
-            image: '<span class="grid place-content-center w-9 h-9 rounded-full bg-warning-light dark:bg-warning text-warning dark:text-warning-light"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">    <circle cx="12" cy="12" r="10"></circle>    <line x1="12" y1="8" x2="12" y2="12"></line>    <line x1="12" y1="16" x2="12.01" y2="16"></line></svg></span>',
-            title: 'Warning',
-            message: 'Your password strength is low.',
-            time: '5days',
-        },
-    ]);
-
-    const removeMessage = (value: number) => {
-        setMessages(messages.filter((user) => user.id !== value));
-    };
+    const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl';
 
     const [notifications, setNotifications] = useState<any[]>([]);
+    const [unreadCount, setUnreadCount] = useState(0);
+    const [isNotificationsLoading, setIsNotificationsLoading] = useState(true);
+    const [notificationsError, setNotificationsError] = useState<string | null>(null);
 
-    // Fetch notifications from API
-    const loadNotifications = async () => {
-        try {
-            // In a real implementation, you would get the user ID from the auth context
-            const userId = 1; // Placeholder user ID
-            const fetchedNotifications = await fetchNotifications(userId);
-            // Convert to the format expected by the component
-            const formattedNotifications = fetchedNotifications.map(notification => ({
-                id: notification.id,
-                profile: 'user-profile.jpeg',
-                message: `<strong class="text-sm mr-1">${notification.title}</strong>${notification.message}`,
-                time: new Date(notification.time).toLocaleString(),
-            }));
-            setNotifications(formattedNotifications);
-        } catch (error) {
-            console.error('Failed to load notifications:', error);
-        }
-    };
-
-    // Mark notification as read and remove it from the list
-    const removeNotification = async (value: number) => {
-        try {
-            await markNotificationAsRead(value);
-            setNotifications(notifications.filter((notification) => notification.id !== value));
-        } catch (error) {
-            console.error('Failed to mark notification as read:', error);
-            // Still remove from UI even if API call fails
-            setNotifications(notifications.filter((notification) => notification.id !== value));
-        }
-    };
-
-    // Load notifications when component mounts
+    // Fetch notifications
     useEffect(() => {
+        const loadNotifications = async () => {
+            try {
+                setIsNotificationsLoading(true);
+                // Use a mock userId for now, or get it from user context/state
+                const userId = 1; // Replace with actual user ID
+                const notificationsData = await fetchNotifications(userId);
+                
+                if (notificationsData && Array.isArray(notificationsData)) {
+                    setNotifications(notificationsData);
+                    setUnreadCount(notificationsData.filter((n: any) => !n.read).length);
+                }
+            } catch (err) {
+                console.error('Failed to fetch notifications:', err);
+                setNotificationsError('Failed to load notifications');
+            } finally {
+                setIsNotificationsLoading(false);
+            }
+        };
+
         loadNotifications();
     }, []);
 
-    const [search, setSearch] = useState(false);
+    const toggleThemeHandler = (value: string) => {
+        dispatch(toggleTheme(value));
+    };
+
+    const toggleSidebarHandler = () => {
+        dispatch(toggleSidebar());
+    };
+
+    const toggleRtlHandler = (value: string) => {
+        dispatch(toggleRTL(value));
+    };
+
+    const handleNotificationClick = async (notificationId: string) => {
+        try {
+            await markNotificationAsRead(parseInt(notificationId, 10));
+            
+            // Update local state
+            setNotifications(prev => 
+                prev.map(n => 
+                    n.id === parseInt(notificationId, 10) ? { ...n, read: true } : n
+                )
+            );
+            
+            setUnreadCount(prev => Math.max(0, prev - 1));
+        } catch (err) {
+            console.error('Failed to mark notification as read:', err);
+        }
+    };
 
     return (
-        <header className={`z-40 ${themeConfig.semidark && themeConfig.menu === 'horizontal' ? 'dark' : ''}`}>
+        <header className={`z-40 ${themeConfig.semidark && themeConfig.menu === 'horizontal' ? '' : 'dark'}`}>
             <div className="shadow-sm">
                 <div className="relative flex w-full items-center bg-white px-5 py-2.5 dark:bg-black">
                     <div className="horizontal-logo flex items-center justify-between ltr:mr-2 rtl:ml-2 lg:hidden">
                         <Link href="/" className="main-logo flex shrink-0 items-center">
-                            <img className="inline w-8 ltr:-ml-1 rtl:-mr-1" src="/logo.png" alt="logo" />
-                            <span className="hidden align-middle text-2xl  font-semibold  transition-all duration-300 ltr:ml-1.5 rtl:mr-1.5 dark:text-white-light md:inline">TDI Employee</span>
+                            <img className="inline w-8 ltr:-mr-1 rtl:-ml-1 hidden md:inline" src="/logo.png" alt="logo" />
+                            <span className="hidden text-2xl font-semibold text-primary ltr:ml-1.5 rtl:mr-1.5 md:inline">TDI Employee</span>
                         </Link>
+                    </div>
+
+                    {/* hamburger menu icon */}
+                    <div className="flex h-16 w-16 items-center justify-center transition-all hover:bg-gray-100/30 ltr:mr-2 rtl:ml-2 dark:hover:bg-gray-900/20 lg:hidden">
                         <button
                             type="button"
-                            className="collapse-icon flex flex-none rounded-full bg-white-light/40 p-2 hover:bg-white-light/90 hover:text-primary ltr:ml-2 rtl:mr-2 dark:bg-dark/40 dark:text-[#d0d2d6] dark:hover:bg-dark/60 dark:hover:text-primary lg:hidden"
-                            onClick={() => dispatch(toggleSidebar())}
+                            className="collapse-icon inline-flex h-16 w-16 items-center justify-center transition-all hover:bg-gray-100/30 ltr:mr-2 rtl:ml-2 dark:hover:bg-black/20"
+                            onClick={toggleSidebarHandler}
                         >
-                            <IconMenu className="h-5 w-5" />
+                            <IconMenu className="text-black dark:text-white" />
                         </button>
                     </div>
 
-                    <div className="flex items-center space-x-1.5 ltr:ml-auto rtl:mr-auto rtl:space-x-reverse dark:text-[#d0d2d6] sm:flex-1 ltr:sm:ml-0 sm:rtl:mr-0 lg:space-x-2">
+                    {/* Quick Access Menu */}
+                    <div className="flex items-center space-x-4 ml-4">
+                        <Link href="/apps/calendar" className="flex flex-col items-center justify-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800">
+                            <IconMenuCalendar className="w-5 h-5 mb-1" />
+                            <span className="text-xs">Calendar</span>
+                        </Link>
+                        <Link href="/apps/todolist" className="flex flex-col items-center justify-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800">
+                            <IconMenuTodo className="w-5 h-5 mb-1" />
+                            <span className="text-xs">Todo</span>
+                        </Link>
+                        <Link href="/users/profile" className="flex flex-col items-center justify-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800">
+                            <IconMenuUsers className="w-5 h-5 mb-1" />
+                            <span className="text-xs">Profile</span>
+                        </Link>
+                        <Link href="/auth/boxed-signin" className="flex flex-col items-center justify-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800">
+                            <IconLogout className="w-5 h-5 mb-1" />
+                            <span className="text-xs">Sign Out</span>
+                        </Link>
+                    </div>
+
+                    <div className="dropdown shrink-0 ml-auto">
+                        <Dropdown
+                            offset={[0, 8]}
+                            placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
+                            btnClassName="relative block p-2 rounded-full bg-white-light/40 dark:bg-dark/40 hover:bg-white-light/90 dark:hover:bg-dark/60"
+                            button={
+                                <span>
+                                    <IconSun className="hidden dark:flex w-5 h-5" />
+                                    <IconMoon className="flex dark:hidden w-5 h-5" />
+                                    <IconLaptop className="hidden dark:flex w-5 h-5" />
+                                </span>
+                            }
+                        >
+                            <ul className="!px-2 text-dark dark:text-white-dark grid font-semibold dark:text-white-light/90">
+                                <li>
+                                    <button
+                                        type="button"
+                                        className={`flex items-center gap-2 rounded px-4 py-2 text-left hover:bg-gray-100/70 dark:hover:bg-gray-900/60 ${themeConfig.theme === 'light' ? '!bg-gray-100/70 dark:!bg-gray-900/60' : ''}`}
+                                        onClick={() => toggleThemeHandler('light')}
+                                    >
+                                        <IconSun className="h-5 w-5 shrink-0" />
+                                        Light
+                                    </button>
+                                </li>
+                                <li>
+                                    <button
+                                        type="button"
+                                        className={`flex items-center gap-2 rounded px-4 py-2 text-left hover:bg-gray-100/70 dark:hover:bg-gray-900/60 ${themeConfig.theme === 'dark' ? '!bg-gray-100/70 dark:!bg-gray-900/60' : ''}`}
+                                        onClick={() => toggleThemeHandler('dark')}
+                                    >
+                                        <IconMoon className="h-5 w-5 shrink-0" />
+                                        Dark
+                                    </button>
+                                </li>
+                                <li>
+                                    <button
+                                        type="button"
+                                        className={`flex items-center gap-2 rounded px-4 py-2 text-left hover:bg-gray-100/70 dark:hover:bg-gray-900/60 ${themeConfig.theme === 'system' ? '!bg-gray-100/70 dark:!bg-gray-900/60' : ''}`}
+                                        onClick={() => toggleThemeHandler('system')}
+                                    >
+                                        <IconLaptop className="h-5 w-5 shrink-0" />
+                                        System
+                                    </button>
+                                </li>
+                            </ul>
+                        </Dropdown>
+                    </div>
+
+                    <div className="dropdown shrink-0">
+                        <Dropdown
+                            offset={[0, 8]}
+                            placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
+                            btnClassName="relative block p-2 rounded-full bg-white-light/40 dark:bg-dark/40 hover:bg-white-light/90 dark:hover:bg-dark/60"
+                            button={
+                                <span>
+                                    <IconChatNotification className="w-5 h-5" />
+                                    {unreadCount > 0 && (
+                                        <span className="flex absolute w-3 h-3 ltr:right-0 rtl:left-0 top-0">
+                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success/50 opacity-75"></span>
+                                            <span className="relative inline-flex w-3 h-3 rounded-full bg-success"></span>
+                                        </span>
+                                    )}
+                                </span>
+                            }
+                        >
+                            <ul className="!px-0 text-dark dark:text-white-dark w-[300px] sm:w-[375px] divide-y dark:divide-white/10">
+                                <li onClick={(e) => e.stopPropagation()}>
+                                    <div className="flex items-center px-4 py-2">
+                                        <div className="text-lg font-bold">Notifications</div>
+                                        {unreadCount > 0 && (
+                                            <span className="badge bg-primary/80 text-xs text-white hover:bg-primary ltr:ml-auto rtl:mr-auto">
+                                                {unreadCount} New
+                                            </span>
+                                        )}
+                                    </div>
+                                </li>
+                                {isNotificationsLoading ? (
+                                    <li>
+                                        <div className="py-4 text-center">Loading notifications...</div>
+                                    </li>
+                                ) : notificationsError ? (
+                                    <li>
+                                        <div className="py-4 text-center text-danger">{notificationsError}</div>
+                                    </li>
+                                ) : notifications.length === 0 ? (
+                                    <li>
+                                        <div className="py-4 text-center">No notifications</div>
+                                    </li>
+                                ) : (
+                                    <>
+                                        {notifications.slice(0, 5).map((notification) => (
+                                            <li key={notification.id} onClick={(e) => e.stopPropagation()}>
+                                                <div
+                                                    className={`py-2 px-4 hover:bg-gray-100/70 dark:hover:bg-gray-900/60 cursor-pointer ${!notification.read ? 'bg-gray-100/70 dark:bg-gray-900/60' : ''}`}
+                                                    onClick={() => handleNotificationClick(notification.id)}
+                                                >
+                                                    <div className="flex">
+                                                        <div className="shrink-0">
+                                                            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                                                                <IconMail className="w-5 h-5 text-primary" />
+                                                            </div>
+                                                        </div>
+                                                        <div className="ltr:ml-3 rtl:mr-3 flex-1">
+                                                            <h4 className="font-semibold text-primary">{notification.title}</h4>
+                                                            <p className="text-sm line-clamp-1">{notification.message}</p>
+                                                            <div className="text-xs text-white-dark dark:text-gray-500">
+                                                                {new Date(notification.created_at).toLocaleString()}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        ))}
+                                        <li className="border-t border-white-light px-4 py-2 dark:border-white/10">
+                                            <button
+                                                type="button"
+                                                className="text-center w-full font-bold text-primary hover:text-opacity-90"
+                                                onClick={() => router.push('/apps/chat')}
+                                            >
+                                                View All Notifications
+                                            </button>
+                                        </li>
+                                    </>
+                                )}
+                            </ul>
+                        </Dropdown>
                     </div>
                 </div>
-
-                {/* horizontal menu */}
-                <ul className="horizontal-menu hidden border-t border-[#ebedf2] bg-white px-6 py-1.5 font-semibold text-black rtl:space-x-reverse dark:border-[#191e3a] dark:bg-black dark:text-white-dark lg:space-x-1.5 xl:space-x-8">
-                    <li className="menu nav-item relative">
-                        <button type="button" className="nav-link">
-                            <div className="flex items-center">
-                                <IconMenuDashboard className="shrink-0" />
-                                <span className="px-1">{t('dashboard')}</span>
-                            </div>
-                            <div className="right_arrow">
-                                <IconCaretDown />
-                            </div>
-                        </button>
-                        <ul className="sub-menu">
-                            <li>
-                                <Link href="/">{t('sales')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/analytics">{t('analytics')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/finance">{t('finance')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/crypto">{t('crypto')}</Link>
-                            </li>
-                        </ul>
-                    </li>
-                    <li className="menu nav-item relative">
-                        <button type="button" className="nav-link">
-                            <div className="flex items-center">
-                                <IconMenuApps className="shrink-0" />
-                                <span className="px-1">{t('apps')}</span>
-                            </div>
-                            <div className="right_arrow">
-                                <IconCaretDown />
-                            </div>
-                        </button>
-                        <ul className="sub-menu">
-                            <li>
-                                <Link href="/apps/chat">{t('chat')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/apps/mailbox">{t('mailbox')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/apps/todolist">{t('todo_list')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/apps/notes">{t('notes')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/apps/scrumboard">{t('scrumboard')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/apps/contacts">{t('contacts')}</Link>
-                            </li>
-                            <li className="relative">
-                                <button type="button">
-                                    {t('invoice')}
-                                    <div className="-rotate-90 ltr:ml-auto rtl:mr-auto rtl:rotate-90">
-                                        <IconCaretDown />
-                                    </div>
-                                </button>
-                                <ul className="absolute top-0 z-[10] hidden min-w-[180px] rounded bg-white p-0 py-2 text-dark shadow ltr:left-[95%] rtl:right-[95%] dark:bg-[#1b2e4b] dark:text-white-dark">
-                                    <li>
-                                        <Link href="/apps/invoice/list">{t('list')}</Link>
-                                    </li>
-                                    <li>
-                                        <Link href="/apps/invoice/preview">{t('preview')}</Link>
-                                    </li>
-                                    <li>
-                                        <Link href="/apps/invoice/add">{t('add')}</Link>
-                                    </li>
-                                    <li>
-                                        <Link href="/apps/invoice/edit">{t('edit')}</Link>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li>
-                                <Link href="/apps/calendar">{t('calendar')}</Link>
-                            </li>
-                        </ul>
-                    </li>
-                    <li className="menu nav-item relative">
-                        <button type="button" className="nav-link">
-                            <div className="flex items-center">
-                                <IconMenuComponents className="shrink-0" />
-                                <span className="px-1">{t('components')}</span>
-                            </div>
-                            <div className="right_arrow">
-                                <IconCaretDown />
-                            </div>
-                        </button>
-                        <ul className="sub-menu">
-                            <li>
-                                <Link href="/components/tabs">{t('tabs')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/components/accordions">{t('accordions')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/components/modals">{t('modals')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/components/cards">{t('cards')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/components/carousel">{t('carousel')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/components/countdown">{t('countdown')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/components/counter">{t('counter')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/components/sweetalert">{t('sweet_alerts')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/components/timeline">{t('timeline')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/components/notifications">{t('notifications')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/components/media-object">{t('media_object')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/components/list-group">{t('list_group')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/components/pricing-table">{t('pricing_tables')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/components/lightbox">{t('lightbox')}</Link>
-                            </li>
-                        </ul>
-                    </li>
-                    <li className="menu nav-item relative">
-                        <button type="button" className="nav-link">
-                            <div className="flex items-center">
-                                <IconMenuElements className="shrink-0" />
-                                <span className="px-1">{t('elements')}</span>
-                            </div>
-                            <div className="right_arrow">
-                                <IconCaretDown />
-                            </div>
-                        </button>
-                        <ul className="sub-menu">
-                            <li>
-                                <Link href="/elements/alerts">{t('alerts')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/elements/avatar">{t('avatar')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/elements/badges">{t('badges')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/elements/breadcrumbs">{t('breadcrumbs')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/elements/buttons">{t('buttons')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/elements/buttons-group">{t('button_groups')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/elements/color-library">{t('color_library')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/elements/dropdown">{t('dropdown')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/elements/infobox">{t('infobox')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/elements/jumbotron">{t('jumbotron')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/elements/loader">{t('loader')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/elements/pagination">{t('pagination')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/elements/popovers">{t('popovers')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/elements/progress-bar">{t('progress_bar')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/elements/search">{t('search')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/elements/tooltips">{t('tooltips')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/elements/treeview">{t('treeview')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/elements/typography">{t('typography')}</Link>
-                            </li>
-                        </ul>
-                    </li>
-                    <li className="menu nav-item relative">
-                        <button type="button" className="nav-link">
-                            <div className="flex items-center">
-                                <IconMenuDatatables className="shrink-0" />
-                                <span className="px-1">{t('tables')}</span>
-                            </div>
-                            <div className="right_arrow">
-                                <IconCaretDown />
-                            </div>
-                        </button>
-                        <ul className="sub-menu">
-                            <li>
-                                <Link href="/tables">{t('tables')}</Link>
-                            </li>
-                            <li className="relative">
-                                <button type="button">
-                                    {t('datatables')}
-                                    <div className="-rotate-90 ltr:ml-auto rtl:mr-auto rtl:rotate-90">
-                                        <IconCaretDown />
-                                    </div>
-                                </button>
-                                <ul className="absolute top-0 z-[10] hidden min-w-[180px] rounded bg-white p-0 py-2 text-dark shadow ltr:left-[95%] rtl:right-[95%] dark:bg-[#1b2e4b] dark:text-white-dark">
-                                    <li>
-                                        <Link href="/datatables/basic">{t('basic')}</Link>
-                                    </li>
-                                    <li>
-                                        <Link href="/datatables/advanced">{t('advanced')}</Link>
-                                    </li>
-                                    <li>
-                                        <Link href="/datatables/skin">{t('skin')}</Link>
-                                    </li>
-                                    <li>
-                                        <Link href="/datatables/order-sorting">{t('order_sorting')}</Link>
-                                    </li>
-                                    <li>
-                                        <Link href="/datatables/multi-column">{t('multi_column')}</Link>
-                                    </li>
-                                    <li>
-                                        <Link href="/datatables/multiple-tables">{t('multiple_tables')}</Link>
-                                    </li>
-                                    <li>
-                                        <Link href="/datatables/alt-pagination">{t('alt_pagination')}</Link>
-                                    </li>
-                                    <li>
-                                        <Link href="/datatables/checkbox">{t('checkbox')}</Link>
-                                    </li>
-                                    <li>
-                                        <Link href="/datatables/range-search">{t('range_search')}</Link>
-                                    </li>
-                                    <li>
-                                        <Link href="/datatables/export">{t('export')}</Link>
-                                    </li>
-                                    <li>
-                                        <Link href="/datatables/column-chooser">{t('column_chooser')}</Link>
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li className="menu nav-item relative">
-                        <button type="button" className="nav-link">
-                            <div className="flex items-center">
-                                <IconMenuForms className="shrink-0" />
-                                <span className="px-1">{t('forms')}</span>
-                            </div>
-                            <div className="right_arrow">
-                                <IconCaretDown />
-                            </div>
-                        </button>
-                        <ul className="sub-menu">
-                            <li>
-                                <Link href="/forms/basic">{t('basic')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/forms/input-group">{t('input_group')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/forms/layouts">{t('layouts')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/forms/validation">{t('validation')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/forms/input-mask">{t('input_mask')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/forms/select2">{t('select2')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/forms/touchspin">{t('touchspin')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/forms/checkbox-radio">{t('checkbox_and_radio')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/forms/switches">{t('switches')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/forms/wizards">{t('wizards')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/forms/file-upload">{t('file_upload')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/forms/quill-editor">{t('quill_editor')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/forms/markdown-editor">{t('markdown_editor')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/forms/date-picker">{t('date_and_range_picker')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/forms/clipboard">{t('clipboard')}</Link>
-                            </li>
-                        </ul>
-                    </li>
-                    <li className="menu nav-item relative">
-                        <button type="button" className="nav-link">
-                            <div className="flex items-center">
-                                <IconMenuPages className="shrink-0" />
-                                <span className="px-1">{t('pages')}</span>
-                            </div>
-                            <div className="right_arrow">
-                                <IconCaretDown />
-                            </div>
-                        </button>
-                        <ul className="sub-menu">
-                            <li className="relative">
-                                <button type="button">
-                                    {t('users')}
-                                    <div className="-rotate-90 ltr:ml-auto rtl:mr-auto rtl:rotate-90">
-                                        <IconCaretDown />
-                                    </div>
-                                </button>
-                                <ul className="absolute top-0 z-[10] hidden min-w-[180px] rounded bg-white p-0 py-2 text-dark shadow ltr:left-[95%] rtl:right-[95%] dark:bg-[#1b2e4b] dark:text-white-dark">
-                                    <li>
-                                        <Link href="/users/profile">{t('profile')}</Link>
-                                    </li>
-                                    <li>
-                                        <Link href="/users/user-account-settings">{t('account_settings')}</Link>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li>
-                                <Link href="/pages/knowledge-base">{t('knowledge_base')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/pages/contact-us-boxed" target="_blank">
-                                    {t('contact_us_boxed')}
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/pages/contact-us-cover" target="_blank">
-                                    {t('contact_us_cover')}
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/pages/faq">{t('faq')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/pages/coming-soon-boxed" target="_blank">
-                                    {t('coming_soon_boxed')}
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/pages/coming-soon-cover" target="_blank">
-                                    {t('coming_soon_cover')}
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/pages/maintenence" target="_blank">
-                                    {t('maintenence')}
-                                </Link>
-                            </li>
-                            <li className="relative">
-                                <button type="button">
-                                    {t('error')}
-                                    <div className="-rotate-90 ltr:ml-auto rtl:mr-auto rtl:rotate-90">
-                                        <IconCaretDown />
-                                    </div>
-                                </button>
-                                <ul className="absolute top-0 z-[10] hidden min-w-[180px] rounded bg-white p-0 py-2 text-dark shadow ltr:left-[95%] rtl:right-[95%] dark:bg-[#1b2e4b] dark:text-white-dark">
-                                    <li>
-                                        <Link href="/pages/error404" target="_blank">
-                                            {t('404')}
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link href="/pages/error500" target="_blank">
-                                            {t('500')}
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link href="/pages/error503" target="_blank">
-                                            {t('503')}
-                                        </Link>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li className="relative">
-                                <button type="button">
-                                    {t('login')}
-                                    <div className="-rotate-90 ltr:ml-auto rtl:mr-auto rtl:rotate-90">
-                                        <IconCaretDown />
-                                    </div>
-                                </button>
-                                <ul className="absolute top-0 z-[10] hidden min-w-[180px] rounded bg-white p-0 py-2 text-dark shadow ltr:left-[95%] rtl:right-[95%] dark:bg-[#1b2e4b] dark:text-white-dark">
-                                    <li>
-                                        <Link href="/auth/cover-login" target="_blank">
-                                            {t('login_cover')}
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link href="/auth/boxed-signin" target="_blank">
-                                            {t('login_boxed')}
-                                        </Link>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li className="relative">
-                                <button type="button">
-                                    {t('register')}
-                                    <div className="-rotate-90 ltr:ml-auto rtl:mr-auto rtl:rotate-90">
-                                        <IconCaretDown />
-                                    </div>
-                                </button>
-                                <ul className="absolute top-0 z-[10] hidden min-w-[180px] rounded bg-white p-0 py-2 text-dark shadow ltr:left-[95%] rtl:right-[95%] dark:bg-[#1b2e4b] dark:text-white-dark">
-                                    <li>
-                                        <Link href="/auth/cover-register" target="_blank">
-                                            {t('register_cover')}
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link href="/auth/boxed-signup" target="_blank">
-                                            {t('register_boxed')}
-                                        </Link>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li className="relative">
-                                <button type="button">
-                                    {t('password_recovery')}
-                                    <div className="-rotate-90 ltr:ml-auto rtl:mr-auto rtl:rotate-90">
-                                        <IconCaretDown />
-                                    </div>
-                                </button>
-                                <ul className="absolute top-0 z-[10] hidden min-w-[180px] rounded bg-white p-0 py-2 text-dark shadow ltr:left-[95%] rtl:right-[95%] dark:bg-[#1b2e4b] dark:text-white-dark">
-                                    <li>
-                                        <Link href="/auth/cover-password-reset" target="_blank">
-                                            {t('recover_id_cover')}
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link href="/auth/boxed-password-reset" target="_blank">
-                                            {t('recover_id_boxed')}
-                                        </Link>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li className="relative">
-                                <button type="button">
-                                    {t('lockscreen')}
-                                    <div className="-rotate-90 ltr:ml-auto rtl:mr-auto rtl:rotate-90">
-                                        <IconCaretDown />
-                                    </div>
-                                </button>
-                                <ul className="absolute top-0 z-[10] hidden min-w-[180px] rounded bg-white p-0 py-2 text-dark shadow ltr:left-[95%] rtl:right-[95%] dark:bg-[#1b2e4b] dark:text-white-dark">
-                                    <li>
-                                        <Link href="/auth/cover-lockscreen" target="_blank">
-                                            {t('unlock_cover')}
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link href="/auth/boxed-lockscreen" target="_blank">
-                                            {t('unlock_boxed')}
-                                        </Link>
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li className="menu nav-item relative">
-                        <button type="button" className="nav-link">
-                            <div className="flex items-center">
-                                <IconMenuMore className="shrink-0" />
-                                <span className="px-1">{t('more')}</span>
-                            </div>
-                            <div className="right_arrow">
-                                <IconCaretDown />
-                            </div>
-                        </button>
-                        <ul className="sub-menu">
-                            <li>
-                                <Link href="/dragndrop">{t('drag_and_drop')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/charts">{t('charts')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/font-icons">{t('font_icons')}</Link>
-                            </li>
-                            <li>
-                                <Link href="/widgets">{t('widgets')}</Link>
-                            </li>
-                            <li>
-                                <Link href="https://vristo.sbthemes.com" target="_blank">
-                                    {t('documentation')}
-                                </Link>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
             </div>
         </header>
     );

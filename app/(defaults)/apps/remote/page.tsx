@@ -1,14 +1,32 @@
-import RemoteCheckin from '@/components/apps/remote/components-apps-remote';
-import { getTranslation } from '@/i18n';
+'use client';
+import dynamic from 'next/dynamic';
+import { useState, useEffect } from 'react';
 
-const RemotePage = async () => {
-    const { t } = await getTranslation();
-    
+// Dynamically import the actual component to avoid SSR issues
+const RemoteCheckinClient = dynamic(
+  () => import('@/components/apps/remote/components-apps-remote'),
+  { ssr: false, loading: () => <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div></div> }
+);
+
+const RemotePageWrapper = () => {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    // Set isClient to true only on the client side
+    setIsClient(true);
+  }, []);
+
+  // Show loading state on server side
+  if (!isClient) {
     return (
-        <div>
-            <RemoteCheckin />
-        </div>
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+      </div>
     );
+  }
+
+  // Render the actual component on client side
+  return <RemoteCheckinClient />;
 };
 
-export default RemotePage;
+export default RemotePageWrapper;

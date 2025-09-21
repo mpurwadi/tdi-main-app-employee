@@ -3,10 +3,14 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "dev": "next dev --hostname 0.0.0.0 --port 3000",
+        "dev": "next dev --hostname 0.0.0.0 --port 3401",
         "dev-https": "HTTPS=true node server.js",
         "build": "next build",
-        "start": "next start",
+        "start": "PORT=3400 node server.js",
+        "start-https": "HTTPS=true PORT=3443 node server.js",
+        "generate-certificates": "node generate-certificates.js",
+        "start-production": "./start-production.sh",
+        "start-production-https": "./start-production-https.sh",
         "lint": "next lint"
     },
     "dependencies": {
@@ -22,6 +26,7 @@
         "@reduxjs/toolkit": "^2.2.7",
         "@tippyjs/react": "^4.2.6",
         "@types/bcrypt": "^6.0.0",
+        "@types/bcryptjs": "^2.4.6",
         "@types/jsonwebtoken": "^9.0.10",
         "@types/leaflet": "^1.9.20",
         "@types/node": "^22.4.0",
@@ -32,6 +37,8 @@
         "apexcharts": "^3.37.1",
         "autotable": "^1.0.0",
         "bcrypt": "^6.0.0",
+        "bcryptjs": "^3.0.2",
+        "dotenv": "^17.2.2",
         "easymde": "^2.18.0",
         "eslint": "8.57.0",
         "eslint-config-next": "14.2.13",

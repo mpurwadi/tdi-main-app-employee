@@ -15,7 +15,27 @@ interface LanguageDropdownProps {
 const LanguageDropdown = ({ className = '' }: LanguageDropdownProps) => {
     const dispatch = useDispatch();
     const router = useRouter();
-    const { i18n } = getTranslation();
+    
+    // Add error handling for the translation with improved fallback
+    let i18n;
+    try {
+        const translationResult = getTranslation();
+        i18n = translationResult.i18n;
+        
+        // Ensure i18n is properly structured
+        if (!i18n || typeof i18n !== 'object') {
+            i18n = {
+                language: 'en',
+                changeLanguage: () => {}
+            };
+        }
+    } catch (e) {
+        // Fallback if getTranslation fails
+        i18n = {
+            language: 'en',
+            changeLanguage: () => {}
+        };
+    }
 
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl';
 
@@ -29,9 +49,12 @@ const LanguageDropdown = ({ className = '' }: LanguageDropdownProps) => {
         router.refresh();
     };
 
+    // Add safety check for i18n.language
+    const safeLanguage = i18n?.language && typeof i18n.language === 'string' ? i18n.language : 'en';
+
     return (
         <div className={`dropdown ${className}`}>
-            {i18n.language && (
+            {safeLanguage && (
                 <Dropdown
                     offset={[0, 8]}
                     placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}

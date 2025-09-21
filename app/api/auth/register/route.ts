@@ -1,16 +1,7 @@
 
-import { Pool } from 'pg';
 import bcrypt from 'bcrypt';
 import { NextResponse } from 'next/server';
-
-// Database connection pool
-const pool = new Pool({
-    user: 'mpurwadi',
-    host: 'localhost',
-    database: 'opsapps',
-    password: 'pratista17',
-    port: 5432,
-});
+import { db } from '@/lib/db';
 
 export async function POST(request: Request) {
     try {
@@ -23,7 +14,7 @@ export async function POST(request: Request) {
         }
 
         // Check if user already exists
-        const existingUser = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+        const existingUser = await db.query('SELECT * FROM users WHERE email = $1', [email]);
         if (existingUser.rows.length > 0) {
             return NextResponse.json({ message: 'User with this email already exists' }, { status: 409 });
         }
@@ -40,7 +31,7 @@ export async function POST(request: Request) {
         `;
         const values = [fullName, email, passwordHash, studentId, campus, division];
 
-        const newUser = await pool.query(query, values);
+        const newUser = await db.query(query, values);
 
         return NextResponse.json(
             {

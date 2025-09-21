@@ -1,15 +1,6 @@
-import { Pool } from 'pg';
 import { NextResponse } from 'next/server';
 import { verifyAuth } from '@/lib/auth';
-
-// Database connection pool
-const pool = new Pool({
-    user: 'mpurwadi',
-    host: 'localhost',
-    database: 'opsapps',
-    password: 'pratista17',
-    port: 5432,
-});
+import { db } from '@/lib/db';
 
 // Handle CORS preflight requests
 export async function OPTIONS() {
@@ -40,7 +31,7 @@ export async function GET(request: Request) {
         let paramIndex = 2;
         
         if (status) {
-            query += ` AND status = ${paramIndex}`;
+            query += ` AND status = $${paramIndex}`;
             params.push(status);
             paramIndex++;
         }
@@ -65,7 +56,7 @@ export async function GET(request: Request) {
         
         query += ' ORDER BY created_at DESC';
         
-        const result = await pool.query(query, params);
+        const result = await db.query(query, params);
         
         return NextResponse.json(result.rows, { status: 200 });
     } catch (error: any) {
@@ -91,7 +82,7 @@ export async function POST(request: Request) {
         }
         
         // Insert new todo list item
-        const result = await pool.query(
+        const result = await db.query(
             'INSERT INTO todo_list_items (user_id, title, description, description_text, tag, priority, status, date, path) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id, user_id, title, description, description_text, tag, priority, status, date, path, created_at, updated_at',
             [auth.userId, title, description || '', descriptionText || '', tag || '', priority || 'medium', status || 'pending', date || '', path || '']
         );
@@ -120,7 +111,7 @@ export async function PUT(request: Request) {
         }
         
         // Check if todo list item exists and belongs to user
-        const existingItem = await pool.query(
+        const existingItem = await db.query(
             'SELECT id FROM todo_list_items WHERE id = $1 AND user_id = $2',
             [id, auth.userId]
         );
@@ -130,7 +121,7 @@ export async function PUT(request: Request) {
         }
         
         // Update todo list item
-        const result = await pool.query(
+        const result = await db.query(
             'UPDATE todo_list_items SET title = $1, description = $2, description_text = $3, tag = $4, priority = $5, status = $6, date = $7, path = $8, updated_at = CURRENT_TIMESTAMP WHERE id = $9 AND user_id = $10 RETURNING id, user_id, title, description, description_text, tag, priority, status, date, path, created_at, updated_at',
             [title || null, description || null, descriptionText || null, tag || null, priority || null, status || null, date || null, path || null, id, auth.userId]
         );
@@ -163,7 +154,7 @@ export async function DELETE(request: Request) {
         }
         
         // Check if todo list item exists and belongs to user
-        const existingItem = await pool.query(
+        const existingItem = await db.query(
             'SELECT id FROM todo_list_items WHERE id = $1 AND user_id = $2',
             [id, auth.userId]
         );
@@ -173,7 +164,7 @@ export async function DELETE(request: Request) {
         }
         
         // Delete todo list item
-        const result = await pool.query(
+        const result = await db.query(
             'DELETE FROM todo_list_items WHERE id = $1 AND user_id = $2',
             [id, auth.userId]
         );

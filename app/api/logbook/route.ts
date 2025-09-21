@@ -1,15 +1,6 @@
-import { Pool } from 'pg';
 import { NextResponse } from 'next/server';
 import { verifyAuth } from '@/lib/auth';
-
-// Database connection pool
-const pool = new Pool({
-    user: 'mpurwadi',
-    host: 'localhost',
-    database: 'opsapps',
-    password: 'pratista17',
-    port: 5432,
-});
+import { db } from '@/lib/db';
 
 // Get logbook entries for a user
 export async function GET(request: Request) {
@@ -30,7 +21,7 @@ export async function GET(request: Request) {
         
         query += ' ORDER BY entry_date DESC';
         
-        const result = await pool.query(query, params);
+        const result = await db.query(query, params);
         
         return NextResponse.json(result.rows, { status: 200 });
     } catch (error: any) {
@@ -56,7 +47,7 @@ export async function POST(request: Request) {
         }
         
         // Check if an entry already exists for this date
-        const existingEntry = await pool.query(
+        const existingEntry = await db.query(
             'SELECT id, user_id, entry_date, activity, work_type, start_time, end_time, status, created_at, updated_at FROM logbook_entries WHERE user_id = $1 AND entry_date = $2',
             [auth.userId, entryDate]
         );
@@ -69,7 +60,7 @@ export async function POST(request: Request) {
         }
         
         // Insert new logbook entry
-        const result = await pool.query(
+        const result = await db.query(
             'INSERT INTO logbook_entries (user_id, entry_date, activity, work_type, start_time, end_time, status) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, entry_date, activity, work_type, start_time, end_time, status',
             [auth.userId, entryDate, activity, workType || null, startTime || null, endTime || null, 'pending']
         );
@@ -98,7 +89,7 @@ export async function PUT(request: Request) {
         }
         
         // Check if entry exists and belongs to user
-        const existingEntry = await pool.query(
+        const existingEntry = await db.query(
             'SELECT id, status FROM logbook_entries WHERE id = $1 AND user_id = $2',
             [entryId, auth.userId]
         );
@@ -113,7 +104,7 @@ export async function PUT(request: Request) {
         }
         
         // Update logbook entry
-        const result = await pool.query(
+        const result = await db.query(
             'UPDATE logbook_entries SET activity = $1, work_type = $2, start_time = $3, end_time = $4, status = $5, updated_at = CURRENT_TIMESTAMP WHERE id = $6 AND user_id = $7 RETURNING id, entry_date, activity, work_type, start_time, end_time, status',
             [activity, workType || null, startTime || null, endTime || null, 'pending', entryId, auth.userId]
         );
@@ -145,7 +136,7 @@ export async function DELETE(request: Request) {
         }
         
         // Check if entry exists and belongs to user
-        const existingEntry = await pool.query(
+        const existingEntry = await db.query(
             'SELECT id, status FROM logbook_entries WHERE id = $1 AND user_id = $2',
             [entryId, auth.userId]
         );
@@ -160,7 +151,7 @@ export async function DELETE(request: Request) {
         }
         
         // Delete logbook entry
-        const result = await pool.query(
+        const result = await db.query(
             'DELETE FROM logbook_entries WHERE id = $1 AND user_id = $2 RETURNING id',
             [entryId, auth.userId]
         );

@@ -7,6 +7,8 @@ export const metadata = {
     title: 'Attendance Report',
 };
 
+export const dynamic = 'force-dynamic';
+
 const AttendanceReportPage = () => {
     try {
         const auth = verifyAuth();

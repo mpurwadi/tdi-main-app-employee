@@ -7,6 +7,8 @@ export const metadata = {
     title: 'Admin Dashboard',
 };
 
+export const dynamic = 'force-dynamic';
+
 const DashboardPage = () => {
     try {
         const auth = verifyAuth();

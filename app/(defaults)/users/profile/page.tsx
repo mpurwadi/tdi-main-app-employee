@@ -15,6 +15,154 @@ interface UserProfile {
     division: string;
 }
 
+const PasswordResetForm = () => {
+    const [passwordData, setPasswordData] = useState({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+    });
+    const [errors, setErrors] = useState<any>({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setPasswordData(prevData => ({
+            ...prevData,
+            [name]: value
+        }));
+    };
+
+    const validatePasswordForm = () => {
+        let newErrors: any = {};
+        if (!passwordData.currentPassword) newErrors.currentPassword = 'Current password is required';
+        if (!passwordData.newPassword) {
+            newErrors.newPassword = 'New password is required';
+        } else if (passwordData.newPassword.length < 6) {
+            newErrors.newPassword = 'Password must be at least 6 characters';
+        }
+        if (!passwordData.confirmPassword) {
+            newErrors.confirmPassword = 'Please confirm your new password';
+        } else if (passwordData.newPassword !== passwordData.confirmPassword) {
+            newErrors.confirmPassword = 'Passwords do not match';
+        }
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handlePasswordSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!validatePasswordForm()) return;
+
+        setIsSubmitting(true);
+        try {
+            const response = await fetch('/api/users/profile/reset-password', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    currentPassword: passwordData.currentPassword,
+                    newPassword: passwordData.newPassword
+                }),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Password Updated!',
+                    text: 'Your password has been updated successfully.',
+                    padding: '2em',
+                    customClass: {
+                        container: 'sweet-alerts'
+                    },
+                });
+                // Reset form
+                setPasswordData({
+                    currentPassword: '',
+                    newPassword: '',
+                    confirmPassword: ''
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Update Failed',
+                    text: result.message || 'Failed to update password.',
+                    padding: '2em',
+                    customClass: {
+                        container: 'sweet-alerts'
+                    },
+                });
+            }
+        } catch (error) {
+            console.error('Error updating password:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'An unexpected error occurred. Please try again.',
+                padding: '2em',
+                customClass: {
+                    container: 'sweet-alerts'
+                },
+            });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    return (
+        <form className="space-y-5" onSubmit={handlePasswordSubmit}>
+            <div>
+                <label htmlFor="currentPassword">Current Password</label>
+                <input
+                    id="currentPassword"
+                    type="password"
+                    name="currentPassword"
+                    placeholder="Enter Current Password"
+                    className="form-input"
+                    value={passwordData.currentPassword}
+                    onChange={handlePasswordChange}
+                />
+                {errors.currentPassword && <div className="text-danger text-sm">{errors.currentPassword}</div>}
+            </div>
+            <div>
+                <label htmlFor="newPassword">New Password</label>
+                <input
+                    id="newPassword"
+                    type="password"
+                    name="newPassword"
+                    placeholder="Enter New Password"
+                    className="form-input"
+                    value={passwordData.newPassword}
+                    onChange={handlePasswordChange}
+                />
+                {errors.newPassword && <div className="text-danger text-sm">{errors.newPassword}</div>}
+            </div>
+            <div>
+                <label htmlFor="confirmPassword">Confirm New Password</label>
+                <input
+                    id="confirmPassword"
+                    type="password"
+                    name="confirmPassword"
+                    placeholder="Confirm New Password"
+                    className="form-input"
+                    value={passwordData.confirmPassword}
+                    onChange={handlePasswordChange}
+                />
+                {errors.confirmPassword && <div className="text-danger text-sm">{errors.confirmPassword}</div>}
+            </div>
+            <button 
+                type="submit" 
+                className="btn btn-primary !mt-6"
+                disabled={isSubmitting}
+            >
+                {isSubmitting ? 'Updating...' : 'Update Password'}
+            </button>
+        </form>
+    );
+};
+
 const UserProfilePage = () => {
     const router = useRouter();
     const [loading, setLoading] = useState(true);
@@ -215,6 +363,12 @@ const UserProfilePage = () => {
                     Update Profile
                 </button>
             </form>
+            
+            {/* Password Reset Section */}
+            <div className="mt-10 panel">
+                <h5 className="mb-5 text-lg font-semibold">Reset Password</h5>
+                <PasswordResetForm />
+            </div>
         </div>
     );
 };

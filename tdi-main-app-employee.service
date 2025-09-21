@@ -1,0 +1,17 @@
+[Unit]
+Description=TDI Main App Employee
+After=network.target
+
+[Service]
+Type=simple
+User=tabeldata
+Group=tabeldata
+WorkingDirectory=/home/tabeldata/app/tdi-main-app-employee
+Environment=PORT=3400
+Environment=NODE_ENV=production
+ExecStart=/usr/bin/node server.js
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

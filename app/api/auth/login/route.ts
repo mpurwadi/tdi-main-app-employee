@@ -1,19 +1,9 @@
 
-import { Pool } from 'pg';
-
 export const dynamic = 'force-dynamic';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { NextResponse } from 'next/server';
-
-// Database connection pool
-const pool = new Pool({
-    user: 'mpurwadi',
-    host: 'localhost',
-    database: 'opsapps',
-    password: 'pratista17',
-    port: 5432,
-});
+import { db } from '@/lib/db';
 
 // It's crucial to use an environment variable for the JWT secret in a real application
 const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-key';
@@ -28,7 +18,7 @@ export async function POST(request: Request) {
         }
 
         // Find the user by email
-        const userResult = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+        const userResult = await db.query('SELECT * FROM users WHERE email = $1', [email]);
 
         if (userResult.rows.length === 0) {
             return NextResponse.json({ message: 'Invalid credentials' }, { status: 401 });

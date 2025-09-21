@@ -81,6 +81,10 @@
     }
 
     /* Sidebar */
+    .sidebar {
+        @apply fixed top-0 z-40 h-full w-[260px];
+    }
+    
     .sidebar:hover .nav-item > a {
         @apply w-auto;
     }

@@ -1,27 +1,32 @@
-import ComponentsDatatablesAdvanced from '@/components/datatables/components-datatables-advanced';
-import IconBell from '@/components/icon/icon-bell';
-import { Metadata } from 'next';
-import React from 'react';
+'use client';
+import dynamic from 'next/dynamic';
+import { useState, useEffect } from 'react';
 
-export const metadata: Metadata = {
-    title: 'Advanced Table',
-};
+// Dynamically import the actual component to avoid SSR issues
+const DatatablesAdvancedClient = dynamic(
+  () => import('@/components/datatables/components-datatables-advanced'),
+  { ssr: false, loading: () => <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div></div> }
+);
 
-const Advanced = () => {
+const DatatablesAdvancedPageWrapper = () => {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    // Set isClient to true only on the client side
+    setIsClient(true);
+  }, []);
+
+  // Show loading state on server side
+  if (!isClient) {
     return (
-        <div>
-            <div className="panel flex items-center overflow-x-auto whitespace-nowrap p-3 text-primary">
-                <div className="rounded-full bg-primary p-1.5 text-white ring-2 ring-primary/30 ltr:mr-3 rtl:ml-3">
-                    <IconBell />
-                </div>
-                <span className="ltr:mr-3 rtl:ml-3">Documentation: </span>
-                <a href="https://www.npmjs.com/package/mantine-datatable" target="_blank" className="block hover:underline" rel="noreferrer">
-                    https://www.npmjs.com/package/mantine-datatable
-                </a>
-            </div>
-            <ComponentsDatatablesAdvanced />
-        </div>
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+      </div>
     );
+  }
+
+  // Render the actual component on client side
+  return <DatatablesAdvancedClient />;
 };
 
-export default Advanced;
+export default DatatablesAdvancedPageWrapper;
