@@ -28,9 +28,16 @@ export async function PUT(request: Request) {
         }
 
         // Validate role values
-        const validRoles = ['user', 'admin', 'superadmin'];
+        const validRoles = [
+            'user', 'admin', 'superadmin',
+            'service_catalog_manager', 'service_provider', 'service_requester', 
+            'approver', 'billing_coordinator', 'billing_admin', 
+            'change_requester', 'change_manager', 'cab_member', 'implementer'
+        ];
         if (!validRoles.includes(role)) {
-            return NextResponse.json({ message: 'Invalid role. Must be one of: user, admin, superadmin' }, { status: 400 });
+            return NextResponse.json({ 
+                message: 'Invalid role. Must be one of: user, admin, superadmin, service_catalog_manager, service_provider, service_requester, approver, billing_coordinator, billing_admin, change_requester, change_manager, cab_member, implementer' 
+            }, { status: 400 });
         }
 
         // Update user role

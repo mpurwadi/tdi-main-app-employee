@@ -233,6 +233,16 @@ const UserManagementComponent = () => {
                                             <option value="user">User</option>
                                             <option value="admin">Admin</option>
                                             <option value="superadmin">Super Admin</option>
+                                            <option value="service_catalog_manager">Service Catalog Manager</option>
+                                            <option value="service_provider">Service Provider</option>
+                                            <option value="service_requester">Service Requester</option>
+                                            <option value="approver">Approver</option>
+                                            <option value="billing_coordinator">Billing Coordinator</option>
+                                            <option value="billing_admin">Billing Admin</option>
+                                            <option value="change_requester">Change Requester</option>
+                                            <option value="change_manager">Change Manager</option>
+                                            <option value="cab_member">CAB Member</option>
+                                            <option value="implementer">Implementer</option>
                                         </select>
                                     </td>
                                     <td className="text-center space-x-2">
@@ -437,6 +447,16 @@ const UserForm = ({ user, onClose, onSave }: { user: User | null; onClose: () =>
                             <option value="user">User</option>
                             <option value="admin">Admin</option>
                             <option value="superadmin">Super Admin</option>
+                            <option value="service_catalog_manager">Service Catalog Manager</option>
+                            <option value="service_provider">Service Provider</option>
+                            <option value="service_requester">Service Requester</option>
+                            <option value="approver">Approver</option>
+                            <option value="billing_coordinator">Billing Coordinator</option>
+                            <option value="billing_admin">Billing Admin</option>
+                            <option value="change_requester">Change Requester</option>
+                            <option value="change_manager">Change Manager</option>
+                            <option value="cab_member">CAB Member</option>
+                            <option value="implementer">Implementer</option>
                         </select>
                     </div>
                     

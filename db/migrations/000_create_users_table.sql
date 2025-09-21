@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS users (
     department VARCHAR(100),
     position VARCHAR(100),
     hire_date DATE,
+    division VARCHAR(100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -19,6 +20,7 @@ CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
 CREATE INDEX IF NOT EXISTS idx_users_status ON users(status);
+CREATE INDEX IF NOT EXISTS idx_users_division ON users(division);
 
 -- Add a comment to the table
 COMMENT ON TABLE users IS 'Table to store user information';

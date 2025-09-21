@@ -4,6 +4,31 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 This branch `dev/feature/itsm` was created as the starting point for ITSM feature development.
 
+## ITSM (Internal Service Hub) Module
+
+This application includes a comprehensive IT Service Management module with the following features:
+
+### Key Features:
+- **Service Catalog**: Browse and manage internal services offered by different divisions
+- **Service Requests**: Submit, track, and manage service requests across divisions
+- **Internal Billing**: Automated internal billing and financial reporting between divisions
+- **Change Management**: Submit and track infrastructure and application changes
+
+### Roles and Permissions:
+The ITSM module implements role-based access control with specialized roles for different functions:
+- Service Catalog Manager, Service Provider, Service Requester
+- Approver, Billing Coordinator, Billing Admin
+- Change Requester, Change Manager, CAB Member, Implementer
+
+Each role is associated with specific divisions (DevOps, Big Data, Produk, Operasional, Finance) for proper access control.
+
+### Access:
+- Main dashboard quick link
+- Direct URL: `/itsm`
+- Quick access from the landing page
+
+For detailed documentation, see [docs/itsm-module.md](docs/itsm-module.md)
+
 ## Getting Started
 
 First, run the development server:
