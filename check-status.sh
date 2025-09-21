@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# Script to check the status of the TDI Main App Employee
+# Script to check the status of the TDI Main App Service
 
-echo "Checking TDI Main App Employee status..."
+echo "Checking TDI Main App Service status..."
 
 # Check if the process is running
 PID=$(pgrep -f "node server.js")

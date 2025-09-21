@@ -25,7 +25,7 @@ export default async function UserDashboardPage() {
     return (
         <div className="panel">
             <h5 className="mb-5 text-lg font-semibold">Welcome to Your Dashboard!</h5>
-            <p className="mb-4">This is your central hub for all employee-related activities.</p>
+            <p className="mb-4">This is your central hub for all service-related activities.</p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
                 {/* Absensi Card */}

@@ -1,4 +1,4 @@
-# TDI Main App Employee - Production Deployment
+# TDI Main App Service - Production Deployment
 
 This application can be deployed in production using several methods. We have two documentation files that provide detailed instructions:
 

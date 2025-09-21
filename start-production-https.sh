@@ -7,7 +7,6 @@ cd /root/app/tdi-main-app-employee
 
 # Build the application (if not already built)
 echo "Building the application..."
-npm run build
 
 # Set environment to production
 export NODE_ENV=production

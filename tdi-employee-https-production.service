@@ -1,5 +1,5 @@
 [Unit]
-Description=TDI Main App Service
+Description=TDI Main App Service HTTPS Production Service
 After=network.target
 
 [Service]
@@ -8,8 +8,8 @@ User=root
 Group=root
 WorkingDirectory=/root/app/tdi-main-app-employee
 Environment=NODE_ENV=production
-Environment=PORT=3443
 Environment=HTTPS=true
+Environment=PORT=3443
 ExecStart=/usr/bin/npm run start-https
 Restart=always
 RestartSec=10

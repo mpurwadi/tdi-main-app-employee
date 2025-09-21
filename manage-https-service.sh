@@ -1,31 +1,31 @@
 #!/bin/bash
 
-# Script to manage the TDI Employee HTTPS service
+# Script to manage the TDI Service HTTPS service
 # Usage: ./manage-https-service.sh [start|stop|restart|status|install|uninstall]
 
 ACTION=${1:-status}
 
 case $ACTION in
     start)
-        echo "Starting TDI Employee HTTPS service..."
+        echo "Starting TDI Service HTTPS service..."
         systemctl start tdi-employee-https
         systemctl status tdi-employee-https --no-pager
         ;;
     stop)
-        echo "Stopping TDI Employee HTTPS service..."
+        echo "Stopping TDI Service HTTPS service..."
         systemctl stop tdi-employee-https
         ;;
     restart)
-        echo "Restarting TDI Employee HTTPS service..."
+        echo "Restarting TDI Service HTTPS service..."
         systemctl restart tdi-employee-https
         systemctl status tdi-employee-https --no-pager
         ;;
     status)
-        echo "TDI Employee HTTPS service status:"
+        echo "TDI Service HTTPS service status:"
         systemctl status tdi-employee-https --no-pager
         ;;
     install)
-        echo "Installing TDI Employee HTTPS service..."
+        echo "Installing TDI Service HTTPS service..."
         # Copy service file to systemd directory
         cp /root/app/tdi-main-app-employee/tdi-employee-https.service /etc/systemd/system/
         
@@ -43,7 +43,7 @@ case $ACTION in
         systemctl status tdi-employee-https --no-pager
         ;;
     uninstall)
-        echo "Uninstalling TDI Employee HTTPS service..."
+        echo "Uninstalling TDI Service HTTPS service..."
         # Stop the service
         systemctl stop tdi-employee-https
         

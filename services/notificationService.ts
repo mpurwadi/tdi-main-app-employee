@@ -20,7 +20,7 @@ export async function fetchNotifications(userId: number): Promise<Notification[]
             {
                 id: 1,
                 title: 'Welcome',
-                message: 'Welcome to the TDI Employee system!',
+                message: 'Welcome to the TDI Service system!',
                 time: '2023-05-01T08:30:00Z',
                 read: false,
                 userId: userId

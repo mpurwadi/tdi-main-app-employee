@@ -1,6 +1,6 @@
-# TDI Main App Employee - Production Deployment Guide
+# TDI Main App Service - Production Deployment Guide
 
-This document provides detailed instructions on how to deploy and run the TDI Main App Employee application in a production environment.
+This document provides detailed instructions on how to deploy and run the TDI Main App Service application in a production environment.
 
 ## Prerequisites
 

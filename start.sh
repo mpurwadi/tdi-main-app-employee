@@ -1,5 +1,5 @@
 #!/bin/bash
-# Wrapper script for tdi-main-app-employee
+# Wrapper script for tdi-main-app-service
 
 # Source NVM if it exists
 if [ -f "/root/.nvm/nvm.sh" ]; then

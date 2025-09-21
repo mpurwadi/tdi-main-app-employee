@@ -6,8 +6,8 @@ import { Nunito } from 'next/font/google';
 
 export const metadata: Metadata = {
     title: {
-        template: '%s | TDI Employee Service',
-        default: 'TDI Employee Service',
+        template: '%s | TDI Service',
+        default: 'TDI Service',
     },
     icons: {
         icon: '/logo.ico',

@@ -1,19 +1,19 @@
 #!/bin/bash
 
-# TDI Employee App Service Management Script
+# TDI Service App Service Management Script
 
 case "$1" in
     start)
         sudo systemctl start tdi-employee.service
-        echo "TDI Employee service started"
+        echo "TDI Service service started"
         ;;
     stop)
         sudo systemctl stop tdi-employee.service
-        echo "TDI Employee service stopped"
+        echo "TDI Service service stopped"
         ;;
     restart)
         sudo systemctl restart tdi-employee.service
-        echo "TDI Employee service restarted"
+        echo "TDI Service service restarted"
         ;;
     status)
         sudo systemctl status tdi-employee.service

@@ -1,4 +1,4 @@
-# TDI Main App Employee - Production Deployment
+# TDI Main App Service - Production Deployment
 
 ## Running the Application
 

@@ -65,8 +65,8 @@ const LandingPage = () => {
         },
         {
             id: 2,
-            title: 'Intern Logbook',
-            description: 'Daily activity logging for interns with on-site vs. remote work tracking and supervisor approval workflow.',
+            title: 'User Logbook',
+            description: 'Daily activity logging for users with on-site vs. remote work tracking and supervisor approval workflow.',
             icon: (
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -152,8 +152,8 @@ const LandingPage = () => {
         },
         {
             id: 3,
-            title: 'Employee Recognition Program',
-            excerpt: 'Nominations are now open for our quarterly employee recognition awards.',
+            title: 'User Recognition Program',
+            excerpt: 'Nominations are now open for our quarterly user recognition awards.',
             date: '2025-09-05',
         },
     ];
@@ -169,7 +169,7 @@ const LandingPage = () => {
         {
             id: 2,
             title: 'Security Training Session',
-            content: 'All employees must attend the mandatory security training on September 20th.',
+            content: 'All users must attend the mandatory security training on September 20th.',
             priority: 'medium',
         },
         {
@@ -189,7 +189,7 @@ const LandingPage = () => {
                         <div className="bg-primary text-white p-2 rounded-lg">
                             <IconCompany />
                         </div>
-                        <h1 className="text-xl font-bold text-gray-800 dark:text-white">TDI Employee Management</h1>
+                        <h1 className="text-xl font-bold text-gray-800 dark:text-white">TDI Service Management</h1>
                     </div>
                     <nav className="hidden md:flex space-x-6">
                         <Link href="/auth/cover-login" className="text-gray-600 hover:text-primary dark:text-gray-400 dark:hover:text-primary font-medium">
@@ -212,7 +212,7 @@ const LandingPage = () => {
                         Manage Your Team <span className="text-primary">Efficiently</span>
                     </h1>
                     <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-10">
-                        A comprehensive employee management system with attendance tracking, financial management, and remote work scheduling.
+                        A comprehensive service management system with attendance tracking, financial management, and remote work scheduling.
                     </p>
                     <div className="flex flex-col sm:flex-row justify-center gap-4">
                         <Link 
@@ -237,7 +237,7 @@ const LandingPage = () => {
                     <div className="text-center mb-16">
                         <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">Powerful Features</h2>
                         <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                            Everything you need to manage your employees, track attendance, and handle finances.
+                            Everything you need to manage your services, track attendance, and handle finances.
                         </p>
                     </div>
 

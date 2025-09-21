@@ -37,7 +37,7 @@ const AdminQrCodePage = () => {
     return (
         <div className="panel">
             <h5 className="mb-5 text-lg font-semibold">Generate Office QR Code for Absensi</h5>
-            <p className="mb-4">This QR code will be used by employees for check-in. Ensure it is prominently displayed at the office entrance.</p>
+            <p className="mb-4">This QR code will be used by users for check-in. Ensure it is prominently displayed at the office entrance.</p>
 
             <div className="flex flex-col items-center justify-center p-6 border rounded-lg shadow-md bg-white dark:bg-gray-800">
                 <div id="qr-code-print-area" className="p-4 bg-white rounded-lg">

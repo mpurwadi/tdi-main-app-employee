@@ -1,5 +1,5 @@
 [Unit]
-Description=TDI Main App Employee Service
+Description=TDI Main App Service
 After=network.target
 
 [Service]

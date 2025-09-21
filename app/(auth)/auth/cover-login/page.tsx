@@ -159,7 +159,7 @@ const SimpleCoverLogin = () => {
 
                 <div className="mt-8 text-center">
                     <p className="text-xs text-gray-500 dark:text-gray-400">
-                        &copy; {new Date().getFullYear()} TDI Employee. All rights reserved.
+                        &copy; {new Date().getFullYear()} TDI Service. All rights reserved.
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                         Made with Love by mpurwadi

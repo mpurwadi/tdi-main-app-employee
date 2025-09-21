@@ -173,7 +173,7 @@ const Sidebar = () => {
                         <div className="logo-box">
                             <Link href="/" className="main-logo flex shrink-0 items-center">
                                 <img className="inline w-10 ltr:-mr-1 rtl:-ml-1 hidden md:inline" src="/logo.png" alt="logo" />
-                                <span className="hidden text-2xl font-semibold text-primary ltr:ml-1.5 rtl:mr-1.5 md:inline">TDI Employee</span>
+                                <span className="hidden text-2xl font-semibold text-primary ltr:ml-1.5 rtl:mr-1.5 md:inline">TDI Service</span>
                             </Link>
                         </div>
                         {/* Quick Access Section - Fixed at the top */}

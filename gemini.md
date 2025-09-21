@@ -6,7 +6,7 @@ DB_NAME=opsapps
 DB_PORT=5432
 DB_SSLMODE=disable
 
-## TDI Employee Management System - Full Stack Implementation
+## TDI Service Management System - Full Stack Implementation
 
 ### New Features Implemented
 
@@ -53,7 +53,7 @@ A complete user registration and approval workflow has been implemented:
 Three user roles have been implemented:
 - **Super Admin**: Full system access
 - **Admin**: Can approve/reject users and manage system settings
-- **User**: Regular employee with access to their dashboard
+- **User**: Regular user with access to their dashboard
 
 
 ### API Endpoints
@@ -116,5 +116,5 @@ See `DATABASE_SETUP.md` for detailed setup instructions.
 ### Testing
 See `TESTING.md` for detailed instructions on testing the full registration and approval workflow.
 
-The implementation maintains consistency with the existing Vristo template while adding the required custom functionality for a complete employee management system.
+The implementation maintains consistency with the existing Vristo template while adding the required custom functionality for a complete service management system.
 

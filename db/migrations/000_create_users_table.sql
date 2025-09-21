@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(100) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     full_name VARCHAR(100) NOT NULL,
-    role VARCHAR(50) DEFAULT 'employee',
+    role VARCHAR(50) DEFAULT 'user',
     status VARCHAR(20) DEFAULT 'active',
     department VARCHAR(100),
     position VARCHAR(100),

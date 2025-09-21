@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Script to manage the TDI Employee service
+# Script to manage the TDI Service
 
 case "$1" in
     start)
