@@ -69,6 +69,13 @@ const Sidebar = () => {
         };
     }, [themeConfig.sidebar, dispatch]);
     
+    // Close sidebar when clicking on menu items on mobile
+    const handleMenuItemClick = () => {
+        if (window.innerWidth <= 1024 && themeConfig.sidebar) {
+            dispatch(toggleSidebar());
+        }
+    };
+    
     // Set active menu based on current path
     useEffect(() => {
         const selector = document.querySelector('ul.vertical-menu a[href="' + window.location.pathname + '"]');
@@ -150,7 +157,7 @@ const Sidebar = () => {
     }, []);
     
     return (
-        <div className={`sidebar ${themeConfig.sidebar ? 'ltr:left-0 rtl:right-0' : 'ltr:-left-[260px] rtl:-right-[260px] lg:ltr:left-0 lg:rtl:right-0'} z-50`} data-testid="sidebar">
+        <div className={`sidebar ${themeConfig.sidebar ? 'ltr:left-0 rtl:right-0' : 'ltr:-left-[260px] rtl:-right-[260px]'} lg:ltr:left-0 lg:rtl:right-0 z-50`} data-testid="sidebar">
             <div className="sidebar-wrapper h-full">
                 <PerfectScrollbar className="relative !h-screen">
                     <div className="icon-menu">
@@ -169,7 +176,51 @@ const Sidebar = () => {
                                 <span className="hidden text-2xl font-semibold text-primary ltr:ml-1.5 rtl:mr-1.5 md:inline">TDI Employee</span>
                             </Link>
                         </div>
-                        <div className="menu-items h-[calc(100vh-80px)] overflow-y-auto">
+                        {/* Quick Access Section - Fixed at the top */}
+                                <div className="sticky top-0 z-10 bg-white dark:bg-black border-b border-gray-200 dark:border-gray-700">
+                                    <div className="pb-4">
+                                        <h2 className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase">Quick Access</h2>
+                                        <div className="grid grid-cols-4 gap-2 px-4 py-2">
+                                            <Link 
+                                                href="/apps/calendar" 
+                                                className="flex flex-col items-center justify-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
+                                                title="Calendar"
+                                                onClick={handleMenuItemClick}
+                                            >
+                                                <IconMenuCalendar className="w-5 h-5 mb-1" />
+                                                <span className="text-xs">Calendar</span>
+                                            </Link>
+                                            <Link 
+                                                href="/apps/todolist" 
+                                                className="flex flex-col items-center justify-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
+                                                title="Todo List"
+                                                onClick={handleMenuItemClick}
+                                            >
+                                                <IconMenuCalendar className="w-5 h-5 mb-1" />
+                                                <span className="text-xs">Todo</span>
+                                            </Link>
+                                            <Link 
+                                                href="/users/profile" 
+                                                className="flex flex-col items-center justify-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
+                                                title="Profile"
+                                                onClick={handleMenuItemClick}
+                                            >
+                                                <IconMenuUsers className="w-5 h-5 mb-1" />
+                                                <span className="text-xs">Profile</span>
+                                            </Link>
+                                            <Link 
+                                                href="/auth/boxed-signin" 
+                                                className="flex flex-col items-center justify-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
+                                                title="Sign Out"
+                                                onClick={handleMenuItemClick}
+                                            >
+                                                <IconLogout className="w-5 h-5 mb-1" />
+                                                <span className="text-xs">Sign Out</span>
+                                            </Link>
+                                        </div>
+                                    </div>
+                                </div>
+                        <div className="menu-items h-[calc(100vh-140px)] overflow-y-auto">
                             <ul className="relative space-y-0.5 py-4 font-semibold">
                                 {/* ADMIN SECTION - Only show for admin/superadmin users */}
                                 {(userRole === 'admin' || userRole === 'superadmin') && (
@@ -180,19 +231,20 @@ const Sidebar = () => {
                                         </h2>
                                         
                                         {/* Admin Dashboard */}
-                                        <li className="menu-item">
-                                            <Link 
-                                                href="/admin/dashboard"
-                                                className={`flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm transition-all duration-200 ${
-                                                    pathname === '/admin/dashboard' 
-                                                        ? 'bg-primary text-white shadow-[0_7px_14px_0_rgb(100_100_100_/_20%)]' 
-                                                        : 'hover:bg-primary/10 hover:text-primary'
-                                                }`}
-                                            >
-                                                <IconMenuDashboard className="h-5 w-5 shrink-0" />
-                                                <span className="text-base">Dashboard</span>
-                                            </Link>
-                                        </li>
+                                <li className="menu-item">
+                                    <Link 
+                                        href="/admin/dashboard"
+                                        className={`flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm transition-all duration-200 ${
+                                            pathname === '/admin/dashboard' 
+                                                ? 'bg-primary text-white shadow-[0_7px_14px_0_rgb(100_100_100_/_20%)]' 
+                                                : 'hover:bg-primary/10 hover:text-primary'
+                                        }`}
+                                        onClick={handleMenuItemClick}
+                                    >
+                                        <IconMenuDashboard className="h-5 w-5 shrink-0" />
+                                        <span className="text-base">Dashboard</span>
+                                    </Link>
+                                </li>
                                         
                                         {/* User Management */}
                                         <li className="menu-item">
@@ -203,7 +255,7 @@ const Sidebar = () => {
                                                         ? 'bg-primary text-white shadow-[0_7px_14px_0_rgb(100_100_100_/_20%)]' 
                                                         : 'hover:bg-primary/10 hover:text-primary'
                                                 }`}
-                                                onClick={() => toggleMenu('userManagement')}
+                                                onClick={() => { toggleMenu('userManagement'); handleMenuItemClick(); }}
                                             >
                                                 <IconMenuUsers className="h-5 w-5 shrink-0" />
                                                 <span className="text-base">User Management</span>
@@ -370,6 +422,7 @@ const Sidebar = () => {
                                                 ? 'bg-primary text-white shadow-[0_7px_14px_0_rgb(100_100_100_/_20%)]' 
                                                 : 'hover:bg-primary/10 hover:text-primary'
                                         }`}
+                                        onClick={handleMenuItemClick}
                                     >
                                         <IconMenuDashboard className="h-5 w-5 shrink-0" />
                                         <span className="text-base">Dashboard</span>
@@ -450,45 +503,6 @@ const Sidebar = () => {
                                         <span className="text-base">My Tickets</span>
                                     </Link>
                                 </li>
-                                
-                                {/* Quick Access Section */}
-                                <div className="mt-auto pt-4 border-t border-gray-200 dark:border-gray-700">
-                                    <h2 className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase">Quick Access</h2>
-                                    <div className="grid grid-cols-4 gap-2 px-4 py-2">
-                                        <Link 
-                                            href="/apps/calendar" 
-                                            className="flex flex-col items-center justify-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
-                                            title="Calendar"
-                                        >
-                                            <IconMenuCalendar className="w-5 h-5 mb-1" />
-                                            <span className="text-xs">Calendar</span>
-                                        </Link>
-                                        <Link 
-                                            href="/apps/todolist" 
-                                            className="flex flex-col items-center justify-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
-                                            title="Todo List"
-                                        >
-                                            <IconMenuCalendar className="w-5 h-5 mb-1" />
-                                            <span className="text-xs">Todo</span>
-                                        </Link>
-                                        <Link 
-                                            href="/users/profile" 
-                                            className="flex flex-col items-center justify-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
-                                            title="Profile"
-                                        >
-                                            <IconMenuUsers className="w-5 h-5 mb-1" />
-                                            <span className="text-xs">Profile</span>
-                                        </Link>
-                                        <Link 
-                                            href="/auth/boxed-signin" 
-                                            className="flex flex-col items-center justify-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
-                                            title="Sign Out"
-                                        >
-                                            <IconLogout className="w-5 h-5 mb-1" />
-                                            <span className="text-xs">Sign Out</span>
-                                        </Link>
-                                    </div>
-                                </div>
                             </ul>
                         </div>
                     </div>

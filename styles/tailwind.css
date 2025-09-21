@@ -82,7 +82,7 @@
 
     /* Sidebar */
     .sidebar {
-        @apply fixed top-0 z-40 h-full w-[260px];
+        @apply fixed top-0 z-40 h-full w-[260px] bg-white dark:bg-black;
     }
     
     .sidebar:hover .nav-item > a {
