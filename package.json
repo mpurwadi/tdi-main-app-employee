@@ -6,7 +6,7 @@
         "dev": "next dev --hostname 0.0.0.0 --port 3401",
         "dev-https": "HTTPS=true node server.js",
         "build": "next build",
-        "start": "PORT=3400 node server.js",
+        "start": "HTTPS=true PORT=3443 node server.js",
         "start-https": "HTTPS=true PORT=3443 node server.js",
         "generate-certificates": "node generate-certificates.js",
         "start-production": "./start-production.sh",
