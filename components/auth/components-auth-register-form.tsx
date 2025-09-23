@@ -6,7 +6,7 @@ import IconUser from '@/components/icon/icon-user';
 import IconEye from '@/components/icon/icon-eye';
 import IconEyeOff from '@/components/icon/icon-eye-off';
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const ComponentsAuthRegisterForm = () => {
     const router = useRouter();
@@ -17,11 +17,33 @@ const ComponentsAuthRegisterForm = () => {
         passwordConfirm: '',
         studentId: '',
         campus: '',
-        division: '',
+        division: '', // This will now be the actual division
+        role: '', // This is the new role field
     });
     const [showPassword, setShowPassword] = useState(false);
     const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [divisions, setDivisions] = useState<{id: number, name: string}[]>([]);
+    const [loadingDivisions, setLoadingDivisions] = useState(true);
+
+    // Fetch divisions on component mount
+    useEffect(() => {
+        const fetchDivisions = async () => {
+            try {
+                const response = await fetch('/api/admin/divisions', { credentials: 'include' });
+                if (response.ok) {
+                    const data = await response.json();
+                    setDivisions(data);
+                }
+            } catch (err) {
+                console.error('Error fetching divisions:', err);
+            } finally {
+                setLoadingDivisions(false);
+            }
+        };
+
+        fetchDivisions();
+    }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -49,6 +71,7 @@ const ComponentsAuthRegisterForm = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include',
                 body: JSON.stringify({
                     fullName: formData.fullName,
                     email: formData.email,
@@ -56,6 +79,7 @@ const ComponentsAuthRegisterForm = () => {
                     studentId: formData.studentId,
                     campus: formData.campus,
                     division: formData.division,
+                    role: formData.role,
                 }),
             });
 
@@ -73,7 +97,17 @@ const ComponentsAuthRegisterForm = () => {
         }
     };
 
-    const divisions = ['BA', 'QA', 'Developer', 'UIUX', 'Multimedia', 'Helpdesk'];
+    // Available roles for the dropdown
+    const availableRoles = [
+        'user',
+        'service_requester',
+        'service_provider',
+        'approver',
+        'billing_coordinator',
+        'change_requester',
+        'cab_member',
+        'implementer'
+    ];
 
     return (
         <form className="space-y-5 dark:text-white" onSubmit={handleSubmit}>
@@ -167,11 +201,37 @@ const ComponentsAuthRegisterForm = () => {
             </div>
             <div>
                 <label htmlFor="division">Division</label>
-                <select id="division" name="division" className="form-select text-white-dark" value={formData.division} onChange={handleChange} required>
-                    <option value="">Select Division</option>
+                <select 
+                    id="division" 
+                    name="division" 
+                    className="form-select text-white-dark" 
+                    value={formData.division} 
+                    onChange={handleChange} 
+                    required
+                    disabled={loadingDivisions}
+                >
+                    <option value="">{loadingDivisions ? 'Loading divisions...' : 'Select Division'}</option>
                     {divisions.map((div) => (
-                        <option key={div} value={div}>
-                            {div}
+                        <option key={div.id} value={div.id}>
+                            {div.name}
+                        </option>
+                    ))}
+                </select>
+            </div>
+            <div>
+                <label htmlFor="role">Role</label>
+                <select 
+                    id="role" 
+                    name="role" 
+                    className="form-select text-white-dark" 
+                    value={formData.role} 
+                    onChange={handleChange} 
+                    required
+                >
+                    <option value="">Select Role</option>
+                    {availableRoles.map((role) => (
+                        <option key={role} value={role}>
+                            {role.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                         </option>
                     ))}
                 </select>

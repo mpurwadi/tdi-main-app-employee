@@ -6,11 +6,27 @@ import { db } from '@/lib/db';
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { fullName, email, password, studentId, campus, division } = body;
+        const { fullName, email, password, studentId, campus, division, role } = body;
 
         // Basic validation
-        if (!fullName || !email || !password || !studentId || !campus || !division) {
+        if (!fullName || !email || !password || !studentId || !campus || !division || !role) {
             return NextResponse.json({ message: 'All fields are required' }, { status: 400 });
+        }
+
+        // Validate role
+        const validRoles = [
+            'user',
+            'service_requester',
+            'service_provider',
+            'approver',
+            'billing_coordinator',
+            'change_requester',
+            'cab_member',
+            'implementer'
+        ];
+        
+        if (!validRoles.includes(role)) {
+            return NextResponse.json({ message: 'Invalid role selected' }, { status: 400 });
         }
 
         // Check if user already exists
@@ -25,11 +41,11 @@ export async function POST(request: Request) {
 
         // Insert new user
         const query = `
-            INSERT INTO users (full_name, email, password_hash, student_id, campus, division, status, role)
-            VALUES ($1, $2, $3, $4, $5, $6, 'pending', 'user')
+            INSERT INTO users (full_name, email, password_hash, student_id, campus, division_id, status, role)
+            VALUES ($1, $2, $3, $4, $5, $6, 'pending', $7)
             RETURNING id;
         `;
-        const values = [fullName, email, passwordHash, studentId, campus, division];
+        const values = [fullName, email, passwordHash, studentId, campus, division, role];
 
         const newUser = await db.query(query, values);
 

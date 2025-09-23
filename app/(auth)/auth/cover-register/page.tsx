@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import IconMail from '@/components/icon/icon-mail';
@@ -18,12 +18,34 @@ const SimpleCoverRegister = () => {
         passwordConfirm: '',
         studentId: '',
         campus: '',
-        division: '',
+        division: '', // This will now be the actual division ID
+        role: '', // This is the new role field
     });
     const [showPassword, setShowPassword] = useState(false);
     const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [divisions, setDivisions] = useState<{id: number, name: string}[]>([]);
+    const [loadingDivisions, setLoadingDivisions] = useState(true);
+
+    // Fetch divisions on component mount
+    useEffect(() => {
+        const fetchDivisions = async () => {
+            try {
+                const response = await fetch('/api/admin/divisions', { credentials: 'include' });
+                if (response.ok) {
+                    const data = await response.json();
+                    setDivisions(data);
+                }
+            } catch (err) {
+                console.error('Error fetching divisions:', err);
+            } finally {
+                setLoadingDivisions(false);
+            }
+        };
+
+        fetchDivisions();
+    }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -74,7 +96,17 @@ const SimpleCoverRegister = () => {
         }
     };
 
-    const divisions = ['BA', 'QA', 'Developer', 'UIUX', 'Multimedia', 'Helpdesk'];
+    // Available roles for the dropdown
+    const availableRoles = [
+        'user',
+        'service_requester',
+        'service_provider',
+        'approver',
+        'billing_coordinator',
+        'change_requester',
+        'cab_member',
+        'implementer'
+    ];
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
@@ -234,7 +266,7 @@ const SimpleCoverRegister = () => {
                             </div>
                         </div>
 
-                        <div className="mb-6">
+                        <div className="mb-4">
                             <label htmlFor="division" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Division
                             </label>
@@ -245,11 +277,33 @@ const SimpleCoverRegister = () => {
                                 value={formData.division}
                                 onChange={handleChange}
                                 required
+                                disabled={loadingDivisions}
                             >
-                                <option value="">Select Division</option>
+                                <option value="">{loadingDivisions ? 'Loading divisions...' : 'Select Division'}</option>
                                 {divisions.map((div) => (
-                                    <option key={div} value={div}>
-                                        {div}
+                                    <option key={div.id} value={div.id}>
+                                        {div.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="mb-6">
+                            <label htmlFor="role" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                Role
+                            </label>
+                            <select
+                                id="role"
+                                name="role"
+                                className="w-full py-2 px-3 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                value={formData.role}
+                                onChange={handleChange}
+                                required
+                            >
+                                <option value="">Select Role</option>
+                                {availableRoles.map((role) => (
+                                    <option key={role} value={role}>
+                                        {role.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                                     </option>
                                 ))}
                             </select>
