@@ -7,6 +7,13 @@ This application can be deployed in production using several methods. We have tw
 1. **[README.PRODUCTION.md](README.PRODUCTION.md)** - Original production deployment guide
 2. **[PRODUCTION_DEPLOYMENT.md](PRODUCTION_DEPLOYMENT.md)** - Enhanced production deployment guide with additional details
 
+## New Features
+
+### ITSM Dynamic Content Loading
+The application now includes dynamic loading of ITSM (IT Service Management) content without full page navigation. When users select ITSM menu items from the sidebar, the content loads dynamically in the main content area while staying on the same page.
+
+For details on this implementation, see [ITSMDynamicLoading.md](ITSMDynamicLoading.md).
+
 ## Quick Start
 
 For a quick deployment, follow these steps:

@@ -21,6 +21,7 @@ const AdminRolesManagement = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState<string>('');
+    const [resettingPassword, setResettingPassword] = useState<number | null>(null);
 
     const fetchUsersAndRoles = async () => {
         setLoading(true);
@@ -84,6 +85,74 @@ const AdminRolesManagement = () => {
             // Refresh the user list
             fetchUsersAndRoles();
         } catch (err: any) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: err.message,
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+            });
+        }
+    };
+
+    const handleResetPassword = async (userId: number, userName: string) => {
+        try {
+            // Ask for new password using SweetAlert
+            const { value: newPassword } = await Swal.fire({
+                title: `Reset Password for ${userName}`,
+                input: 'password',
+                inputLabel: 'New Password',
+                inputPlaceholder: 'Enter new password',
+                inputAttributes: {
+                    autocapitalize: 'off',
+                    autocorrect: 'off'
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Reset Password',
+                cancelButtonText: 'Cancel',
+                showLoaderOnConfirm: true,
+                preConfirm: (password) => {
+                    if (!password || password.length < 8) {
+                        Swal.showValidationMessage('Password must be at least 8 characters long');
+                        return false;
+                    }
+                    return password;
+                }
+            });
+
+            if (newPassword) {
+                setResettingPassword(userId);
+                
+                const response = await fetch('/api/admin/users/password', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ userId, newPassword }),
+                });
+
+                const data = await response.json();
+                setResettingPassword(null);
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Failed to reset password');
+                }
+
+                // Show success message
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: data.message,
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                });
+            }
+        } catch (err: any) {
+            setResettingPassword(null);
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
@@ -168,8 +237,8 @@ const AdminRolesManagement = () => {
                                         </span>
                                     </td>
                                     <td>
-                                        {user.role !== 'superadmin' ? (
-                                            <div className="flex gap-2">
+                                        <div className="flex flex-wrap gap-2">
+                                            {user.role !== 'superadmin' ? (
                                                 <select
                                                     className="form-select"
                                                     value={user.role}
@@ -177,11 +246,32 @@ const AdminRolesManagement = () => {
                                                 >
                                                     <option value="user">User</option>
                                                     <option value="admin">Admin</option>
+                                                    <option value="itsm_division_admin">ITSM Division Admin</option>
+                                                    <option value="itsm_manager">ITSM Manager</option>
+                                                    <option value="service_catalog_manager">Service Catalog Manager</option>
+                                                    <option value="service_provider">Service Provider</option>
+                                                    <option value="service_requester">Service Requester</option>
+                                                    <option value="approver">Approver</option>
+                                                    <option value="billing_coordinator">Billing Coordinator</option>
+                                                    <option value="billing_admin">Billing Admin</option>
+                                                    <option value="change_requester">Change Requester</option>
+                                                    <option value="change_manager">Change Manager</option>
+                                                    <option value="cab_member">CAB Member</option>
+                                                    <option value="implementer">Implementer</option>
                                                 </select>
-                                            </div>
-                                        ) : (
-                                            <span className="text-muted">Cannot change</span>
-                                        )}
+                                            ) : (
+                                                <span className="text-muted">Cannot change</span>
+                                            )}
+                                            
+                                            <button
+                                                type="button"
+                                                className="btn btn-warning btn-sm"
+                                                onClick={() => handleResetPassword(user.id, user.full_name)}
+                                                disabled={resettingPassword === user.id}
+                                            >
+                                                {resettingPassword === user.id ? 'Resetting...' : 'Reset Password'}
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}

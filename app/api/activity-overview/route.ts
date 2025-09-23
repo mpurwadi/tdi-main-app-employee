@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
     try {
-        const auth = verifyAuth();
+        const auth = await verifyAuth();
         
         // Get user ID from auth
         const userId = auth.userId;

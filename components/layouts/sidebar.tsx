@@ -1,4 +1,5 @@
 'use client';
+
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useDispatch, useSelector } from 'react-redux';
 import Link from 'next/link';
@@ -49,6 +50,13 @@ const Sidebar = () => {
     };
     
     const [activeMenuItem, setActiveMenuItem] = useState<string | null>(null);
+    
+    // Function to handle ITSM menu item selection - now using direct routing
+    const handleITSMMenuItemClick = (menuItem: string) => {
+        setActiveMenuItem(menuItem);
+        handleMenuItemClick();
+        // No longer dispatching custom events as we're using direct routing
+    };
     
     // Close sidebar when clicking outside
     useEffect(() => {
@@ -221,11 +229,11 @@ const Sidebar = () => {
                                     </div>
                                 </div>
                         <div className="menu-items h-[calc(100vh-140px)] overflow-y-auto">
-                            <ul className="relative space-y-0.5 py-4 font-semibold">
+                            <ul className="relative space-y-1 py-4 font-semibold">
                                 {/* ADMIN SECTION - Only show for admin/superadmin users */}
                                 {(userRole === 'admin' || userRole === 'superadmin') && (
                                     <>
-                                        <h2 className="py-3 px-7 text-xs font-bold uppercase text-black/70 dark:text-white/70 -mx-4 bg-white-light/30 dark:bg-dark/60">
+                                        <h2 className="py-3 px-6 text-xs font-bold uppercase text-black/70 dark:text-white/70 bg-white-light/30 dark:bg-dark/60 rounded-lg mx-2">
                                             <IconMinus className="hidden h-5 w-4 flex-none" />
                                             <span>Admin</span>
                                         </h2>
@@ -234,7 +242,7 @@ const Sidebar = () => {
                                 <li className="menu-item">
                                     <Link 
                                         href="/admin/dashboard"
-                                        className={`flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm transition-all duration-200 ${
+                                        className={`flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm transition-all duration-200 mx-2 ${
                                             pathname === '/admin/dashboard' 
                                                 ? 'bg-primary text-white shadow-[0_7px_14px_0_rgb(100_100_100_/_20%)]' 
                                                 : 'hover:bg-primary/10 hover:text-primary'
@@ -250,7 +258,7 @@ const Sidebar = () => {
                                         <li className="menu-item">
                                             <button
                                                 type="button"
-                                                className={`w-full flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm transition-all duration-200 ${
+                                                className={`w-full flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm transition-all duration-200 mx-2 ${
                                                     isActive('userManagement') 
                                                         ? 'bg-primary text-white shadow-[0_7px_14px_0_rgb(100_100_100_/_20%)]' 
                                                         : 'hover:bg-primary/10 hover:text-primary'
@@ -273,7 +281,7 @@ const Sidebar = () => {
                                                 height={isActive('userManagement') ? 'auto' : 0}
                                                 animateOpacity={true}
                                             >
-                                                <ul className="sub-menu mt-2 space-y-1 px-4">
+                                                <ul className="sub-menu mt-2 space-y-1 px-2 mx-2">
                                                     <li>
                                                         <Link
                                                             href="/admin/users"
@@ -283,8 +291,7 @@ const Sidebar = () => {
                                                                     : 'hover:bg-primary/10 hover:text-primary'
                                                             }`}
                                                         >
-                                                            <IconMinus className="h-5 w-5 shrink-0" />
-                                                            <span className="text-base">All Users</span>
+                                                            <span className="text-sm">All Users</span>
                                                         </Link>
                                                     </li>
                                                     <li>
@@ -296,11 +303,142 @@ const Sidebar = () => {
                                                                     : 'hover:bg-primary/10 hover:text-primary'
                                                             }`}
                                                         >
-                                                            <IconMinus className="h-5 w-5 shrink-0" />
-                                                            <span className="text-base">Approve Users</span>
+                                                            <span className="text-sm">Approve Users</span>
                                                         </Link>
                                                     </li>
+                                                    {/* Moved My Profile under User Management */}
+                                                    <li>
+                                                        <Link
+                                                            href="/users/profile"
+                                                            className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm transition-all duration-200 ${
+                                                                pathname === '/users/profile' 
+                                                                    ? 'bg-primary/10 text-primary' 
+                                                                    : 'hover:bg-primary/10 hover:text-primary'
+                                                            }`}
+                                                        >
+                                                            <span className="text-sm">My Profile</span>
+                                                        </Link>
+                                                    </li>
+                                                    {/* Moved Roles Management under User Management for superadmins */}
+                                                    {userRole === 'superadmin' && (
+                                                        <li>
+                                                            <Link
+                                                                href="/admin/roles"
+                                                                className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm transition-all duration-200 ${
+                                                                    pathname === '/admin/roles' 
+                                                                        ? 'bg-primary/10 text-primary' 
+                                                                        : 'hover:bg-primary/10 hover:text-primary'
+                                                                }`}
+                                                            >
+                                                                <span className="text-sm">Roles Management</span>
+                                                            </Link>
+                                                        </li>
+                                                    )}
                                                 </ul>
+                                            </AnimateHeight>
+                                        </li>
+                                        
+                                        {/* Attendance Management */}
+                                        <li className="menu-item">
+                                            <button
+                                                type="button"
+                                                className={`w-full flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm transition-all duration-200 mx-2 ${
+                                                    isActive('attendanceManagement') 
+                                                        ? 'bg-primary text-white shadow-[0_7px_14px_0_rgb(100_100_100_/_20%)]' 
+                                                        : 'hover:bg-primary/10 hover:text-primary'
+                                                }`}
+                                                onClick={() => { toggleMenu('attendanceManagement'); handleMenuItemClick(); }}
+                                            >
+                                                <IconMenuCalendar className="h-5 w-5 shrink-0" />
+                                                <span className="text-base">Attendance</span>
+                                                <div className="rtl:rotate-180 ml-auto transition-all duration-300">
+                                                    <IconCaretDown
+                                                        className={`h-5 w-5 transition-transform duration-300 ${
+                                                            isActive('attendanceManagement') ? 'rotate-180' : ''
+                                                        }`}
+                                                    />
+                                                </div>
+                                            </button>
+                                            
+                                            <AnimateHeight
+                                                duration={300}
+                                                height={isActive('attendanceManagement') ? 'auto' : 0}
+                                                animateOpacity={true}
+                                            >
+                                                <ul className="sub-menu mt-2 space-y-1 px-2 mx-2">
+                                                    <li>
+                                                        <Link
+                                                            href="/apps/absen"
+                                                            className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm transition-all duration-200 ${
+                                                                pathname === '/apps/absen' 
+                                                                    ? 'bg-primary/10 text-primary' 
+                                                                    : 'hover:bg-primary/10 hover:text-primary'
+                                                            }`}
+                                                        >
+                                                            <span className="text-sm">Absence</span>
+                                                        </Link>
+                                                    </li>
+                                                    <li>
+                                                        <Link
+                                                            href="/admin/reports/attendance"
+                                                            className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm transition-all duration-200 ${
+                                                                pathname === '/admin/reports/attendance' 
+                                                                    ? 'bg-primary/10 text-primary' 
+                                                                    : 'hover:bg-primary/10 hover:text-primary'
+                                                            }`}
+                                                        >
+                                                            <span className="text-sm">Report</span>
+                                                        </Link>
+                                                    </li>
+                                                    <li>
+                                                        <Link
+                                                            href="/admin/logbook"
+                                                            className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm transition-all duration-200 ${
+                                                                pathname === '/admin/logbook' 
+                                                                    ? 'bg-primary/10 text-primary' 
+                                                                    : 'hover:bg-primary/10 hover:text-primary'
+                                                            }`}
+                                                        >
+                                                            <span className="text-sm">Logbook</span>
+                                                        </Link>
+                                                    </li>
+                                                    <li>
+                                                        <Link
+                                                            href="/apps/logbook"
+                                                            className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm transition-all duration-200 ${
+                                                                pathname === '/apps/logbook' 
+                                                                    ? 'bg-primary/10 text-primary' 
+                                                                    : 'hover:bg-primary/10 hover:text-primary'
+                                                            }`}
+                                                        >
+                                                            <span className="text-sm">My Log Book</span>
+                                                        </Link>
+                                                    </li>
+                                                    <li>
+                                                        <Link
+                                                            href="/admin/remote-schedule"
+                                                            className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm transition-all duration-200 ${
+                                                                pathname === '/admin/remote-schedule' 
+                                                                    ? 'bg-primary/10 text-primary' 
+                                                                    : 'hover:bg-primary/10 hover:text-primary'
+                                                            }`}
+                                                        >
+                                                            <span className="text-sm">Remote Schedule</span>
+                                                        </Link>
+                                                    </li>
+                                                    <li>
+                                                        <Link
+                                                            href="/admin/holidays"
+                                                            className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm transition-all duration-200 ${
+                                                                pathname === '/admin/holidays' 
+                                                                    ? 'bg-primary/10 text-primary' 
+                                                                    : 'hover:bg-primary/10 hover:text-primary'
+                                                            }`}
+                                                        >
+                                                            <span className="text-sm">Holidays</span>
+                                                        </Link>
+                                                    </li>
+                                                    </ul>
                                             </AnimateHeight>
                                         </li>
                                         
@@ -308,7 +446,7 @@ const Sidebar = () => {
                                         <li className="menu-item">
                                             <Link 
                                                 href="/admin/logbook"
-                                                className={`flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm transition-all duration-200 ${
+                                                className={`flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm transition-all duration-200 mx-2 ${
                                                     pathname === '/admin/logbook' 
                                                         ? 'bg-primary text-white shadow-[0_7px_14px_0_rgb(100_100_100_/_20%)]' 
                                                         : 'hover:bg-primary/10 hover:text-primary'
@@ -319,26 +457,11 @@ const Sidebar = () => {
                                             </Link>
                                         </li>
                                         
-                                        {/* Generate QR Code */}
-                                        <li className="menu-item">
-                                            <Link 
-                                                href="/admin/qr-code"
-                                                className={`flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm transition-all duration-200 ${
-                                                    pathname === '/admin/qr-code' 
-                                                        ? 'bg-primary text-white shadow-[0_7px_14px_0_rgb(100_100_100_/_20%)]' 
-                                                        : 'hover:bg-primary/10 hover:text-primary'
-                                                }`}
-                                            >
-                                                <IconMenuDashboard className="h-5 w-5 shrink-0" />
-                                                <span className="text-base">Generate QR Code</span>
-                                            </Link>
-                                        </li>
-                                        
                                         {/* News & Announcements */}
                                         <li className="menu-item">
                                             <Link 
                                                 href="/admin/news"
-                                                className={`flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm transition-all duration-200 ${
+                                                className={`flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm transition-all duration-200 mx-2 ${
                                                     pathname === '/admin/news' 
                                                         ? 'bg-primary text-white shadow-[0_7px_14px_0_rgb(100_100_100_/_20%)]' 
                                                         : 'hover:bg-primary/10 hover:text-primary'
@@ -349,160 +472,102 @@ const Sidebar = () => {
                                             </Link>
                                         </li>
                                         
-                                        {/* Remote Schedule Management */}
+                                        {/* ITSM Service */}
                                         <li className="menu-item">
                                             <Link 
-                                                href="/admin/remote-schedule"
-                                                className={`flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm transition-all duration-200 ${
-                                                    pathname === '/admin/remote-schedule' 
+                                                href="/itsm"
+                                                className={`flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm transition-all duration-200 mx-2 ${
+                                                    pathname === '/itsm' 
                                                         ? 'bg-primary text-white shadow-[0_7px_14px_0_rgb(100_100_100_/_20%)]' 
                                                         : 'hover:bg-primary/10 hover:text-primary'
                                                 }`}
+                                                onClick={handleMenuItemClick}
                                             >
-                                                <IconMenuCalendar className="h-5 w-5 shrink-0" />
-                                                <span className="text-base">Remote Schedule</span>
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                </svg>
+                                                <span className="text-base">ITSM Service</span>
                                             </Link>
                                         </li>
-                                        
-                                        {/* Tickets Management */}
-                                        <li className="menu-item">
-                                            <Link 
-                                                href="/admin/tickets"
-                                                className={`flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm transition-all duration-200 ${
-                                                    pathname === '/admin/tickets' 
-                                                        ? 'bg-primary text-white shadow-[0_7px_14px_0_rgb(100_100_100_/_20%)]' 
-                                                        : 'hover:bg-primary/10 hover:text-primary'
-                                                }`}
-                                            >
-                                                <IconMessage className="h-5 w-5 shrink-0" />
-                                                <span className="text-base">Tickets</span>
-                                            </Link>
-                                        </li>
-                                        
-                                        {/* Holidays Management */}
-                                        <li className="menu-item">
-                                            <Link 
-                                                href="/admin/holidays"
-                                                className={`flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm transition-all duration-200 ${
-                                                    pathname === '/admin/holidays' 
-                                                        ? 'bg-primary text-white shadow-[0_7px_14px_0_rgb(100_100_100_/_20%)]' 
-                                                        : 'hover:bg-primary/10 hover:text-primary'
-                                                }`}
-                                            >
-                                                <IconMenuCalendar className="h-5 w-5 shrink-0" />
-                                                <span className="text-base">Holidays</span>
-                                            </Link>
-                                        </li>
-                                        
-                                        {/* Roles Management - Only visible to superadmins */}
-                                        {userRole === 'superadmin' && (
-                                            <li className="menu-item">
-                                                <Link 
-                                                    href="/admin/roles"
-                                                    className={`flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm transition-all duration-200 ${
-                                                        pathname === '/admin/roles' 
-                                                            ? 'bg-primary text-white shadow-[0_7px_14px_0_rgb(100_100_100_/_20%)]' 
-                                                            : 'hover:bg-primary/10 hover:text-primary'
-                                                    }`}
-                                                >
-                                                    <IconMenuUsers className="h-5 w-5 shrink-0" />
-                                                    <span className="text-base">Roles Management</span>
-                                                </Link>
-                                            </li>
-                                        )}
                                     </>
                                 )}
                                 
-                                {/* User Dashboard - For all authenticated users */}
-                                <li className="menu-item">
-                                    <Link
-                                        href="/user-dashboard"
-                                        className={`flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm transition-all duration-200 ${
-                                            pathname === '/user-dashboard' 
-                                                ? 'bg-primary text-white shadow-[0_7px_14px_0_rgb(100_100_100_/_20%)]' 
-                                                : 'hover:bg-primary/10 hover:text-primary'
-                                        }`}
-                                        onClick={handleMenuItemClick}
-                                    >
-                                        <IconMenuDashboard className="h-5 w-5 shrink-0" />
-                                        <span className="text-base">Dashboard</span>
-                                    </Link>
-                                </li>
+                                {/* Regular User Section */}
+                                {(userRole === 'user' || userRole === 'service_requester' || userRole === 'service_provider' || !userRole) && (
+                                    <>
+                                        <h2 className="py-3 px-6 text-xs font-bold uppercase text-black/70 dark:text-white/70 bg-white-light/30 dark:bg-dark/60 rounded-lg mx-2">
+                                            <IconMinus className="hidden h-5 w-4 flex-none" />
+                                            <span>My Services</span>
+                                        </h2>
+                                        
+                                        {/* User Dashboard */}
+                                        <li className="menu-item">
+                                            <Link 
+                                                href="/user/dashboard"
+                                                className={`flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm transition-all duration-200 mx-2 ${
+                                                    pathname === '/user/dashboard' 
+                                                        ? 'bg-primary text-white shadow-[0_7px_14px_0_rgb(100_100_100_/_20%)]' 
+                                                        : 'hover:bg-primary/10 hover:text-primary'
+                                                }`}
+                                                onClick={handleMenuItemClick}
+                                            >
+                                                <IconMenuDashboard className="h-5 w-5 shrink-0" />
+                                                <span className="text-base">Dashboard</span>
+                                            </Link>
+                                        </li>
+                                        
+                                        {/* Absence */}
+                                        <li className="menu-item">
+                                            <Link
+                                                href="/apps/absen"
+                                                className={`flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm transition-all duration-200 mx-2 ${
+                                                    pathname === '/apps/absen' 
+                                                        ? 'bg-primary text-white shadow-[0_7px_14px_0_rgb(100_100_100_/_20%)]' 
+                                                        : 'hover:bg-primary/10 hover:text-primary'
+                                                }`}
+                                                onClick={handleMenuItemClick}
+                                            >
+                                                <IconMenuCalendar className="h-5 w-5 shrink-0" />
+                                                <span className="text-base">Absence</span>
+                                            </Link>
+                                        </li>
+                                        
+                                        {/* Remote Login */}
+                                        <li className="menu-item">
+                                            <Link
+                                                href="/apps/remote"
+                                                className={`flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm transition-all duration-200 mx-2 ${
+                                                    pathname === '/apps/remote' 
+                                                        ? 'bg-primary text-white shadow-[0_7px_14px_0_rgb(100_100_100_/_20%)]' 
+                                                        : 'hover:bg-primary/10 hover:text-primary'
+                                                }`}
+                                                onClick={handleMenuItemClick}
+                                            >
+                                                <IconMenuUsers className="h-5 w-5 shrink-0" />
+                                                <span className="text-base">Remote Login</span>
+                                            </Link>
+                                        </li>
+                                        
+                                        {/* My Log Book */}
+                                        <li className="menu-item">
+                                            <Link
+                                                href="/apps/logbook"
+                                                className={`flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm transition-all duration-200 mx-2 ${
+                                                    pathname === '/apps/logbook' 
+                                                        ? 'bg-primary text-white shadow-[0_7px_14px_0_rgb(100_100_100_/_20%)]' 
+                                                        : 'hover:bg-primary/10 hover:text-primary'
+                                                }`}
+                                                onClick={handleMenuItemClick}
+                                            >
+                                                <IconMenuCalendar className="h-5 w-5 shrink-0" />
+                                                <span className="text-base">My Log Book</span>
+                                            </Link>
+                                        </li>
+                                    </>
+                                )}
                                 
-                                {/* Logbook - For regular users */}
-                                <li className="menu-item">
-                                    <Link
-                                        href="/apps/logbook"
-                                        className={`flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm transition-all duration-200 ${
-                                            pathname === '/apps/logbook' 
-                                                ? 'bg-primary text-white shadow-[0_7px_14px_0_rgb(100_100_100_/_20%)]' 
-                                                : 'hover:bg-primary/10 hover:text-primary'
-                                        }`}
-                                    >
-                                        <IconMenuCalendar className="h-5 w-5 shrink-0" />
-                                        <span className="text-base">My Logbook</span>
-                                    </Link>
-                                </li>
                                 
-                                {/* Remote Work - For regular users */}
-                                <li className="menu-item">
-                                    <Link
-                                        href="/apps/remote"
-                                        className={`flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm transition-all duration-200 ${
-                                            pathname === '/apps/remote' 
-                                                ? 'bg-primary text-white shadow-[0_7px_14px_0_rgb(100_100_100_/_20%)]' 
-                                                : 'hover:bg-primary/10 hover:text-primary'
-                                        }`}
-                                    >
-                                        <IconMenuCalendar className="h-5 w-5 shrink-0" />
-                                        <span className="text-base">Remote Work</span>
-                                    </Link>
-                                </li>
-                                
-                                {/* Attendance - For regular users */}
-                                <li className="menu-item">
-                                    <Link
-                                        href="/apps/absen"
-                                        className={`flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm transition-all duration-200 ${
-                                            pathname === '/apps/absen' 
-                                                ? 'bg-primary text-white shadow-[0_7px_14px_0_rgb(100_100_100_/_20%)]' 
-                                                : 'hover:bg-primary/10 hover:text-primary'
-                                        }`}
-                                    >
-                                        <IconMenuCalendar className="h-5 w-5 shrink-0" />
-                                        <span className="text-base">Attendance</span>
-                                    </Link>
-                                </li>
-                                
-                                {/* Profile Management */}
-                                <li className="menu-item">
-                                    <Link
-                                        href="/users/profile"
-                                        className={`flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm transition-all duration-200 ${
-                                            pathname === '/users/profile' 
-                                                ? 'bg-primary text-white shadow-[0_7px_14px_0_rgb(100_100_100_/_20%)]' 
-                                                : 'hover:bg-primary/10 hover:text-primary'
-                                        }`}
-                                    >
-                                        <IconMenuUsers className="h-5 w-5 shrink-0" />
-                                        <span className="text-base">My Profile</span>
-                                    </Link>
-                                </li>
-                                
-                                {/* Tickets - For regular users */}
-                                <li className="menu-item">
-                                    <Link
-                                        href="/tickets"
-                                        className={`flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm transition-all duration-200 ${
-                                            pathname === '/tickets' 
-                                                ? 'bg-primary text-white shadow-[0_7px_14px_0_rgb(100_100_100_/_20%)]' 
-                                                : 'hover:bg-primary/10 hover:text-primary'
-                                        }`}
-                                    >
-                                        <IconMessage className="h-5 w-5 shrink-0" />
-                                        <span className="text-base">My Tickets</span>
-                                    </Link>
-                                </li>
                             </ul>
                         </div>
                     </div>

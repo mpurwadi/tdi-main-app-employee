@@ -19,10 +19,13 @@ const ContentAnimation = ({ children }: { children: React.ReactNode }) => {
             setAnimation('');
         }, 1100);
     }, [pathname]);
+
     return (
         <>
             {/* BEGIN CONTENT AREA */}
-            <div className={`${animation} animate__animated p-6`}>{children}</div>
+            <div className={`${animation} animate__animated p-6`}>
+                {children}
+            </div>
             {/* END CONTENT AREA */}
         </>
     );

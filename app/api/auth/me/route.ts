@@ -4,7 +4,7 @@ import { verifyAuth, isAdmin } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   try {
-    const auth = verifyAuth();
+    const auth = await verifyAuth();
     const admin = isAdmin(auth);
     
     return NextResponse.json({
@@ -12,6 +12,7 @@ export async function GET(request: NextRequest) {
       userId: auth.userId,
       email: auth.email,
       role: auth.role,
+      roles: auth.roles,
       isAdmin: admin,
     });
   } catch (error) {

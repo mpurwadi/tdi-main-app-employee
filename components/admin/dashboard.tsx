@@ -1,11 +1,18 @@
 'use client';
-import { useState, useEffect } from 'react';
-import ReactApexChart from 'react-apexcharts';
+import { useState, useEffect, Suspense } from 'react';
 
 const AdminDashboard = () => {
+    const [ReactApexChart, setReactApexChart] = useState<any>(null);
     const [stats, setStats] = useState<any>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        // Dynamically import ReactApexChart only on client side
+        import('react-apexcharts').then((module) => {
+            setReactApexChart(() => module.default);
+        });
+    }, []);
 
     const fetchStats = async () => {
         setLoading(true);
@@ -209,7 +216,7 @@ const AdminDashboard = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="panel">
                     <h2 className="text-xl font-bold mb-4">Users by Division</h2>
-                    {usersByDivisionChartData.length > 0 ? (
+                    {ReactApexChart && usersByDivisionChartData.length > 0 ? (
                         <ReactApexChart
                             options={usersByDivisionChartOptions}
                             series={usersByDivisionChartData}
@@ -225,7 +232,7 @@ const AdminDashboard = () => {
 
                 <div className="panel">
                     <h2 className="text-xl font-bold mb-4">Tickets by Status</h2>
-                    {ticketsByStatusChartData.length > 0 ? (
+                    {ReactApexChart && ticketsByStatusChartData.length > 0 ? (
                         <ReactApexChart
                             options={ticketsByStatusChartOptions}
                             series={ticketsByStatusChartData}

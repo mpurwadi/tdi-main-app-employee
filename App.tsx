@@ -34,7 +34,7 @@ function App({ children }: PropsWithChildren) {
                         const storedLocale = localStorage.getItem('i18nextLng');
                         const validLocale = storedLocale && ['da', 'de', 'el', 'en', 'es', 'fr', 'hu', 'it', 'ja', 'pl', 'pt', 'ru', 'sv', 'tr', 'zh', 'ae'].includes(storedLocale) 
                             ? storedLocale 
-                            : 'en';
+                            : 'en'; 
                             
                         initLocale(validLocale);
                     } else {

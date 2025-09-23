@@ -18,7 +18,7 @@ const pool = new Pool({
 // Get all users or users with specific status/role
 export async function GET(request: Request) {
     try {
-        const auth = verifyAuth();
+        const auth = await verifyAuth();
         if (!isAdmin(auth)) {
             return NextResponse.json({ message: 'Forbidden' }, { status: 403 });
         }
@@ -73,7 +73,7 @@ export async function GET(request: Request) {
 // Create a new user
 export async function POST(request: Request) {
     try {
-        const auth = verifyAuth();
+        const auth = await verifyAuth();
         if (!isAdmin(auth)) {
             return NextResponse.json({ message: 'Forbidden' }, { status: 403 });
         }
@@ -112,7 +112,7 @@ export async function POST(request: Request) {
 // Update a user
 export async function PUT(request: Request) {
     try {
-        const auth = verifyAuth();
+        const auth = await verifyAuth();
         if (!isAdmin(auth)) {
             return NextResponse.json({ message: 'Forbidden' }, { status: 403 });
         }
@@ -149,7 +149,7 @@ export async function PUT(request: Request) {
 // Delete a user
 export async function DELETE(request: Request) {
     try {
-        const auth = verifyAuth();
+        const auth = await verifyAuth();
         if (!isAdmin(auth)) {
             return NextResponse.json({ message: 'Forbidden' }, { status: 403 });
         }

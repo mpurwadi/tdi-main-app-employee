@@ -36,14 +36,19 @@ const SimpleCoverLogin = () => {
             }
 
             // On successful login, the API sets a cookie.
-            // Redirect based on user role.
-            const userRole = data.role;
-            if (userRole === 'superadmin' || userRole === 'admin') {
-                router.push('/admin/approval'); // Redirect to admin approval page
-            } else if (userRole === 'user') {
-                router.push('/user-dashboard'); // Redirect to the new user dashboard
+            // Redirect based on the redirectTo field from the API response.
+            if (data.redirectTo) {
+                router.push(data.redirectTo);
             } else {
-                router.push('/'); // Fallback to home if role is unknown
+                // Fallback redirect logic based on user role.
+                const userRole = data.role;
+                if (userRole === 'superadmin' || userRole === 'admin') {
+                    router.push('/admin/dashboard'); // Redirect to admin dashboard
+                } else if (userRole === 'user') {
+                    router.push('/user-dashboard'); // Redirect to the new user dashboard
+                } else {
+                    router.push('/'); // Fallback to home if role is unknown
+                }
             }
         } catch (err: any) {
             setError(err.message);

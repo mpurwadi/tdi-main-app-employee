@@ -116,7 +116,7 @@ function removeUserCalendarEntries(scheduleId: number) {
 // GET /api/admin/remote-schedule - Get schedule history
 export async function GET(request: NextRequest) {
   try {
-    const auth = verifyAuth();
+    const auth = await verifyAuth();
     if (!isAdmin(auth)) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
@@ -139,7 +139,7 @@ export async function GET(request: NextRequest) {
 // POST /api/admin/remote-schedule - Generate random schedule
 export async function POST(request: NextRequest) {
   try {
-    const auth = verifyAuth();
+    const auth = await verifyAuth();
     if (!isAdmin(auth)) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
@@ -206,7 +206,7 @@ export async function POST(request: NextRequest) {
 // PUT /api/admin/remote-schedule - Save schedule to database
 export async function PUT(request: NextRequest) {
   try {
-    const auth = verifyAuth();
+    const auth = await verifyAuth();
     if (!isAdmin(auth)) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
@@ -291,7 +291,7 @@ export async function PUT(request: NextRequest) {
 // PATCH /api/admin/remote-schedule/{id} - Update individual intern date
 export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const auth = verifyAuth();
+    const auth = await verifyAuth();
     if (!isAdmin(auth)) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },

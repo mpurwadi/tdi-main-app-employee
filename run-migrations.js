@@ -34,9 +34,10 @@ async function runMigrations() {
                     try {
                         await pool.query(statement);
                     } catch (error) {
-                        console.error(`Error executing statement: ${error.message}`);
-                        console.error(`Statement: ${statement}`);
-                        throw error;
+                        // Log error but continue with other statements
+                        console.warn(`Warning: Error executing statement in ${file}: ${error.message}`);
+                        console.warn(`Statement: ${statement.substring(0, 100)}...`);
+                        // Don't throw error to continue with other migrations
                     }
                 }
             }
@@ -44,7 +45,7 @@ async function runMigrations() {
             console.log(`Completed migration: ${file}`);
         }
         
-        console.log('All migrations completed successfully');
+        console.log('All migrations processed (with any errors logged as warnings)');
     } catch (error) {
         console.error('Error running migrations:', error);
     } finally {

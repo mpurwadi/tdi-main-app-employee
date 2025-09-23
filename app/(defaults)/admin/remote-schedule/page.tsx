@@ -31,13 +31,13 @@ const RemoteSchedulePage = () => {
         const data = await response.json();
         
         if (!response.ok || !data.isAdmin) {
-          router.push('/auth/boxed-signin');
+          router.push('/auth/cover-login');
           return;
         }
         
         setIsLoading(false);
       } catch (err) {
-        router.push('/auth/boxed-signin');
+        router.push('/auth/cover-login');
       }
     };
     

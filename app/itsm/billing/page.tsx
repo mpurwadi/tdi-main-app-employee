@@ -3,95 +3,95 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { IRootState } from '@/store';
+import { useSearchParams } from 'next/navigation';
+import CreateBillingRecord from '@/components/itsm/billing/CreateBillingRecord';
+import RecordPayment from '@/components/itsm/billing/RecordPayment';
 
 const BillingPage = () => {
     const themeConfig = useSelector((state: IRootState) => state.themeConfig);
-    const [bills, setBills] = useState<any[]>([]);
+    const [billingRecords, setBillingRecords] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState('pending');
     const [searchTerm, setSearchTerm] = useState('');
+    const [statusFilter, setStatusFilter] = useState('all');
+    const [userRole, setUserRole] = useState<string>('');
+    const [userDivision, setUserDivision] = useState<string>('');
 
-    // Mock data for demonstration
-    const mockBills = [
-        {
-            id: 1,
-            requester_division: 'Marketing',
-            provider_division: 'DevOps',
-            amount: 1500.00,
-            billing_period: 'September 2025',
-            status: 'pending',
-            created_at: '2025-09-01',
-            due_date: '2025-09-30',
-            service_requests: 12
-        },
-        {
-            id: 2,
-            requester_division: 'Sales',
-            provider_division: 'Big Data',
-            amount: 2250.75,
-            billing_period: 'September 2025',
-            status: 'paid',
-            created_at: '2025-09-01',
-            due_date: '2025-09-30',
-            payment_date: '2025-09-15',
-            service_requests: 30
-        },
-        {
-            id: 3,
-            requester_division: 'HR',
-            provider_division: 'Produk',
-            amount: 5000.00,
-            billing_period: 'September 2025',
-            status: 'disputed',
-            created_at: '2025-09-01',
-            due_date: '2025-09-30',
-            service_requests: 10
-        },
-        {
-            id: 4,
-            requester_division: 'Finance',
-            provider_division: 'DevOps',
-            amount: 750.50,
-            billing_period: 'August 2025',
-            status: 'paid',
-            created_at: '2025-08-01',
-            due_date: '2025-08-31',
-            payment_date: '2025-08-25',
-            service_requests: 5
-        }
-    ];
+    // Modal states
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [selectedBillingRecord, setSelectedBillingRecord] = useState<any>(null);
 
+    const searchParams = useSearchParams();
+    const tab = searchParams.get('tab') || 'invoices';
+
+    // Fetch billing records
     useEffect(() => {
-        // Simulate API call
-        setTimeout(() => {
-            setBills(mockBills);
-            setLoading(false);
-        }, 1000);
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                
+                // Fetch user authentication data
+                const authResponse = await fetch('/api/auth/me');
+                const authData = await authResponse.json();
+                
+                if (!authResponse.ok || !authData.success) {
+                    console.error('Failed to fetch user data');
+                    return;
+                }
+                
+                setUserRole(authData.role);
+                setUserDivision(authData.division);
+                
+                // Fetch billing records from API
+                const billingResponse = await fetch('/api/itsm/billing');
+                const billingData = await billingResponse.json();
+                
+                if (!billingResponse.ok || !billingData.success) {
+                    console.error('Failed to fetch billing data');
+                    return;
+                }
+                
+                setBillingRecords(billingData.data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        
+        fetchData();
     }, []);
 
-    // Filter bills based on active tab and search term
-    const filteredBills = bills.filter(bill => {
-        const matchesSearch = bill.requester_division.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                             bill.provider_division.toLowerCase().includes(searchTerm.toLowerCase());
+    // Refresh billing records
+    const refreshBillingRecords = async () => {
+        try {
+            const response = await fetch('/api/itsm/billing');
+            const data = await response.json();
+            
+            if (data.success) {
+                setBillingRecords(data.data);
+            }
+        } catch (error) {
+            console.error('Error refreshing billing records:', error);
+        }
+    };
+
+    // Handle payment recording
+    const handleRecordPayment = (record: any) => {
+        setSelectedBillingRecord(record);
+        setShowPaymentModal(true);
+    };
+
+    // Filter billing records based on search and filters
+    const filteredBillingRecords = billingRecords.filter(record => {
+        const matchesSearch = record.invoice_number.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                             record.requester_division.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesStatus = statusFilter === 'all' || record.status === statusFilter;
         
-        if (activeTab === 'all') return matchesSearch;
-        return matchesSearch && bill.status === activeTab;
+        return matchesSearch && matchesStatus;
     });
 
-    // Get counts for tabs
-    const allCount = bills.length;
-    const pendingCount = bills.filter(b => b.status === 'pending').length;
-    const paidCount = bills.filter(b => b.status === 'paid').length;
-    const disputedCount = bills.filter(b => b.status === 'disputed').length;
-
-    // Calculate total amounts
-    const totalPending = bills
-        .filter(b => b.status === 'pending')
-        .reduce((sum, bill) => sum + bill.amount, 0);
-        
-    const totalPaid = bills
-        .filter(b => b.status === 'paid')
-        .reduce((sum, bill) => sum + bill.amount, 0);
+    const statuses = ['all', 'pending', 'paid', 'overdue', 'disputed'];
 
     if (loading) {
         return (
@@ -110,236 +110,241 @@ const BillingPage = () => {
                 </p>
             </div>
 
-            {/* Summary cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                <div className={`rounded-lg shadow-md p-5 ${themeConfig.theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
-                    <div className="flex items-center">
-                        <div className="p-3 rounded-full bg-yellow-100 text-yellow-600 dark:bg-yellow-900 dark:text-yellow-200">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
-                        <div className="ml-4">
-                            <h3 className="text-lg font-medium text-gray-500 dark:text-gray-400">Pending</h3>
-                            <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                                ${totalPending.toFixed(2)}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div className={`rounded-lg shadow-md p-5 ${themeConfig.theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
-                    <div className="flex items-center">
-                        <div className="p-3 rounded-full bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-200">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
-                        <div className="ml-4">
-                            <h3 className="text-lg font-medium text-gray-500 dark:text-gray-400">Paid</h3>
-                            <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                                ${totalPaid.toFixed(2)}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div className={`rounded-lg shadow-md p-5 ${themeConfig.theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
-                    <div className="flex items-center">
-                        <div className="p-3 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-200">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                            </svg>
-                        </div>
-                        <div className="ml-4">
-                            <h3 className="text-lg font-medium text-gray-500 dark:text-gray-400">Total Bills</h3>
-                            <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                                {bills.length}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             {/* Tabs */}
             <div className="mb-6">
                 <div className="border-b border-gray-200 dark:border-gray-700">
-                    <nav className="-mb-px flex space-x-8 overflow-x-auto">
-                        <button
-                            onClick={() => setActiveTab('all')}
-                            className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
-                                activeTab === 'all'
-                                    ? 'border-primary text-primary'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
-                            }`}
-                        >
-                            All Bills
-                            <span className="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-gray-500 rounded-full">
-                                {allCount}
-                            </span>
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('pending')}
-                            className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
-                                activeTab === 'pending'
-                                    ? 'border-primary text-primary'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
-                            }`}
-                        >
-                            Pending
-                            <span className="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-yellow-500 rounded-full">
-                                {pendingCount}
-                            </span>
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('paid')}
-                            className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
-                                activeTab === 'paid'
-                                    ? 'border-primary text-primary'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
-                            }`}
-                        >
-                            Paid
-                            <span className="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-green-500 rounded-full">
-                                {paidCount}
-                            </span>
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('disputed')}
-                            className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
-                                activeTab === 'disputed'
-                                    ? 'border-primary text-primary'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
-                            }`}
-                        >
-                            Disputed
-                            <span className="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full">
-                                {disputedCount}
-                            </span>
-                        </button>
-                    </nav>
+                    <ul className="flex flex-wrap -mb-px">
+                        <li className="mr-2">
+                            <button
+                                className={`inline-block p-4 rounded-t-lg border-b-2 ${
+                                    tab === 'invoices'
+                                        ? 'text-primary border-primary dark:text-primary dark:border-primary'
+                                        : 'border-transparent text-gray-500 hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+                                }`}
+                                onClick={() => window.history.pushState({}, '', '?tab=invoices')}
+                            >
+                                Invoices
+                            </button>
+                        </li>
+                        {(userRole === 'billing_coordinator' || userRole === 'admin' || userRole === 'superadmin') && (
+                            <li className="mr-2">
+                                <button
+                                    className={`inline-block p-4 rounded-t-lg border-b-2 ${
+                                        tab === 'payments'
+                                            ? 'text-primary border-primary dark:text-primary dark:border-primary'
+                                            : 'border-transparent text-gray-500 hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+                                    }`}
+                                    onClick={() => window.history.pushState({}, '', '?tab=payments')}
+                                >
+                                    Payment Processing
+                                </button>
+                            </li>
+                        )}
+                        <li className="mr-2">
+                            <button
+                                className={`inline-block p-4 rounded-t-lg border-b-2 ${
+                                    tab === 'reports'
+                                        ? 'text-primary border-primary dark:text-primary dark:border-primary'
+                                        : 'border-transparent text-gray-500 hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+                                }`}
+                                onClick={() => window.history.pushState({}, '', '?tab=reports')}
+                            >
+                                Reports
+                            </button>
+                        </li>
+                    </ul>
                 </div>
             </div>
 
-            {/* Search */}
-            <div className={`mb-6 p-4 rounded-lg ${themeConfig.theme === 'dark' ? 'bg-gray-800' : 'bg-white'} shadow`}>
-                <div className="flex flex-col md:flex-row md:items-center gap-4">
-                    <div className="flex-1">
-                        <input
-                            type="text"
-                            placeholder="Search bills..."
-                            className="form-input w-full"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
+            {tab === 'invoices' && (
+                <>
+                    {/* Filters */}
+                    <div className={`mb-6 p-4 rounded-lg ${themeConfig.theme === 'dark' ? 'bg-gray-800' : 'bg-white'} shadow`}>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    Search
+                                </label>
+                                <input
+                                    type="text"
+                                    placeholder="Search invoices..."
+                                    className="form-input w-full"
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    Status
+                                </label>
+                                <select
+                                    className="form-select w-full"
+                                    value={statusFilter}
+                                    onChange={(e) => setStatusFilter(e.target.value)}
+                                >
+                                    {statuses.map(status => (
+                                        <option key={status} value={status}>
+                                            {status === 'all' ? 'All Statuses' : status.charAt(0).toUpperCase() + status.slice(1)}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="flex items-end">
+                                <button
+                                    className="btn btn-primary w-full"
+                                    onClick={() => setShowCreateModal(true)}
+                                >
+                                    Create New Billing Record
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <div className="flex space-x-3">
-                        <button className="btn btn-outline-primary whitespace-nowrap">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
-                            </svg>
-                            Generate Report
-                        </button>
-                        <button className="btn btn-primary whitespace-nowrap">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+
+                    {/* Billing records table */}
+                    {filteredBillingRecords.length === 0 ? (
+                        <div className={`rounded-lg p-8 text-center ${themeConfig.theme === 'dark' ? 'bg-gray-800' : 'bg-white'} shadow`}>
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
-                            New Invoice
-                        </button>
-                    </div>
-                </div>
-            </div>
+                            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-1">No billing records found</h3>
+                            <p className="text-gray-500 dark:text-gray-400">
+                                Try adjusting your search or filter criteria
+                            </p>
+                        </div>
+                    ) : (
+                        <div className={`rounded-lg overflow-hidden ${themeConfig.theme === 'dark' ? 'bg-gray-800' : 'bg-white'} shadow`}>
+                            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                <thead className={`${themeConfig.theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'}`}>
+                                    <tr>
+                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Invoice
+                                        </th>
+                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Requester
+                                        </th>
+                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Provider
+                                        </th>
+                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Amount
+                                        </th>
+                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Period
+                                        </th>
+                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Due Date
+                                        </th>
+                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Status
+                                        </th>
+                                        <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Actions
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody className={`divide-y ${themeConfig.theme === 'dark' ? 'divide-gray-700 bg-gray-800' : 'divide-gray-200 bg-white'}`}>
+                                    {filteredBillingRecords.map((record) => (
+                                        <tr key={record.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div className="text-sm font-medium text-gray-900 dark:text-white">{record.invoice_number}</div>
+                                                <div className="text-sm text-gray-500 dark:text-gray-400">{record.created_at}</div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                                {record.requester_division}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                                {record.provider_division}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                ${record.amount.toFixed(2)}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                                {record.billing_period}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                                {record.due_date}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                                    record.status === 'paid' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
+                                                    record.status === 'pending' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
+                                                    record.status === 'overdue' ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' :
+                                                    'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
+                                                }`}>
+                                                    {record.status}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                <button className="text-primary hover:text-primary-hover dark:text-primary dark:hover:text-primary-hover mr-3">
+                                                    View
+                                                </button>
+                                                {record.status === 'pending' && (
+                                                    <button 
+                                                        className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300"
+                                                        onClick={() => handleRecordPayment(record)}
+                                                    >
+                                                        Confirm Payment
+                                                    </button>
+                                                )}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                </>
+            )}
 
-            {/* Bills table */}
-            {filteredBills.length === 0 ? (
-                <div className={`rounded-lg p-8 text-center ${themeConfig.theme === 'dark' ? 'bg-gray-800' : 'bg-white'} shadow`}>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-1">No bills found</h3>
-                    <p className="text-gray-500 dark:text-gray-400">
-                        Try adjusting your search or filter criteria
+            {tab === 'payments' && (
+                <div className={`rounded-lg p-6 ${themeConfig.theme === 'dark' ? 'bg-gray-800' : 'bg-white'} shadow`}>
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Payment Processing</h2>
+                    <p className="text-gray-600 dark:text-gray-400 mb-6">
+                        Process payments for pending invoices
                     </p>
-                </div>
-            ) : (
-                <div className={`rounded-lg shadow-md overflow-hidden ${themeConfig.theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
+                    
+                    {/* Pending payments table */}
                     <div className="overflow-x-auto">
                         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                            <thead>
+                            <thead className={`${themeConfig.theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'}`}>
                                 <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Invoice
                                     </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                        Divisions
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        Requester
                                     </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Amount
                                     </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                        Period
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Due Date
                                     </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                        Requests
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                        Status
-                                    </th>
-                                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Actions
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                                {filteredBills.map((bill) => (
-                                    <tr key={bill.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                                        <td className="px-6 py-4">
-                                            <div className="text-sm font-medium text-gray-900 dark:text-white">
-                                                INV-{bill.id.toString().padStart(4, '0')}
-                                            </div>
-                                            <div className="text-sm text-gray-500 dark:text-gray-400">
-                                                {bill.created_at}
-                                            </div>
+                            <tbody className={`divide-y ${themeConfig.theme === 'dark' ? 'divide-gray-700 bg-gray-800' : 'divide-gray-200 bg-white'}`}>
+                                {billingRecords.filter(r => r.status === 'pending').map((record) => (
+                                    <tr key={record.id}>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div className="text-sm font-medium text-gray-900 dark:text-white">{record.invoice_number}</div>
+                                            <div className="text-sm text-gray-500 dark:text-gray-400">{record.created_at}</div>
                                         </td>
-                                        <td className="px-6 py-4">
-                                            <div className="text-sm text-gray-900 dark:text-white">
-                                                {bill.requester_division}
-                                            </div>
-                                            <div className="text-sm text-gray-500 dark:text-gray-400">
-                                                to {bill.provider_division}
-                                            </div>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                            {record.requester_division}
                                         </td>
-                                        <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
-                                            ${bill.amount.toFixed(2)}
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                            ${record.amount.toFixed(2)}
                                         </td>
-                                        <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                                            {bill.billing_period}
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                            {record.due_date}
                                         </td>
-                                        <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                                            {bill.due_date}
-                                        </td>
-                                        <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                                            {bill.service_requests} requests
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                                bill.status === 'pending' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
-                                                bill.status === 'paid' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
-                                                'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                                            }`}>
-                                                {bill.status}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4 text-right text-sm font-medium">
-                                            <button className="text-primary hover:text-primary/80 mr-3">
-                                                View
+                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <button className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300">
+                                                Confirm Payment
                                             </button>
-                                            {bill.status === 'pending' && (
-                                                <button className="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300">
-                                                    Confirm Payment
-                                                </button>
-                                            )}
                                         </td>
                                     </tr>
                                 ))}
@@ -348,7 +353,215 @@ const BillingPage = () => {
                     </div>
                 </div>
             )}
+
+            {(tab === 'reports' || tab === 'payments') && (
+                <div className={`rounded-lg p-6 ${themeConfig.theme === 'dark' ? 'bg-gray-800' : 'bg-white'} shadow`}>
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+                        {tab === 'reports' ? 'Billing Reports' : 'Payment Processing'}
+                    </h2>
+                    <p className="text-gray-600 dark:text-gray-400 mb-6">
+                        {tab === 'reports' 
+                            ? 'Generate and view billing reports' 
+                            : 'Process payments for pending invoices'}
+                    </p>
+                    
+                    {tab === 'payments' ? (
+                        // Pending payments table
+                        <div className="overflow-x-auto">
+                            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                <thead className={`${themeConfig.theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'}`}>
+                                    <tr>
+                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Invoice
+                                        </th>
+                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Requester
+                                        </th>
+                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Amount
+                                        </th>
+                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Due Date
+                                        </th>
+                                        <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Actions
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody className={`divide-y ${themeConfig.theme === 'dark' ? 'divide-gray-700 bg-gray-800' : 'divide-gray-200 bg-white'}`}>
+                                    {billingRecords.filter(r => r.status === 'pending').map((record) => (
+                                        <tr key={record.id}>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div className="text-sm font-medium text-gray-900 dark:text-white">{record.invoice_number}</div>
+                                                <div className="text-sm text-gray-500 dark:text-gray-400">{new Date(record.created_at).toLocaleDateString()}</div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                                {record.requester_division}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                Rp {record.total_amount.toLocaleString()}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                                {new Date(record.due_date).toLocaleDateString()}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                <button 
+                                                    className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300"
+                                                    onClick={() => handleRecordPayment(record)}
+                                                >
+                                                    Confirm Payment
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    ) : (
+                        // Reports content
+                        <div>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                                <div className={`p-5 rounded-lg ${themeConfig.theme === 'dark' ? 'bg-gray-700' : 'bg-blue-50'} border border-blue-200 dark:border-blue-900`}>
+                                    <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+                                        Rp {billingRecords.reduce((sum, record) => sum + record.total_amount, 0).toLocaleString()}
+                                    </div>
+                                    <div className="text-sm text-gray-600 dark:text-gray-400">Total Billed</div>
+                                </div>
+                                <div className={`p-5 rounded-lg ${themeConfig.theme === 'dark' ? 'bg-gray-700' : 'bg-green-50'} border border-green-200 dark:border-green-900`}>
+                                    <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+                                        Rp {billingRecords.filter(r => r.status === 'paid').reduce((sum, record) => sum + record.total_amount, 0).toLocaleString()}
+                                    </div>
+                                    <div className="text-sm text-gray-600 dark:text-gray-400">Total Paid</div>
+                                </div>
+                                <div className={`p-5 rounded-lg ${themeConfig.theme === 'dark' ? 'bg-gray-700' : 'bg-yellow-50'} border border-yellow-200 dark:border-yellow-900`}>
+                                <p className="text-2xl font-bold">{formatToRupiah(billingRecords.filter(r => r.status === 'pending').reduce((sum, record) => sum + record.total_amount, 0))}</p>
+                                    <div className="text-sm text-gray-600 dark:text-gray-400">Pending Payment</div>
+                                </div>
+                            </div>
+                            
+                            <div className="mb-6">
+                                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Generate Report</h3>
+                                <form className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                            Start Date
+                                        </label>
+                                        <input
+                                            type="date"
+                                            className="form-input w-full"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                            End Date
+                                        </label>
+                                        <input
+                                            type="date"
+                                            className="form-input w-full"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                            Division
+                                        </label>
+                                        <select className="form-select w-full">
+                                            <option value="">All Divisions</option>
+                                            <option value="DevOps">DevOps</option>
+                                            <option value="Big Data">Big Data</option>
+                                            <option value="Produk">Produk</option>
+                                            <option value="Operasional">Operasional</option>
+                                        </select>
+                                    </div>
+                                    <div className="flex items-end">
+                                        <button
+                                            type="submit"
+                                            className="btn btn-primary w-full"
+                                        >
+                                            Generate Report
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            <div>
+                                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Recent Reports</h3>
+                                <div className={`rounded-lg overflow-hidden ${themeConfig.theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'}`}>
+                                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
+                                        <thead className={`${themeConfig.theme === 'dark' ? 'bg-gray-600' : 'bg-gray-100'}`}>
+                                            <tr>
+                                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                    Report
+                                                </th>
+                                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                    Period
+                                                </th>
+                                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                    Generated
+                                                </th>
+                                                <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                    Actions
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className={`divide-y ${themeConfig.theme === 'dark' ? 'divide-gray-600 bg-gray-700' : 'divide-gray-200 bg-gray-50'}`}>
+                                            <tr>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                                                    Monthly Billing Report - September 2025
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                                    2025-09-01 to 2025-09-30
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                                    2025-10-01
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                    <button className="text-primary hover:text-primary-hover dark:text-primary dark:hover:text-primary-hover mr-3">
+                                                        View
+                                                    </button>
+                                                    <button className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300">
+                                                        Download
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* Modals */}
+            {showCreateModal && (
+                <CreateBillingRecord 
+                    onClose={() => setShowCreateModal(false)}
+                    onRecordCreated={refreshBillingRecords}
+                />
+            )}
+
+            {showPaymentModal && selectedBillingRecord && (
+                <RecordPayment 
+                    billingRecord={selectedBillingRecord}
+                    onClose={() => {
+                        setShowPaymentModal(false);
+                        setSelectedBillingRecord(null);
+                    }}
+                    onPaymentRecorded={refreshBillingRecords}
+                />
+            )}
         </div>
+    );
+};
+
+export default BillingPage;onPaymentRecorded={refreshBillingRecords}
+                />
+            )}
+        </div>
+    );
+};
+
+export default BillingPage;     </div>
     );
 };
 

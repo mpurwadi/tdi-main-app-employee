@@ -1,5 +1,5 @@
 import AdminRolesManagement from '@/components/admin/roles-management';
-import { verifyAuth, isAdmin } from '@/lib/auth';
+import { verifyAuth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import React from 'react';
 
@@ -7,16 +7,16 @@ export const metadata = {
     title: 'Roles Management',
 };
 
-const RolesManagementPage = () => {
+const RolesManagementPage = async () => {
     try {
-        const auth = verifyAuth();
+        const auth = await verifyAuth();
         // Only superadmins can manage roles
         if (auth.role !== 'superadmin') {
             redirect('/');
         }
     } catch (error) {
         // If not authenticated, redirect to the login page.
-        redirect('/auth/boxed-signin');
+        redirect('/auth/cover-login');
     }
 
     // If authorized, render the roles management component.

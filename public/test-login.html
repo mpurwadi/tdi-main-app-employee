@@ -1,0 +1,53 @@
+<!-- test-login.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Test</title>
+</head>
+<body>
+    <h1>Login Test</h1>
+    <button onclick="testLogin()">Test Login</button>
+    <div id="result"></div>
+
+    <script>
+        async function testLogin() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>Testing login...</p>';
+            
+            try {
+                const response = await fetch('http://localhost:3500/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        email: 'purwadi@tabeldata.com', 
+                        password: 'AdminPassword123!!'
+                    }),
+                });
+
+                const data = await response.json();
+                
+                resultDiv.innerHTML += `<p>Status: ${response.status}</p>`;
+                resultDiv.innerHTML += `<p>Message: ${data.message}</p>`;
+                resultDiv.innerHTML += `<p>RedirectTo: ${data.redirectTo}</p>`;
+                
+                if (response.ok) {
+                    resultDiv.innerHTML += '<p style="color: green;">Login successful!</p>';
+                    resultDiv.innerHTML += '<p>Redirecting to dashboard...</p>';
+                    
+                    // Wait a bit then redirect
+                    setTimeout(() => {
+                        window.location.href = data.redirectTo;
+                    }, 2000);
+                } else {
+                    resultDiv.innerHTML += '<p style="color: red;">Login failed!</p>';
+                }
+                
+            } catch (error) {
+                resultDiv.innerHTML += `<p>Error: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

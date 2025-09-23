@@ -17,7 +17,7 @@ const pool = new Pool({
 
 export async function GET(request: NextRequest) {
   try {
-    const auth = verifyAuth();
+    const auth = await verifyAuth();
     if (!isAdmin(auth)) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },

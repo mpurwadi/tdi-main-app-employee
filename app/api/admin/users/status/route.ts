@@ -17,7 +17,7 @@ const pool = new Pool({
 
 export async function PUT(request: Request) {
     try {
-        const auth = verifyAuth();
+        const auth = await verifyAuth();
         if (!isAdmin(auth)) {
             return NextResponse.json({ message: 'Forbidden' }, { status: 403 });
         }

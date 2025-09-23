@@ -3,91 +3,154 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { IRootState } from '@/store';
+import { useSearchParams } from 'next/navigation';
+import Swal from 'sweetalert2';
+
+import { formatToRupiah } from '@/utils/localeUtils';
+
+const ROLES = {
+    SUPERADMIN: 'superadmin',
+    ADMIN: 'admin',
+    CATALOG_MANAGER: 'service_catalog_manager',
+    PROVIDER: 'service_provider',
+};
 
 const ServiceCatalogPage = () => {
     const themeConfig = useSelector((state: IRootState) => state.themeConfig);
+    
     const [services, setServices] = useState<any[]>([]);
+    const [categories, setCategories] = useState<any[]>([]);
+    const [currentUser, setCurrentUser] = useState<any>(null);
+    
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [categoryFilter, setCategoryFilter] = useState('all');
     const [divisionFilter, setDivisionFilter] = useState('all');
-    const [statusFilter, setStatusFilter] = useState('approved');
+    
+    const searchParams = useSearchParams();
+    const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'browse');
 
-    // Mock data for demonstration
-    const mockServices = [
-        {
-            id: 1,
-            name: 'Server Provisioning',
-            description: 'Request new servers for development, testing, or production environments',
-            category: 'Infrastructure',
-            division: 'DevOps',
-            cost_type: 'fixed',
-            cost_amount: 150.00,
-            status: 'approved',
-            created_by: 'John Doe',
-            created_at: '2025-09-15'
-        },
-        {
-            id: 2,
-            name: 'Data Analysis Report',
-            description: 'Request custom data analysis and reporting services',
-            category: 'Analytics',
-            division: 'Big Data',
-            cost_type: 'hourly',
-            cost_amount: 75.00,
-            status: 'approved',
-            created_by: 'Jane Smith',
-            created_at: '2025-09-10'
-        },
-        {
-            id: 3,
-            name: 'Application Development',
-            description: 'Request custom application development services',
-            category: 'Development',
-            division: 'Produk',
-            cost_type: 'fixed',
-            cost_amount: 500.00,
-            status: 'approved',
-            created_by: 'Mike Johnson',
-            created_at: '2025-09-05'
-        },
-        {
-            id: 4,
-            name: 'Network Security Assessment',
-            description: 'Comprehensive security assessment of network infrastructure',
-            category: 'Security',
-            division: 'DevOps',
-            cost_type: 'fixed',
-            cost_amount: 300.00,
-            status: 'pending',
-            created_by: 'Sarah Wilson',
-            created_at: '2025-09-18'
+    const fetchData = async () => {
+        try {
+            setLoading(true);
+            const [servicesRes, categoriesRes, userRes] = await Promise.all([
+                fetch('/api/itsm/service-catalog'),
+                fetch('/api/itsm/service-categories'),
+                fetch('/api/auth/me')
+            ]);
+
+            if (!servicesRes.ok || !categoriesRes.ok || !userRes.ok) {
+                const serviceError = !servicesRes.ok ? await servicesRes.text() : '';
+                const categoryError = !categoriesRes.ok ? await categoriesRes.text() : '';
+                const userError = !userRes.ok ? await userRes.text() : '';
+                console.error('Service Error:', serviceError);
+                console.error('Category Error:', categoryError);
+                console.error('User Error:', userError);
+                throw new Error('Failed to fetch initial page data.');
+            }
+
+            const servicesData = await servicesRes.json();
+            const categoriesData = await categoriesRes.json();
+            const userData = await userRes.json();
+
+            setServices(servicesData.services || []);
+            setCategories(categoriesData.categories || []);
+            setCurrentUser(userData || null);
+
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            Swal.fire('Error', 'Failed to load service catalog data.', 'error');
+        } finally {
+            setLoading(false);
         }
-    ];
+    };
 
     useEffect(() => {
-        // Simulate API call
-        setTimeout(() => {
-            setServices(mockServices);
-            setLoading(false);
-        }, 1000);
+        fetchData();
     }, []);
 
-    // Filter services based on search and filters
+    const handleTabClick = (tab: string) => {
+        setActiveTab(tab);
+        window.history.pushState({}, '', `?tab=${tab}`);
+    };
+
+    const handleAction = async (serviceId: number, action: 'approve' | 'reject' | 'delete') => {
+        const urlMap = {
+            approve: `/api/itsm/service-catalog/${serviceId}/approve`,
+            reject: `/api/itsm/service-catalog/${serviceId}/reject`,
+            delete: `/api/itsm/service-catalog/${serviceId}`
+        };
+        const methodMap = {
+            approve: 'POST',
+            reject: 'POST',
+            delete: 'DELETE'
+        };
+
+        const confirmationTitle = {
+            approve: 'Are you sure you want to approve this service?',
+            reject: 'Are you sure you want to reject this service?',
+            delete: 'Are you sure you want to delete this service?'
+        };
+
+        const result = await Swal.fire({
+            title: confirmationTitle[action],
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: `Yes, ${action} it!`,
+            cancelButtonText: 'No, cancel!'
+        });
+
+        if (result.isConfirmed) {
+            try {
+                const response = await fetch(urlMap[action], { method: methodMap[action] });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Action failed');
+                }
+                Swal.fire('Success!', `Service has been ${action}d.`, 'success');
+                fetchData(); // Refresh data
+            } catch (error: any) {
+                Swal.fire('Error', error.message, 'error');
+            }
+        }
+    };
+
+    const userRole = currentUser?.role || '';
+
+    const permissions = {
+        canAddService: userRole === ROLES.PROVIDER,
+        canApproveServices: [ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.CATALOG_MANAGER].includes(userRole),
+        canManageAllServices: [ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.CATALOG_MANAGER].includes(userRole),
+    };
+
+    const getStatusForTab = (tab: string) => {
+        if (!permissions.canApproveServices && tab === 'pending') return 'approved';
+        if (!permissions.canManageAllServices && tab === 'manage') return 'approved';
+
+        switch (tab) {
+            case 'pending': return 'pending';
+            case 'manage': return 'all';
+            default: return 'approved';
+        }
+    };
+
+    const statusFilter = getStatusForTab(activeTab);
+
     const filteredServices = services.filter(service => {
+        if (!service) return false;
         const matchesSearch = service.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                              service.description.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesCategory = categoryFilter === 'all' || service.category === categoryFilter;
+        const matchesCategory = categoryFilter === 'all' || service.category_id === parseInt(categoryFilter);
         const matchesDivision = divisionFilter === 'all' || service.division === divisionFilter;
         const matchesStatus = statusFilter === 'all' || service.status === statusFilter;
         
-        return matchesSearch && matchesCategory && matchesDivision && matchesStatus;
+        const isProviderManaging = userRole === ROLES.PROVIDER && activeTab === 'manage';
+        const matchesOwnership = !isProviderManaging || service.created_by === currentUser?.id;
+
+        return matchesSearch && matchesCategory && matchesDivision && matchesStatus && matchesOwnership;
     });
 
-    // Get unique categories and divisions for filters
-    const categories = ['all', ...Array.from(new Set(services.map(s => s.category)))];
     const divisions = ['all', ...Array.from(new Set(services.map(s => s.division)))];
-    const statuses = ['all', 'pending', 'approved', 'rejected', 'active', 'inactive'];
 
     if (loading) {
         return (
@@ -106,159 +169,208 @@ const ServiceCatalogPage = () => {
                 </p>
             </div>
 
-            {/* Filters */}
-            <div className={`mb-6 p-4 rounded-lg ${themeConfig.theme === 'dark' ? 'bg-gray-800' : 'bg-white'} shadow`}>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Search
-                        </label>
-                        <input
-                            type="text"
-                            placeholder="Search services..."
-                            className="form-input w-full"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Category
-                        </label>
-                        <select
-                            className="form-select w-full"
-                            value={categoryFilter}
-                            onChange={(e) => setCategoryFilter(e.target.value)}
-                        >
-                            {categories.map(category => (
-                                <option key={category} value={category}>
-                                    {category.charAt(0).toUpperCase() + category.slice(1)}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Division
-                        </label>
-                        <select
-                            className="form-select w-full"
-                            value={divisionFilter}
-                            onChange={(e) => setDivisionFilter(e.target.value)}
-                        >
-                            {divisions.map(division => (
-                                <option key={division} value={division}>
-                                    {division}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Status
-                        </label>
-                        <select
-                            className="form-select w-full"
-                            value={statusFilter}
-                            onChange={(e) => setStatusFilter(e.target.value)}
-                        >
-                            {statuses.map(status => (
-                                <option key={status} value={status}>
-                                    {status.charAt(0).toUpperCase() + status.slice(1)}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            {/* Services grid */}
-            {filteredServices.length === 0 ? (
-                <div className={`rounded-lg p-8 text-center ${themeConfig.theme === 'dark' ? 'bg-gray-800' : 'bg-white'} shadow`}>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-1">No services found</h3>
-                    <p className="text-gray-500 dark:text-gray-400">
-                        Try adjusting your search or filter criteria
-                    </p>
-                </div>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredServices.map((service) => (
-                        <div 
-                            key={service.id} 
-                            className={`rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1 ${
-                                themeConfig.theme === 'dark' ? 'bg-gray-800' : 'bg-white'
-                            }`}
-                        >
-                            <div className="p-5">
-                                <div className="flex justify-between items-start mb-3">
-                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                                        {service.name}
-                                    </h3>
-                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                        service.status === 'approved' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
-                                        service.status === 'pending' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
-                                        service.status === 'rejected' ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' :
-                                        'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
-                                    }`}>
-                                        {service.status}
-                                    </span>
-                                </div>
-                                <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
-                                    {service.description}
-                                </p>
-                                <div className="flex flex-wrap gap-2 mb-4">
-                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                                        {service.category}
-                                    </span>
-                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
-                                        {service.division}
-                                    </span>
-                                </div>
-                                <div className="flex justify-between items-center">
-                                    <div>
-                                        {service.cost_type === 'fixed' ? (
-                                            <span className="text-lg font-bold text-gray-900 dark:text-white">
-                                                ${service.cost_amount.toFixed(2)}
-                                            </span>
-                                        ) : (
-                                            <span className="text-lg font-bold text-gray-900 dark:text-white">
-                                                ${service.cost_amount.toFixed(2)}/hr
-                                            </span>
-                                        )}
-                                        <span className="text-sm text-gray-500 dark:text-gray-400 ml-1">
-                                            {service.cost_type}
-                                        </span>
-                                    </div>
-                                    <button
-                                        className="btn btn-primary btn-sm"
-                                        disabled={service.status !== 'approved'}
-                                    >
-                                        Request Service
-                                    </button>
-                                </div>
-                            </div>
-                            <div className={`px-5 py-3 text-xs text-gray-500 dark:text-gray-400 border-t ${
-                                themeConfig.theme === 'dark' ? 'border-gray-700' : 'border-gray-200'
-                            }`}>
-                                Created by {service.created_by} on {service.created_at}
-                            </div>
-                        </div>
-                    ))}
+            {/* Add Service Button - visible only to providers */}
+            {permissions.canAddService && (
+                <div className="mb-6 flex justify-end">
+                    <button className="btn btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                        Add New Service
+                    </button>
                 </div>
             )}
 
-            {/* Add service button for managers */}
-            <div className="mt-8 flex justify-end">
-                <button className="btn btn-primary">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
-                    Add New Service
-                </button>
+            {/* Tabs */}
+            <div className="mb-6">
+                <div className="border-b border-gray-200 dark:border-gray-700">
+                    <ul className="flex flex-wrap -mb-px">
+                        <li className="mr-2">
+                            <button
+                                className={`inline-block p-4 rounded-t-lg border-b-2 ${
+                                    activeTab === 'browse'
+                                        ? 'text-primary border-primary dark:text-primary dark:border-primary'
+                                        : 'border-transparent text-gray-500 hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+                                }`}
+                                onClick={() => handleTabClick('browse')}
+                            >
+                                Browse Services
+                            </button>
+                        </li>
+                        {permissions.canManageAllServices && (
+                            <li className="mr-2">
+                                <button
+                                    className={`inline-block p-4 rounded-t-lg border-b-2 ${
+                                        activeTab === 'manage'
+                                            ? 'text-primary border-primary dark:text-primary dark:border-primary'
+                                            : 'border-transparent text-gray-500 hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+                                    }`}
+                                    onClick={() => handleTabClick('manage')}
+                                >
+                                    Manage Services
+                                </button>
+                            </li>
+                        )}
+                        {permissions.canApproveServices && (
+                            <li className="mr-2">
+                                <button
+                                    className={`inline-block p-4 rounded-t-lg border-b-2 ${
+                                        activeTab === 'pending'
+                                            ? 'text-primary border-primary dark:text-primary dark:border-primary'
+                                            : 'border-transparent text-gray-500 hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+                                    }`}
+                                    onClick={() => handleTabClick('pending')}
+                                >
+                                    Pending Approvals
+                                </button>
+                            </li>
+                        )}
+                    </ul>
+                </div>
             </div>
+
+            {activeTab === 'browse' && (
+                <>
+                    {/* Filters */}
+                    <div className={`mb-6 p-4 rounded-lg ${themeConfig.theme === 'dark' ? 'bg-gray-800' : 'bg-white'} shadow`}>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Search</label>
+                                <input
+                                    type="text"
+                                    placeholder="Search services..."
+                                    className="form-input w-full"
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category</label>
+                                <select className="form-select w-full" value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
+                                    <option value="all">All Categories</option>
+                                    {categories.map(category => (
+                                        <option key={category.id} value={category.id}>{category.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Division</label>
+                                <select className="form-select w-full" value={divisionFilter} onChange={(e) => setDivisionFilter(e.target.value)}>
+                                    <option value="all">All Divisions</option>
+                                    {divisions.map(division => (
+                                        <option key={division} value={division}>{division}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Services grid */}
+                    {filteredServices.length === 0 ? (
+                        <div className={`rounded-lg p-8 text-center ${themeConfig.theme === 'dark' ? 'bg-gray-800' : 'bg-white'} shadow`}>
+                            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-1">No services found</h3>
+                            <p className="text-gray-500 dark:text-gray-400">Try adjusting your search or filter criteria</p>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {filteredServices.map((service) => (
+                                <div key={service.id} className={`rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1 ${themeConfig.theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
+                                    <div className="p-5">
+                                        <div className="flex justify-between items-start mb-3">
+                                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{service.name}</h3>
+                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                                service.status === 'approved' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
+                                                service.status === 'pending' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
+                                                'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
+                                            }`}>{service.status}</span>
+                                        </div>
+                                        <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">{service.description}</p>
+                                        <div className="flex justify-between items-center">
+                                            <div>
+                                                <span className="text-lg font-bold text-gray-900 dark:text-white">
+                                                    {formatToRupiah(service.cost_amount)}
+                                                </span>
+                                                <span className="text-sm text-gray-500 dark:text-gray-400 ml-1">/{service.cost_type}</span>
+                                            </div>
+                                            <button className="btn btn-primary btn-sm" disabled={service.status !== 'approved'}>
+                                                Request Service
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </>
+            )}
+
+            {activeTab === 'manage' && (
+                <div className={`rounded-lg p-6 ${themeConfig.theme === 'dark' ? 'bg-gray-800' : 'bg-white'} shadow`}>
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Manage Services</h2>
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                            {/* Table Head */}
+                            <thead className={`${themeConfig.theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'}`}>
+                                <tr>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Service</th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Division</th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                                    <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody className={`divide-y ${themeConfig.theme === 'dark' ? 'divide-gray-700 bg-gray-800' : 'divide-gray-200 bg-white'}`}>
+                                {filteredServices.map((service) => (
+                                    <tr key={service.id}>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div className="text-sm font-medium text-gray-900 dark:text-white">{service.name}</div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{service.division}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${ service.status === 'approved' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>{service.status}</span>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <button className="text-primary hover:text-primary-hover mr-3">Edit</button>
+                                            <button onClick={() => handleAction(service.id, 'delete')} className="text-red-600 hover:text-red-900">Delete</button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
+
+            {activeTab === 'pending' && (
+                <div className={`rounded-lg p-6 ${themeConfig.theme === 'dark' ? 'bg-gray-800' : 'bg-white'} shadow`}>
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Pending Approvals</h2>
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                            {/* Table Head */}
+                            <thead className={`${themeConfig.theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'}`}>
+                                <tr>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Service</th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Division</th>
+                                    <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody className={`divide-y ${themeConfig.theme === 'dark' ? 'divide-gray-700 bg-gray-800' : 'divide-gray-200 bg-white'}`}>
+                                {filteredServices.map((service) => (
+                                    <tr key={service.id}>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div className="text-sm font-medium text-gray-900 dark:text-white">{service.name}</div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{service.division}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <button onClick={() => handleAction(service.id, 'approve')} className="text-green-600 hover:text-green-900 mr-3">Approve</button>
+                                            <button onClick={() => handleAction(service.id, 'reject')} className="text-red-600 hover:text-red-900">Reject</button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

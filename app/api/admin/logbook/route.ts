@@ -20,7 +20,7 @@ const pool = new Pool({
 // Get all pending logbook entries for admin approval
 export async function GET(request: Request) {
     try {
-        const auth = verifyAuth();
+        const auth = await verifyAuth();
         if (!isAdmin(auth)) {
             return NextResponse.json({ message: 'Forbidden' }, { status: 403 });
         }
@@ -51,7 +51,7 @@ export async function GET(request: Request) {
 // Update logbook entry status (approve/reject)
 export async function PUT(request: Request) {
     try {
-        const auth = verifyAuth();
+        const auth = await verifyAuth();
         if (!isAdmin(auth)) {
             return NextResponse.json({ message: 'Forbidden' }, { status: 403 });
         }

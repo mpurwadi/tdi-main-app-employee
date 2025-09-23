@@ -1,0 +1,20 @@
+/* ITSM Content Styles */
+
+.itsm-content-container {
+  transition: all 0.3s ease-in-out;
+}
+
+.itsm-module-card {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.itsm-module-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.itsm-loading-spinner {
+  width: 2rem;
+  height: 2rem;
+  border-width: 0.25rem;
+}

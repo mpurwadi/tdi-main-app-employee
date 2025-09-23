@@ -60,6 +60,7 @@ export async function POST(request: Request) {
                 message: 'Login successful',
                 token,
                 role: user.role,
+                redirectTo: user.role === 'admin' || user.role === 'superadmin' ? '/admin/dashboard' : '/user-dashboard'
             },
             { status: 200 }
         );

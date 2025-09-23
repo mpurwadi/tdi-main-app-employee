@@ -45,7 +45,26 @@ export const getSafeTranslation = (t: Function | undefined): Function => {
   return (key: string) => key;
 };
 
+/**
+ * Formats a number into Indonesian Rupiah (IDR) currency format.
+ * @param amount - The number to format.
+ * @returns A string representing the amount in IDR format (e.g., "Rp 50.000").
+ */
+export const formatToRupiah = (amount: number | string): string => {
+  const number = typeof amount === 'string' ? parseFloat(amount) : amount;
+  if (isNaN(number)) {
+    return 'Rp 0';
+  }
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(number);
+};
+
 export default {
   getSafeLocale,
-  getSafeTranslation
+  getSafeTranslation,
+  formatToRupiah,
 };
