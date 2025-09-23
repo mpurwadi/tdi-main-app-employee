@@ -76,13 +76,15 @@ export async function GET(request: NextRequest) {
         const limitOffsetParamIndex = filterParams.length + 1;
 
         // Fetch paginated users
+        const limitParamIndex = filterParams.length + 1;
+        const offsetParamIndex = filterParams.length + 2;
         const userQuery = `
             SELECT u.id, u.full_name, u.email, u.student_id, u.campus, u.status, u.role, u.roles, u.created_at, u.updated_at, u.division_id, d.name as division_name
             FROM users u
             LEFT JOIN divisions d ON u.division_id = d.id
             ${whereClause}
             ORDER BY u.full_name
-            LIMIT ${filterParams.length + 1} OFFSET ${filterParams.length + 2}
+            LIMIT ${limitParamIndex} OFFSET ${offsetParamIndex}
         `;
         const userQueryParams = [...filterParams, limit, offset];
         const usersResult = await pool.query(userQuery, userQueryParams);
