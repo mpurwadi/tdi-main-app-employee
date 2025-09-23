@@ -110,7 +110,7 @@ const LandingPage = () => {
         // Fetch news and announcements from API
         const fetchNewsAndAnnouncements = async () => {
             try {
-                const response = await fetch('/api/public/news');
+                const response = await fetch('/api/public/news', { credentials: 'include' });
                 const data = await response.json();
                 
                 if (data.success) {

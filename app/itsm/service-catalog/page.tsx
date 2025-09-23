@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import { IRootState } from '@/store';
 import { useSearchParams } from 'next/navigation';
 import Swal from 'sweetalert2';
+import Link from 'next/link';
 
 import { formatToRupiah } from '@/utils/localeUtils';
 
@@ -34,9 +35,9 @@ const ServiceCatalogPage = () => {
         try {
             setLoading(true);
             const [servicesRes, categoriesRes, userRes] = await Promise.all([
-                fetch('/api/itsm/service-catalog'),
-                fetch('/api/itsm/service-categories'),
-                fetch('/api/auth/me')
+                fetch('/api/itsm/service-catalog?status=approved', { credentials: 'include' }),
+                fetch('/api/itsm/service-categories', { credentials: 'include' }),
+                fetch('/api/auth/me', { credentials: 'include' })
             ]);
 
             if (!servicesRes.ok || !categoriesRes.ok || !userRes.ok) {
@@ -50,10 +51,11 @@ const ServiceCatalogPage = () => {
             }
 
             const servicesData = await servicesRes.json();
+
             const categoriesData = await categoriesRes.json();
             const userData = await userRes.json();
 
-            setServices(servicesData.services || []);
+            setServices(servicesData.data || []);
             setCategories(categoriesData.categories || []);
             setCurrentUser(userData || null);
 
@@ -102,7 +104,7 @@ const ServiceCatalogPage = () => {
 
         if (result.isConfirmed) {
             try {
-                const response = await fetch(urlMap[action], { method: methodMap[action] });
+                const response = await fetch(urlMap[action], { method: methodMap[action], credentials: 'include' });
                 if (!response.ok) {
                     const errorData = await response.json();
                     throw new Error(errorData.message || 'Action failed');
@@ -118,13 +120,16 @@ const ServiceCatalogPage = () => {
     const userRole = currentUser?.role || '';
 
     const permissions = {
-        canAddService: userRole === ROLES.PROVIDER,
-        canApproveServices: [ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.CATALOG_MANAGER].includes(userRole),
-        canManageAllServices: [ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.CATALOG_MANAGER].includes(userRole),
+        canAddService: [ROLES.PROVIDER, 'itsm_division_admin', 'itsm_manager', ROLES.ADMIN, ROLES.SUPERADMIN].includes(userRole),
+        canApproveServices: [ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.CATALOG_MANAGER, 'itsm_manager'].includes(userRole), // itsm_manager can also approve
+        canManageAllServices: [ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.CATALOG_MANAGER, 'itsm_manager', 'itsm_division_admin'].includes(userRole), // itsm_manager and itsm_division_admin can manage
     };
 
     const getStatusForTab = (tab: string) => {
-        if (!permissions.canApproveServices && tab === 'pending') return 'approved';
+        // If user cannot approve services, and they are on the pending tab,
+        // we still want to show them pending services, but they won't have action buttons.
+        // The previous logic was hiding them entirely.
+        // If they cannot manage services, and they are on the manage tab, show approved services.
         if (!permissions.canManageAllServices && tab === 'manage') return 'approved';
 
         switch (tab) {
@@ -137,7 +142,9 @@ const ServiceCatalogPage = () => {
     const statusFilter = getStatusForTab(activeTab);
 
     const filteredServices = services.filter(service => {
-        if (!service) return false;
+        if (!service) {
+            return false;
+        }
         const matchesSearch = service.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                              service.description.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesCategory = categoryFilter === 'all' || service.category_id === parseInt(categoryFilter);
@@ -149,6 +156,26 @@ const ServiceCatalogPage = () => {
 
         return matchesSearch && matchesCategory && matchesDivision && matchesStatus && matchesOwnership;
     });
+
+    useEffect(() => {
+        console.log('--- Filtering Debug ---');
+        console.log('Services state:', services);
+        console.log('Active Tab:', activeTab);
+        console.log('Status Filter:', statusFilter);
+        console.log('Filtered Services (in useEffect):', filteredServices);
+        services.forEach(service => {
+            const matchesSearch = service.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                                 service.description.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchesCategory = categoryFilter === 'all' || service.category_id === parseInt(categoryFilter);
+            const matchesDivision = divisionFilter === 'all' || service.division === divisionFilter;
+            const matchesStatus = statusFilter === 'all' || service.status === statusFilter;
+            const isProviderManaging = userRole === ROLES.PROVIDER && activeTab === 'manage';
+            const matchesOwnership = !isProviderManaging || service.created_by === currentUser?.id;
+            const finalResult = matchesSearch && matchesCategory && matchesDivision && matchesStatus && matchesOwnership;
+            console.log(`  Service ID: ${service.id}, Name: ${service.name}, Status: ${service.status}, matchesStatus: ${matchesStatus}, matchesOwnership: ${matchesOwnership}, Final: ${finalResult}`);
+        });
+        console.log('-----------------------');
+    }, [services, activeTab, statusFilter, searchTerm, categoryFilter, divisionFilter, userRole, currentUser]);
 
     const divisions = ['all', ...Array.from(new Set(services.map(s => s.division)))];
 
@@ -172,12 +199,12 @@ const ServiceCatalogPage = () => {
             {/* Add Service Button - visible only to providers */}
             {permissions.canAddService && (
                 <div className="mb-6 flex justify-end">
-                    <button className="btn btn-primary">
+                    <Link href="/itsm/service-catalog/create" className="btn btn-primary">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                         </svg>
                         Add New Service
-                    </button>
+                    </Link>
                 </div>
             )}
 
@@ -292,9 +319,9 @@ const ServiceCatalogPage = () => {
                                                 </span>
                                                 <span className="text-sm text-gray-500 dark:text-gray-400 ml-1">/{service.cost_type}</span>
                                             </div>
-                                            <button className="btn btn-primary btn-sm" disabled={service.status !== 'approved'}>
+                                            <Link href={`/itsm/service-requests?tab=create&service_id=${service.id}&service_name=${service.name}`} className={`btn btn-primary btn-sm ${service.status !== 'approved' ? 'disabled' : ''}`}>
                                                 Request Service
-                                            </button>
+                                            </Link>
                                         </div>
                                     </div>
                                 </div>
@@ -329,7 +356,12 @@ const ServiceCatalogPage = () => {
                                             <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${ service.status === 'approved' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>{service.status}</span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <button className="text-primary hover:text-primary-hover mr-3">Edit</button>
+                                            <Link href={`/itsm/service-catalog/details/${service.id}`} className="text-primary hover:text-primary-hover dark:text-primary dark:hover:text-primary-hover mr-3">
+                                                View
+                                            </Link>
+                                            <Link href={`/itsm/service-catalog/edit/${service.id}`} className="text-primary hover:text-primary-hover dark:text-primary dark:hover:text-primary-hover mr-3">
+                                                Edit
+                                            </Link>
                                             <button onClick={() => handleAction(service.id, 'delete')} className="text-red-600 hover:text-red-900">Delete</button>
                                         </td>
                                     </tr>

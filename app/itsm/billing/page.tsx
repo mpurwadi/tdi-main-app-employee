@@ -6,6 +6,7 @@ import { IRootState } from '@/store';
 import { useSearchParams } from 'next/navigation';
 import CreateBillingRecord from '@/components/itsm/billing/CreateBillingRecord';
 import RecordPayment from '@/components/itsm/billing/RecordPayment';
+import { formatToRupiah } from '@/utils/localeUtils';
 
 const BillingPage = () => {
     const themeConfig = useSelector((state: IRootState) => state.themeConfig);
@@ -31,7 +32,7 @@ const BillingPage = () => {
                 setLoading(true);
                 
                 // Fetch user authentication data
-                const authResponse = await fetch('/api/auth/me');
+                const authResponse = await fetch('/api/auth/me', { credentials: 'include' });
                 const authData = await authResponse.json();
                 
                 if (!authResponse.ok || !authData.success) {
@@ -43,7 +44,7 @@ const BillingPage = () => {
                 setUserDivision(authData.division);
                 
                 // Fetch billing records from API
-                const billingResponse = await fetch('/api/itsm/billing');
+                const billingResponse = await fetch('/api/itsm/billing', { credentials: 'include' });
                 const billingData = await billingResponse.json();
                 
                 if (!billingResponse.ok || !billingData.success) {
@@ -65,7 +66,7 @@ const BillingPage = () => {
     // Refresh billing records
     const refreshBillingRecords = async () => {
         try {
-            const response = await fetch('/api/itsm/billing');
+            const response = await fetch('/api/itsm/billing', { credentials: 'include' });
             const data = await response.json();
             
             if (data.success) {
@@ -256,7 +257,7 @@ const BillingPage = () => {
                                                 {record.provider_division}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                                ${record.amount.toFixed(2)}
+                                                ${(record.amount || 0).toFixed(2)}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                                 {record.billing_period}
@@ -551,17 +552,6 @@ const BillingPage = () => {
                 />
             )}
         </div>
-    );
-};
-
-export default BillingPage;onPaymentRecorded={refreshBillingRecords}
-                />
-            )}
-        </div>
-    );
-};
-
-export default BillingPage;     </div>
     );
 };
 

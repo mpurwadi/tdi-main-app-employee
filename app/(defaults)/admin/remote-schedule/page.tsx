@@ -27,7 +27,7 @@ const RemoteSchedulePage = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch('/api/auth/me');
+        const response = await fetch('/api/auth/me', { credentials: 'include' });
         const data = await response.json();
         
         if (!response.ok || !data.isAdmin) {
@@ -50,7 +50,7 @@ const RemoteSchedulePage = () => {
       if (isLoading) return;
       
       try {
-        const response = await fetch('/api/admin/remote-schedule/interns');
+        const response = await fetch('/api/admin/remote-schedule/interns', { credentials: 'include' });
         const result = await response.json();
         
         if (result.success) {
@@ -73,7 +73,7 @@ const RemoteSchedulePage = () => {
       
       try {
         setHistoryLoading(true);
-        const response = await fetch('/api/admin/remote-schedule');
+        const response = await fetch('/api/admin/remote-schedule', { credentials: 'include' });
         const result = await response.json();
         
         if (result.success) {
@@ -115,6 +115,7 @@ const RemoteSchedulePage = () => {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({
           startDate,
           endDate,
@@ -149,6 +150,7 @@ const RemoteSchedulePage = () => {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify(generatedSchedule),
       });
 
@@ -157,7 +159,7 @@ const RemoteSchedulePage = () => {
       if (result.success) {
         alert('Schedule saved successfully!');
         // Refresh history
-        const historyResponse = await fetch('/api/admin/remote-schedule');
+        const historyResponse = await fetch('/api/admin/remote-schedule', { credentials: 'include' });
         const historyResult = await historyResponse.json();
         if (historyResult.success) {
           setScheduleHistory(historyResult.data);
@@ -192,6 +194,7 @@ const RemoteSchedulePage = () => {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({
           internId: editingDate.internId,
           oldDate: editingDate.date,
@@ -203,7 +206,7 @@ const RemoteSchedulePage = () => {
 
       if (result.success) {
         // Refresh history
-        const historyResponse = await fetch('/api/admin/remote-schedule');
+        const historyResponse = await fetch('/api/admin/remote-schedule', { credentials: 'include' });
         const historyResult = await historyResponse.json();
         if (historyResult.success) {
           setScheduleHistory(historyResult.data);

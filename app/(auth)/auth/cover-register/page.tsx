@@ -54,14 +54,8 @@ const SimpleCoverRegister = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    fullName: formData.fullName,
-                    email: formData.email,
-                    password: formData.password,
-                    studentId: formData.studentId,
-                    campus: formData.campus,
-                    division: formData.division,
-                }),
+                credentials: 'include', // Include credentials (cookies) in the request
+                body: JSON.stringify(formData),
             });
 
             const data = await response.json();

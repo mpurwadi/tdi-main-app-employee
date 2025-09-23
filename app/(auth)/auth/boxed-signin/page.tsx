@@ -26,24 +26,36 @@ const SimpleBoxedSignIn = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include', // Include credentials (cookies) in the request
                 body: JSON.stringify({ email, password }),
             });
 
             const data = await response.json();
+            console.log('Login response data:', data);
 
             if (!response.ok) {
                 throw new Error(data.message || 'Login failed');
             }
 
             // On successful login, the API sets a cookie.
-            // Redirect based on user role.
-            const userRole = data.role;
-            if (userRole === 'superadmin' || userRole === 'admin') {
-                router.push('/admin/approval'); // Redirect to admin approval page
-            } else if (userRole === 'user') {
-                router.push('/user-dashboard'); // Redirect to the new user dashboard
+            // Redirect based on redirectTo value from API response.
+            if (data.redirectTo) {
+                console.log('Redirecting to:', data.redirectTo);
+                router.push(data.redirectTo);
             } else {
-                router.push('/'); // Fallback to home if role is unknown
+                // Fallback to role-based redirect if redirectTo is not provided
+                const userRole = data.role;
+                console.log('User role:', userRole);
+                if (userRole === 'superadmin' || userRole === 'admin') {
+                    console.log('Redirecting to admin approval page');
+                    router.push('/admin/approval'); // Redirect to admin approval page
+                } else if (userRole === 'user') {
+                    console.log('Redirecting to user dashboard');
+                    router.push('/user-dashboard'); // Redirect to the new user dashboard
+                } else {
+                    console.log('Redirecting to home page');
+                    router.push('/'); // Fallback to home if role is unknown
+                }
             }
         } catch (err: any) {
             setError(err.message);
