@@ -18,31 +18,47 @@ const ComponentsAuthRegisterForm = () => {
         studentId: '',
         campus: '',
         division: '', // This will now be the actual division
-        role: '', // This is the new role field
+        jobRoleId: '', // This is the new job role field
     });
     const [showPassword, setShowPassword] = useState(false);
     const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [divisions, setDivisions] = useState<{id: number, name: string}[]>([]);
+    const [jobRoles, setJobRoles] = useState<{id: number, name: string}[]>([]);
     const [loadingDivisions, setLoadingDivisions] = useState(true);
+    const [loadingJobRoles, setLoadingJobRoles] = useState(true);
 
-    // Fetch divisions on component mount
+    // Fetch divisions and job roles on component mount
     useEffect(() => {
-        const fetchDivisions = async () => {
+        const fetchData = async () => {
             try {
-                const response = await fetch('/api/admin/divisions', { credentials: 'include' });
-                if (response.ok) {
-                    const data = await response.json();
-                    setDivisions(data);
+                // Fetch divisions
+                const divisionsResponse = await fetch('/api/admin/divisions', { credentials: 'include' });
+                if (divisionsResponse.ok) {
+                    const divisionsData = await divisionsResponse.json();
+                    setDivisions(divisionsData);
                 }
             } catch (err) {
                 console.error('Error fetching divisions:', err);
             } finally {
                 setLoadingDivisions(false);
             }
+
+            try {
+                // Fetch job roles
+                const jobRolesResponse = await fetch('/api/job-roles', { credentials: 'include' });
+                if (jobRolesResponse.ok) {
+                    const jobRolesData = await jobRolesResponse.json();
+                    setJobRoles(jobRolesData);
+                }
+            } catch (err) {
+                console.error('Error fetching job roles:', err);
+            } finally {
+                setLoadingJobRoles(false);
+            }
         };
 
-        fetchDivisions();
+        fetchData();
     }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -79,7 +95,7 @@ const ComponentsAuthRegisterForm = () => {
                     studentId: formData.studentId,
                     campus: formData.campus,
                     division: formData.division,
-                    role: formData.role,
+                    jobRoleId: formData.jobRoleId,
                 }),
             });
 
@@ -96,18 +112,6 @@ const ComponentsAuthRegisterForm = () => {
             setError(err.message);
         }
     };
-
-    // Available roles for the dropdown
-    const availableRoles = [
-        'user',
-        'service_requester',
-        'service_provider',
-        'approver',
-        'billing_coordinator',
-        'change_requester',
-        'cab_member',
-        'implementer'
-    ];
 
     return (
         <form className="space-y-5 dark:text-white" onSubmit={handleSubmit}>
@@ -219,19 +223,20 @@ const ComponentsAuthRegisterForm = () => {
                 </select>
             </div>
             <div>
-                <label htmlFor="role">Role</label>
+                <label htmlFor="jobRoleId">Job Role</label>
                 <select 
-                    id="role" 
-                    name="role" 
+                    id="jobRoleId" 
+                    name="jobRoleId" 
                     className="form-select text-white-dark" 
-                    value={formData.role} 
+                    value={formData.jobRoleId} 
                     onChange={handleChange} 
                     required
+                    disabled={loadingJobRoles}
                 >
-                    <option value="">Select Role</option>
-                    {availableRoles.map((role) => (
-                        <option key={role} value={role}>
-                            {role.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                    <option value="">{loadingJobRoles ? 'Loading job roles...' : 'Select Job Role'}</option>
+                    {jobRoles.map((role) => (
+                        <option key={role.id} value={role.id}>
+                            {role.name}
                         </option>
                     ))}
                 </select>

@@ -19,32 +19,48 @@ const SimpleCoverRegister = () => {
         studentId: '',
         campus: '',
         division: '', // This will now be the actual division ID
-        role: '', // This is the new role field
+        jobRoleId: '', // This is the new job role field
     });
     const [showPassword, setShowPassword] = useState(false);
     const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [divisions, setDivisions] = useState<{id: number, name: string}[]>([]);
+    const [jobRoles, setJobRoles] = useState<{id: number, name: string}[]>([]);
     const [loadingDivisions, setLoadingDivisions] = useState(true);
+    const [loadingJobRoles, setLoadingJobRoles] = useState(true);
 
-    // Fetch divisions on component mount
+    // Fetch divisions and job roles on component mount
     useEffect(() => {
-        const fetchDivisions = async () => {
+        const fetchData = async () => {
             try {
-                const response = await fetch('/api/admin/divisions', { credentials: 'include' });
-                if (response.ok) {
-                    const data = await response.json();
-                    setDivisions(data);
+                // Fetch divisions
+                const divisionsResponse = await fetch('/api/admin/divisions', { credentials: 'include' });
+                if (divisionsResponse.ok) {
+                    const divisionsData = await divisionsResponse.json();
+                    setDivisions(divisionsData);
                 }
             } catch (err) {
                 console.error('Error fetching divisions:', err);
             } finally {
                 setLoadingDivisions(false);
             }
+
+            try {
+                // Fetch job roles
+                const jobRolesResponse = await fetch('/api/job-roles', { credentials: 'include' });
+                if (jobRolesResponse.ok) {
+                    const jobRolesData = await jobRolesResponse.json();
+                    setJobRoles(jobRolesData);
+                }
+            } catch (err) {
+                console.error('Error fetching job roles:', err);
+            } finally {
+                setLoadingJobRoles(false);
+            }
         };
 
-        fetchDivisions();
+        fetchData();
     }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -95,18 +111,6 @@ const SimpleCoverRegister = () => {
             setIsLoading(false);
         }
     };
-
-    // Available roles for the dropdown
-    const availableRoles = [
-        'user',
-        'service_requester',
-        'service_provider',
-        'approver',
-        'billing_coordinator',
-        'change_requester',
-        'cab_member',
-        'implementer'
-    ];
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
@@ -289,21 +293,22 @@ const SimpleCoverRegister = () => {
                         </div>
 
                         <div className="mb-6">
-                            <label htmlFor="role" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Role
+                            <label htmlFor="jobRoleId" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                Job Role
                             </label>
                             <select
-                                id="role"
-                                name="role"
+                                id="jobRoleId"
+                                name="jobRoleId"
                                 className="w-full py-2 px-3 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                                value={formData.role}
+                                value={formData.jobRoleId}
                                 onChange={handleChange}
                                 required
+                                disabled={loadingJobRoles}
                             >
-                                <option value="">Select Role</option>
-                                {availableRoles.map((role) => (
-                                    <option key={role} value={role}>
-                                        {role.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                                <option value="">{loadingJobRoles ? 'Loading job roles...' : 'Select Job Role'}</option>
+                                {jobRoles.map((role) => (
+                                    <option key={role.id} value={role.id}>
+                                        {role.name}
                                     </option>
                                 ))}
                             </select>

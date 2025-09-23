@@ -6,27 +6,11 @@ import { db } from '@/lib/db';
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { fullName, email, password, studentId, campus, division, role } = body;
+        const { fullName, email, password, studentId, campus, division, jobRoleId } = body;
 
         // Basic validation
-        if (!fullName || !email || !password || !studentId || !campus || !division || !role) {
+        if (!fullName || !email || !password || !studentId || !campus || !division || !jobRoleId) {
             return NextResponse.json({ message: 'All fields are required' }, { status: 400 });
-        }
-
-        // Validate role
-        const validRoles = [
-            'user',
-            'service_requester',
-            'service_provider',
-            'approver',
-            'billing_coordinator',
-            'change_requester',
-            'cab_member',
-            'implementer'
-        ];
-        
-        if (!validRoles.includes(role)) {
-            return NextResponse.json({ message: 'Invalid role selected' }, { status: 400 });
         }
 
         // Check if user already exists
@@ -39,13 +23,13 @@ export async function POST(request: Request) {
         const saltRounds = 10;
         const passwordHash = await bcrypt.hash(password, saltRounds);
 
-        // Insert new user
+        // Insert new user with job_role_id
         const query = `
-            INSERT INTO users (full_name, email, password_hash, student_id, campus, division_id, status, role)
-            VALUES ($1, $2, $3, $4, $5, $6, 'pending', $7)
+            INSERT INTO users (full_name, email, password_hash, student_id, campus, division_id, job_role_id, status, role)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, 'pending', 'user')
             RETURNING id;
         `;
-        const values = [fullName, email, passwordHash, studentId, campus, division, role];
+        const values = [fullName, email, passwordHash, studentId, campus, division, jobRoleId];
 
         const newUser = await db.query(query, values);
 
