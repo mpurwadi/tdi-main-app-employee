@@ -58,7 +58,8 @@ export async function POST(request: Request) {
         const response = NextResponse.json(
             {
                 message: 'Login successful',
-                token,
+                // Note: We don't send the token in the response body for security
+                // The token is only sent in the cookie
                 role: user.role,
                 redirectTo: user.role === 'admin' || user.role === 'superadmin' ? '/admin/dashboard' : '/user-dashboard'
             },
@@ -68,11 +69,14 @@ export async function POST(request: Request) {
         // Set token in an HTTP-only cookie for security
         response.cookies.set('token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV !== 'development',
-            sameSite: 'strict',
+            secure: process.env.NODE_ENV === 'production', // Only secure in production
+            sameSite: 'lax', // Changed from 'strict' to 'lax' for better compatibility
             path: '/',
             maxAge: 60 * 60, // 1 hour
         });
+
+        // Log for debugging
+        console.log('Setting token cookie:', token);
 
         return response;
 

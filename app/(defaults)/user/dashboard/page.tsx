@@ -1,4 +1,4 @@
-import { verifyAuth } from '@/lib/auth';
+import { verifyAuthServer } from '@/lib/auth';
 import { notFound, redirect } from 'next/navigation';
 import AttendanceWidget from '@/components/user-dashboard/attendance-widget';
 import Link from 'next/link';
@@ -7,7 +7,7 @@ import ActivityOverviewClient from '@/components/user-dashboard/activity-overvie
 export default async function UserDashboardPage() {
     let authPayload;
     try {
-        authPayload = await verifyAuth();
+        authPayload = await verifyAuthServer();
         // Check if user has the correct role
         if (authPayload.role !== 'user') {
             // Redirect to appropriate dashboard based on role
@@ -19,7 +19,7 @@ export default async function UserDashboardPage() {
         }
     } catch (error) {
         // If authentication fails, redirect to login
-        redirect('/auth/cover-login');
+        redirect('/auth/boxed-signin');
     }
 
     return (

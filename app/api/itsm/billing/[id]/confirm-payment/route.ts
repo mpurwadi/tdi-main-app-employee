@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAuth } from '@/lib/auth';
+import { verifyAuthServer } from "@/lib/auth";
 import { 
   billingService
 } from '@/services/enhancedItsmService';
@@ -7,7 +7,7 @@ import {
 // POST /api/itsm/billing/[id]/confirm-payment - Confirm payment for a billing record
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const auth = await verifyAuth();
+    const auth = await verifyAuthServer();
     
     const billingId = parseInt(params.id);
     if (isNaN(billingId)) {

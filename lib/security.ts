@@ -67,7 +67,7 @@ function normalizeRequest(method: string, pathname: string): string {
 export async function withSecurity(handler: (request: NextRequest, context?: any) => Promise<NextResponse>, request: NextRequest, context?: any) {
   try {
     // Verify authentication
-    const auth = await verifyAuth();
+    const auth = await verifyAuth(request);
     
     // Normalize request for access control
     const normalizedRequest = normalizeRequest(request.method, request.nextUrl.pathname);
@@ -79,13 +79,8 @@ export async function withSecurity(handler: (request: NextRequest, context?: any
       // If no specific rule, allow admins
       if (auth.role === 'admin' || auth.role === 'superadmin') {
         // Inject auth data into request
-        const newRequest = new NextRequest(request, {
-          headers: {
-            ...Object.fromEntries(request.headers),
-            'x-user-auth': JSON.stringify(auth)
-          }
-        });
-        return handler(newRequest, context);
+        request.headers.set('x-user-auth', JSON.stringify(auth));
+        return handler(request, context);
       }
       
       return NextResponse.json(
@@ -100,14 +95,8 @@ export async function withSecurity(handler: (request: NextRequest, context?: any
     // Check admin access
     if (rule.allowAdmin && (auth.role === 'admin' || auth.role === 'superadmin')) {
       // Inject auth data into request
-      const newRequest = new NextRequest(request, {
-        headers: {
-          ...Object.fromEntries(request.headers),
-          'x-user-auth': JSON.stringify(auth)
-        }
-      });
-      return handler(newRequest, context);
-    }
+              request.headers.set('x-user-auth', JSON.stringify(auth));
+              return handler(request, context);    }
     
     // Check role-based access
     if (rule.roles && hasAnyRole(auth, rule.roles)) {

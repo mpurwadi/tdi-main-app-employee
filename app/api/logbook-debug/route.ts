@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { verifyAuth } from '@/lib/auth';
+import { verifyAuthServer } from "@/lib/auth";
 import { db } from '@/lib/db';
 
 // Force dynamic rendering for this route to avoid static generation issues with cookies
@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export async function GET(request: Request) {
     try {
         // NOTE: This is a temporary debug endpoint - remove in production
-        const auth = verifyAuth();
+        const auth = await verifyAuthServer();
         
         const { searchParams } = new URL(request.url);
         const startDate = searchParams.get('startDate');

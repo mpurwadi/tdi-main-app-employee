@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { verifyAuth } from '@/lib/auth';
+import { verifyAuthServer } from "@/lib/auth";
 import { db } from '@/lib/db';
 
 // Handle CORS preflight requests
@@ -18,7 +18,7 @@ export async function OPTIONS() {
 // Get todo list items for a user
 export async function GET(request: Request) {
     try {
-        const auth = verifyAuth();
+        const auth = await verifyAuthServer();
         
         const { searchParams } = new URL(request.url);
         const status = searchParams.get('status');
@@ -71,7 +71,7 @@ export async function GET(request: Request) {
 // Create a new todo list item
 export async function POST(request: Request) {
     try {
-        const auth = verifyAuth();
+        const auth = await verifyAuthServer();
         
         const body = await request.json();
         const { title, description, descriptionText, tag, priority, status, date, path } = body;
@@ -100,7 +100,7 @@ export async function POST(request: Request) {
 // Update a todo list item
 export async function PUT(request: Request) {
     try {
-        const auth = verifyAuth();
+        const auth = await verifyAuthServer();
         
         const body = await request.json();
         const { id, title, description, descriptionText, tag, priority, status, date, path } = body;
@@ -143,7 +143,7 @@ export async function PUT(request: Request) {
 // Delete a todo list item
 export async function DELETE(request: Request) {
     try {
-        const auth = verifyAuth();
+        const auth = await verifyAuthServer();
         
         const { searchParams } = new URL(request.url);
         const id = searchParams.get('id');

@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAuth, isAdmin } from '@/lib/auth';
+import { isAdmin } from "@/lib/auth";
 import { userManagementService } from '@/services/enhancedItsmService';
 import { db } from '@/lib/db';
 
 // GET /api/itsm/users/[id] - Get user by ID
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const auth = verifyAuth();
+    const auth = await verifyAuthServer();
     
     // Only admins can access this endpoint
     if (!isAdmin(auth) && auth.role !== 'superadmin') {
@@ -69,7 +69,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 // PUT /api/itsm/users/[id] - Update user roles and permissions
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const auth = verifyAuth();
+    const auth = await verifyAuthServer();
     
     // Only admins can access this endpoint
     if (!isAdmin(auth) && auth.role !== 'superadmin') {

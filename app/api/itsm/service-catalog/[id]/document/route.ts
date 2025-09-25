@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAuth } from '@/lib/auth';
+import { verifyAuthServer } from "@/lib/auth";
 import { serviceCatalogService } from '@/services/enhancedItsmService';
 import { writeFile } from 'fs/promises';
 import { join } from 'path';
@@ -7,7 +7,7 @@ import { join } from 'path';
 // POST /api/itsm/service-catalog/[id]/document - Upload service document
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const auth = verifyAuth();
+    const auth = await verifyAuthServer();
     
     const serviceId = parseInt(params.id);
     if (isNaN(serviceId) || serviceId <= 0) {
@@ -109,7 +109,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
 // DELETE /api/itsm/service-catalog/[id]/document - Delete service document
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const auth = verifyAuth();
+    const auth = await verifyAuthServer();
     
     const serviceId = parseInt(params.id);
     if (isNaN(serviceId) || serviceId <= 0) {

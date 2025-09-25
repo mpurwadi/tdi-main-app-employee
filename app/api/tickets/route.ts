@@ -1,12 +1,12 @@
 export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
-import { verifyAuth, isAdmin } from '@/lib/auth';
+import { isAdmin } from "@/lib/auth";
 import { db } from '@/lib/db';
 
 // GET all tickets (admin) or user's tickets
 export async function GET(request: Request) {
     try {
-        const auth = verifyAuth();
+        const auth = await verifyAuthServer();
         const { searchParams } = new URL(request.url);
         const page = parseInt(searchParams.get('page') || '1');
         const limit = parseInt(searchParams.get('limit') || '10');
@@ -106,7 +106,7 @@ export async function GET(request: Request) {
 // CREATE a new ticket
 export async function POST(request: Request) {
     try {
-        const auth = verifyAuth();
+        const auth = await verifyAuthServer();
         const body = await request.json();
         const { title, description, category, priority } = body;
         

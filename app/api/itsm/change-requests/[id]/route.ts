@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAuth } from '@/lib/auth';
+import { verifyAuthServer } from "@/lib/auth";
 import { 
   changeRequestService,
   changeRequestActivityService
@@ -8,7 +8,7 @@ import {
 // GET /api/itsm/change-requests/[id] - Get change request by ID
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const auth = verifyAuth();
+    const auth = await verifyAuthServer();
     
     const requestId = parseInt(params.id);
     if (isNaN(requestId)) {
@@ -52,7 +52,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 // PUT /api/itsm/change-requests/[id] - Update change request
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const auth = verifyAuth();
+    const auth = await verifyAuthServer();
     
     const requestId = parseInt(params.id);
     if (isNaN(requestId)) {
@@ -125,7 +125,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 // DELETE /api/itsm/change-requests/[id] - Delete change request
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const auth = verifyAuth();
+    const auth = await verifyAuthServer();
     
     const requestId = parseInt(params.id);
     if (isNaN(requestId)) {

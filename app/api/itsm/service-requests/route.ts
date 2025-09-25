@@ -8,7 +8,7 @@ import {
 // GET /api/itsm/service-requests - Get all service requests
 export async function GET(request: NextRequest) {
   try {
-    const auth = verifyAuth();
+    const auth = await verifyAuth(request);
     
     // Parse query parameters
     const { searchParams } = new URL(request.url);
@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
 // POST /api/itsm/service-requests - Create a new service request
 export async function POST(request: NextRequest) {
   try {
-    const auth = verifyAuth();
+    const auth = await verifyAuth(request);
     
     const body = await request.json();
     

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { verifyAuth } from '@/lib/auth';
+import { verifyAuthServer } from '@/lib/auth';
 import { db } from '@/lib/db';
 
 // Force dynamic rendering for this route to avoid static generation issues with cookies
@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
     try {
-        const auth = await verifyAuth();
+        const auth = await verifyAuthServer();
         
         // Get user ID from auth
         const userId = auth.userId;

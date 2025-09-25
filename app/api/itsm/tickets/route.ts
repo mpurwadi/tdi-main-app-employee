@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAuth } from '@/lib/auth';
+import { verifyAuthServer } from "@/lib/auth";
 import { 
   ticketService,
   ticketCommentService
@@ -8,7 +8,7 @@ import {
 // GET /api/itsm/tickets - Get all tickets
 export async function GET(request: NextRequest) {
   try {
-    const auth = verifyAuth();
+    const auth = await verifyAuthServer();
     
     const url = new URL(request.url);
     const status = url.searchParams.get('status');
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
 // POST /api/itsm/tickets - Create a new ticket
 export async function POST(request: NextRequest) {
   try {
-    const auth = verifyAuth();
+    const auth = await verifyAuthServer();
     
     const body = await request.json();
     

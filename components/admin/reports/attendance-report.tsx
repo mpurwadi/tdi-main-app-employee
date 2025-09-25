@@ -97,8 +97,9 @@ const AttendanceReport = () => {
                 'User Name': record.fullName,
                 'Student ID': record.studentId,
                 'Division': record.division || 'N/A',
-                'Clock In Time': formatDate(record.clockInTime),
-                'Clock Out Time': record.clockOutTime ? formatDate(record.clockOutTime) : 'Not clocked out',
+                'Check-in Type': record.checkinType === 'qr' ? 'GeoFencing' : 'Remote Check-in',
+                'Clock In Time': formatDate(record.clockInTime) + (isLateCheckIn(record.clockInTime) ? ' (LATE)' : ''),
+                'Clock Out Time': record.clockOutTime ? formatDate(record.clockOutTime) + (isEarlyCheckOut(record.clockOutTime) ? ' (EARLY)' : '') : 'Not clocked out',
                 'Latitude': record.latitude,
                 'Longitude': record.longitude
             }));
@@ -109,6 +110,20 @@ const AttendanceReport = () => {
             // Create workbook
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'Attendance Report');
+
+            // Add employee totals sheet
+            const employeeTotalsData = Object.entries(employeeTotals).map(([userId, totals]) => {
+                const employee = attendanceData.find(r => r.userId.toString() === userId);
+                return {
+                    'Employee': employee ? employee.fullName : `Unknown User (${userId})`,
+                    'Late Arrivals': totals.lateCount,
+                    'Early Departures': totals.earlyCount,
+                    'Overtime (hours)': `${Math.floor(totals.overtimeMinutes / 60)}h ${totals.overtimeMinutes % 60}m`
+                };
+            });
+            
+            const totalsWs = XLSX.utils.json_to_sheet(employeeTotalsData);
+            XLSX.utils.book_append_sheet(wb, totalsWs, 'Employee Totals');
 
             // Export to Excel
             XLSX.writeFile(wb, 'attendance_report.xlsx');
@@ -164,16 +179,48 @@ const AttendanceReport = () => {
                 record.fullName,
                 record.studentId,
                 record.division || 'N/A',
-                formatDate(record.clockInTime),
-                record.clockOutTime ? formatDate(record.clockOutTime) : 'Not clocked out',
+                record.checkinType === 'qr' ? 'GeoFencing' : 'Remote Check-in',
+                formatDate(record.clockInTime) + (isLateCheckIn(record.clockInTime) ? ' (LATE)' : ''),
+                record.clockOutTime ? formatDate(record.clockOutTime) + (isEarlyCheckOut(record.clockOutTime) ? ' (EARLY)' : '') : 'Not clocked out',
                 `${record.latitude.toFixed(6)}, ${record.longitude.toFixed(6)}`
             ]);
 
             // Add table
             autoTable(doc, {
-                head: [['User Name', 'Student ID', 'Division', 'Clock In', 'Clock Out', 'Location']],
+                head: [['User Name', 'Student ID', 'Division', 'Check-in Type', 'Clock In', 'Clock Out', 'Location']],
                 body: tableData,
                 startY: 40,
+                styles: {
+                    fontSize: 8
+                },
+                headStyles: {
+                    fillColor: [67, 97, 238] // Primary color
+                }
+            });
+
+            // Add employee totals section
+            let finalY = (doc as any).lastAutoTable.finalY + 10;
+            doc.setFontSize(14);
+            doc.text('Employee Totals', 14, finalY);
+            
+            finalY += 10;
+            
+            // Prepare employee totals data
+            const employeeTotalsData = Object.entries(employeeTotals).map(([userId, totals]) => {
+                const employee = attendanceData.find(r => r.userId.toString() === userId);
+                return [
+                    employee ? employee.fullName : `Unknown User (${userId})`,
+                    totals.lateCount.toString(),
+                    totals.earlyCount.toString(),
+                    `${Math.floor(totals.overtimeMinutes / 60)}h ${totals.overtimeMinutes % 60}m`
+                ];
+            });
+
+            // Add employee totals table
+            autoTable(doc, {
+                head: [['Employee', 'Late Arrivals', 'Early Departures', 'Overtime']],
+                body: employeeTotalsData,
+                startY: finalY,
                 styles: {
                     fontSize: 8
                 },
@@ -216,6 +263,64 @@ const AttendanceReport = () => {
         if (!dateString) return 'N/A';
         return new Date(dateString).toLocaleTimeString();
     };
+
+    // Check if check-in time is late (after 09:00)
+    const isLateCheckIn = (clockInTime: string) => {
+        if (!clockInTime) return false;
+        const checkInDate = new Date(clockInTime);
+        const checkInHour = checkInDate.getHours();
+        const checkInMinute = checkInDate.getMinutes();
+        // Late if after 09:00 (9:00 AM)
+        return (checkInHour > 9) || (checkInHour === 9 && checkInMinute > 0);
+    };
+
+    // Check if check-out time is early (before 17:00)
+    const isEarlyCheckOut = (clockOutTime: string | null) => {
+        if (!clockOutTime) return false;
+        const checkOutDate = new Date(clockOutTime);
+        const checkOutHour = checkOutDate.getHours();
+        const checkOutMinute = checkOutDate.getMinutes();
+        // Early if before 17:00 (5:00 PM)
+        return (checkOutHour < 17) || (checkOutHour === 17 && checkOutMinute === 0);
+    };
+
+    // Calculate totals per employee
+    const calculateEmployeeTotals = () => {
+        const totals: { [key: string]: { lateCount: number; earlyCount: number; overtimeMinutes: number } } = {};
+        
+        attendanceData.forEach(record => {
+            if (!totals[record.userId]) {
+                totals[record.userId] = { lateCount: 0, earlyCount: 0, overtimeMinutes: 0 };
+            }
+            
+            // Count late check-ins
+            if (isLateCheckIn(record.clockInTime)) {
+                totals[record.userId].lateCount++;
+            }
+            
+            // Count early check-outs
+            if (isEarlyCheckOut(record.clockOutTime)) {
+                totals[record.userId].earlyCount++;
+            }
+            
+            // Calculate overtime (work beyond 8 hours)
+            if (record.clockOutTime) {
+                const checkInDate = new Date(record.clockInTime);
+                const checkOutDate = new Date(record.clockOutTime);
+                const workDurationMs = checkOutDate.getTime() - checkInDate.getTime();
+                const workDurationHours = workDurationMs / (1000 * 60 * 60);
+                
+                // Assuming standard workday is 8 hours
+                if (workDurationHours > 8) {
+                    totals[record.userId].overtimeMinutes += Math.round((workDurationHours - 8) * 60);
+                }
+            }
+        });
+        
+        return totals;
+    };
+
+    const employeeTotals = calculateEmployeeTotals();
 
     if (loading) {
         return (
@@ -337,10 +442,16 @@ const AttendanceReport = () => {
                                     <td>{record.studentId}</td>
                                     <td>{record.division || 'N/A'}</td>
                                     <td>
-                                        {record.checkinType === 'qr' ? 'QR Scan' : 'Remote Check-in'}
+                                        {record.checkinType === 'qr' ? 'GeoFencing' : 'Remote Check-in'}
                                     </td>
-                                    <td>{formatDate(record.clockInTime)}</td>
-                                    <td>{record.clockOutTime ? formatDate(record.clockOutTime) : 'Not clocked out'}</td>
+                                    <td className={isLateCheckIn(record.clockInTime) ? 'text-red-500 font-bold' : ''}>
+                                        {formatDate(record.clockInTime)}
+                                        {isLateCheckIn(record.clockInTime) && ' ⚠️'}
+                                    </td>
+                                    <td className={record.clockOutTime && isEarlyCheckOut(record.clockOutTime) ? 'text-orange-500 font-bold' : ''}>
+                                        {record.clockOutTime ? formatDate(record.clockOutTime) : 'Not clocked out'}
+                                        {record.clockOutTime && isEarlyCheckOut(record.clockOutTime) && ' ⚠️'}
+                                    </td>
                                     <td>
                                         {record.latitude.toFixed(6)}, {record.longitude.toFixed(6)}
                                     </td>
@@ -364,10 +475,12 @@ const AttendanceReport = () => {
             {attendanceData.length > 0 && (
                 <div className="mt-6 p-4 bg-gray-100 dark:bg-gray-800 rounded">
                     <h3 className="text-lg font-semibold mb-2">Report Summary</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <p>Total Records: {attendanceData.length}</p>
-                        <p>QR Scans: {attendanceData.filter(r => r.checkinType === 'qr').length}</p>
+                        <p>GeoFencing: {attendanceData.filter(r => r.checkinType === 'qr').length}</p>
                         <p>Remote Check-ins: {attendanceData.filter(r => r.checkinType === 'remote').length}</p>
+                        <p>Late Arrivals: {attendanceData.filter(r => isLateCheckIn(r.clockInTime)).length}</p>
+                        <p>Early Departures: {attendanceData.filter(r => r.clockOutTime && isEarlyCheckOut(r.clockOutTime)).length}</p>
                     </div>
                 </div>
             )}
@@ -401,7 +514,7 @@ const AttendanceReport = () => {
                                     <Popup>
                                         <div>
                                             <strong>{selectedMap.fullName}</strong><br />
-                                            {selectedMap.checkinType === 'qr' ? 'QR Scan' : 'Remote Check-in'}<br />
+                                            {selectedMap.checkinType === 'qr' ? 'GeoFencing' : 'Remote Check-in'}<br />
                                             {formatDate(selectedMap.clockInTime)}<br />
                                             {selectedMap.latitude.toFixed(6)}, {selectedMap.longitude.toFixed(6)}
                                         </div>
@@ -418,7 +531,7 @@ const AttendanceReport = () => {
                                 <div>
                                     <label className="block text-sm font-medium mb-1">Check-in Type</label>
                                     <p className="text-gray-900 dark:text-white">
-                                        {selectedMap.checkinType === 'qr' ? 'QR Scan' : 'Remote Check-in'}
+                                        {selectedMap.checkinType === 'qr' ? 'GeoFencing' : 'Remote Check-in'}
                                     </p>
                                 </div>
                                 <div>

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAuth } from '@/lib/auth';
+import { verifyAuthServer } from "@/lib/auth";
 import { 
   serviceCatalogService,
   serviceCatalogActivityService
@@ -8,7 +8,7 @@ import {
 // POST /api/itsm/service-catalog/[id]/reject - Reject a service
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const auth = verifyAuth();
+    const auth = await verifyAuthServer();
     
     const serviceId = parseInt(params.id);
     if (isNaN(serviceId)) {

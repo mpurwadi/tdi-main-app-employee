@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAuth } from '@/lib/auth';
+import { verifyAuthServer } from "@/lib/auth";
 import { serviceCategoryService } from '@/services/enhancedItsmService';
 
 // GET /api/itsm/service-categories/[id] - Get category by ID
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const auth = verifyAuth();
+    const auth = await verifyAuthServer();
     
     const categoryId = parseInt(params.id);
     if (isNaN(categoryId)) {
@@ -49,7 +49,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 // PUT /api/itsm/service-categories/[id] - Update category
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const auth = verifyAuth();
+    const auth = await verifyAuthServer();
     
     const categoryId = parseInt(params.id);
     if (isNaN(categoryId)) {
@@ -100,7 +100,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 // DELETE /api/itsm/service-categories/[id] - Delete category
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const auth = verifyAuth();
+    const auth = await verifyAuthServer();
     
     const categoryId = parseInt(params.id);
     if (isNaN(categoryId)) {

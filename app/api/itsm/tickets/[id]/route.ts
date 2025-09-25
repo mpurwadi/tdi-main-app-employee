@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAuth } from '@/lib/auth';
+import { verifyAuthServer } from "@/lib/auth";
 import { 
   ticketService,
   ticketCommentService
@@ -8,7 +8,7 @@ import {
 // GET /api/itsm/tickets/[id] - Get ticket by ID
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const auth = verifyAuth();
+    const auth = await verifyAuthServer();
     
     const ticketId = parseInt(params.id);
     if (isNaN(ticketId)) {
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 // PUT /api/itsm/tickets/[id] - Update ticket
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const auth = verifyAuth();
+    const auth = await verifyAuthServer();
     
     const ticketId = parseInt(params.id);
     if (isNaN(ticketId)) {
@@ -117,7 +117,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 // DELETE /api/itsm/tickets/[id] - Delete ticket
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const auth = verifyAuth();
+    const auth = await verifyAuthServer();
     
     const ticketId = parseInt(params.id);
     if (isNaN(ticketId)) {

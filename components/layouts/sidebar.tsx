@@ -41,6 +41,7 @@ const Sidebar = () => {
     const [currentMenu, setCurrentMenu] = useState<string>('');
     const [errorSubMenu, setErrorSubMenu] = useState(false);
     const [userRole, setUserRole] = useState<string | null>(null);
+    const [userRoles, setUserRoles] = useState<string[]>([]);
     
     const themeConfig = useSelector((state: IRootState) => state.themeConfig);
     const semidark = useSelector((state: IRootState) => state.themeConfig.semidark);
@@ -102,12 +103,22 @@ const Sidebar = () => {
                     let parentLi = parentUl.closest('li');
                     if (parentLi) {
                         parentLi.classList.add('active');
+                        // Expand the parent menu if it's the attendance management menu
+                        const button = parentLi.querySelector('button');
+                        if (button && button.textContent?.includes('Attendance')) {
+                            setCurrentMenu('attendanceManagement');
+                        }
                         parentUl = parentLi.parentElement;
                     } else {
                         break;
                     }
                 }
             }
+        }
+        
+        // Special case: if we're on the attendance report page, make sure the attendance management menu is expanded
+        if (window.location.pathname === '/admin/reports/attendance') {
+            setCurrentMenu('attendanceManagement');
         }
     }, [pathname]);
     
@@ -125,7 +136,7 @@ const Sidebar = () => {
         return currentMenu === item;
     };
     
-    // Get user role
+    // Get user role and roles
     useEffect(() => {
         const fetchUserRole = async () => {
             try {
@@ -133,6 +144,7 @@ const Sidebar = () => {
                 if (response.ok) {
                     const userData = await response.json();
                     setUserRole(userData.role);
+                    setUserRoles(userData.roles || []);
                 }
             } catch (error) {
                 console.error('Failed to fetch user role:', error);
@@ -216,15 +228,25 @@ const Sidebar = () => {
                                                 <IconMenuUsers className="w-5 h-5 mb-1" />
                                                 <span className="text-xs">Profile</span>
                                             </Link>
-                                            <Link 
-                                                href="/auth/boxed-signin" 
-                                                className="flex flex-col items-center justify-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
+                                            <button 
+                                                className="flex flex-col items-center justify-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800 w-full"
                                                 title="Sign Out"
-                                                onClick={handleMenuItemClick}
+                                                onClick={async () => {
+                                                    try {
+                                                        await fetch('/api/auth/logout', {
+                                                            method: 'POST',
+                                                            credentials: 'include'
+                                                        });
+                                                        window.location.href = '/auth/boxed-signin';
+                                                    } catch (error) {
+                                                        console.error('Logout error:', error);
+                                                        window.location.href = '/auth/boxed-signin';
+                                                    }
+                                                }}
                                             >
                                                 <IconLogout className="w-5 h-5 mb-1" />
                                                 <span className="text-xs">Sign Out</span>
-                                            </Link>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -319,21 +341,7 @@ const Sidebar = () => {
                                                             <span className="text-sm">My Profile</span>
                                                         </Link>
                                                     </li>
-                                                    {/* Moved Roles Management under User Management for superadmins */}
-                                                    {userRole === 'superadmin' && (
-                                                        <li>
-                                                            <Link
-                                                                href="/admin/roles"
-                                                                className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm transition-all duration-200 ${
-                                                                    pathname === '/admin/roles' 
-                                                                        ? 'bg-primary/10 text-primary' 
-                                                                        : 'hover:bg-primary/10 hover:text-primary'
-                                                                }`}
-                                                            >
-                                                                <span className="text-sm">Roles Management</span>
-                                                            </Link>
-                                                        </li>
-                                                    )}
+
                                                 </ul>
                                             </AnimateHeight>
                                         </li>
@@ -386,6 +394,7 @@ const Sidebar = () => {
                                                                     ? 'bg-primary/10 text-primary' 
                                                                     : 'hover:bg-primary/10 hover:text-primary'
                                                             }`}
+                                                            onClick={() => { setCurrentMenu('attendanceManagement'); handleMenuItemClick(); }}
                                                         >
                                                             <span className="text-sm">Report</span>
                                                         </Link>
@@ -490,11 +499,13 @@ const Sidebar = () => {
                                                 <span className="text-base">ITSM Service</span>
                                             </Link>
                                         </li>
+                                        
+
                                     </>
                                 )}
                                 
                                 {/* Regular User Section */}
-                                {(userRole === 'user' || userRole === 'service_requester' || userRole === 'service_provider' || !userRole) && (
+                                {(userRole === 'user' || userRoles.includes('service_requester') || userRoles.includes('service_provider') || !userRole) && (
                                     <>
                                         <h2 className="py-3 px-6 text-xs font-bold uppercase text-black/70 dark:text-white/70 bg-white-light/30 dark:bg-dark/60 rounded-lg mx-2">
                                             <IconMinus className="hidden h-5 w-4 flex-none" />
@@ -562,6 +573,25 @@ const Sidebar = () => {
                                             >
                                                 <IconMenuCalendar className="h-5 w-5 shrink-0" />
                                                 <span className="text-base">My Log Book</span>
+                                            </Link>
+                                        </li>
+                                        
+                                        {/* ITSM Service */}
+                                        <li className="menu-item">
+                                            <Link 
+                                                href="/itsm"
+                                                className={`flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm transition-all duration-200 mx-2 ${
+                                                    pathname === '/itsm' 
+                                                        ? 'bg-primary text-white shadow-[0_7px_14px_0_rgb(100_100_100_/_20%)]' 
+                                                        : 'hover:bg-primary/10 hover:text-primary'
+                                                }`}
+                                                onClick={handleMenuItemClick}
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                </svg>
+                                                <span className="text-base">ITSM Service</span>
                                             </Link>
                                         </li>
                                     </>

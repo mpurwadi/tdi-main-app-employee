@@ -1,6 +1,6 @@
 // app/api/itsm/billing/[id]/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAuth, hasRole } from '@/lib/auth';
+import { hasRole } from "@/lib/auth";
 import { db } from '@/lib/db';
 
 // GET /api/itsm/billing/[id] - Get a specific billing record
@@ -9,7 +9,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const auth = await verifyAuth();
+    const auth = await verifyAuthServer();
     
     // Check if user has appropriate role for billing
     const hasBillingAccess = hasRole(auth, 'billing_coordinator') || 
@@ -79,7 +79,7 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const auth = await verifyAuth();
+    const auth = await verifyAuthServer();
     
     // Only billing coordinators, admins, and superadmins can update billing records
     const hasUpdateAccess = hasRole(auth, 'billing_coordinator') || 
@@ -150,7 +150,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const auth = await verifyAuth();
+    const auth = await verifyAuthServer();
     
     // Only admins and superadmins can delete billing records
     const hasDeleteAccess = auth.role === 'admin' || auth.role === 'superadmin';

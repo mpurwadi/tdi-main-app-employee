@@ -44,7 +44,9 @@ export async function PUT(req: NextRequest) {
             return NextResponse.json({ message: authResult.message }, { status: 401 });
         }
 
-        const { userId, role } = await req.json();
+        const { userId, role, division } = await req.json();
+
+
 
         // Validate input
         if (!userId || !role) {
@@ -76,8 +78,16 @@ export async function PUT(req: NextRequest) {
             }, { status: 400 });
         }
 
+
+
         // Validate role
-        const validRoles = ['user', 'admin'];
+        const validRoles = [
+            'user', 'admin', 'superadmin',
+            'itsm_division_admin', 'itsm_manager',
+            'service_catalog_manager', 'service_provider', 'service_requester',
+            'approver', 'billing_coordinator', 'billing_admin',
+            'change_requester', 'change_manager', 'cab_member', 'implementer'
+        ];
         if (!validRoles.includes(role)) {
             return NextResponse.json({ 
                 success: false,
@@ -85,10 +95,96 @@ export async function PUT(req: NextRequest) {
             }, { status: 400 });
         }
 
-        // Update user role
+        // Determine boolean role flags based on the assigned role
+        const roleFlags: Record<string, boolean> = {
+            is_service_catalog_manager: false,
+            is_service_provider: false,
+            is_service_requester: false,
+            is_approver: false,
+            is_billing_coordinator: false,
+            is_billing_admin: false,
+            is_change_requester: false,
+            is_change_manager: false,
+            is_cab_member: false,
+            is_implementer: false,
+        };
+
+        switch (role) {
+            case 'service_catalog_manager':
+                roleFlags.is_service_catalog_manager = true;
+                break;
+            case 'service_provider':
+                roleFlags.is_service_provider = true;
+                break;
+            case 'service_requester':
+                roleFlags.is_service_requester = true;
+                break;
+            case 'approver':
+                roleFlags.is_approver = true;
+                break;
+            case 'billing_coordinator':
+                roleFlags.is_billing_coordinator = true;
+                break;
+            case 'billing_admin':
+                roleFlags.is_billing_admin = true;
+                break;
+            case 'change_requester':
+                roleFlags.is_change_requester = true;
+                break;
+            case 'change_manager':
+                roleFlags.is_change_manager = true;
+                break;
+            case 'cab_member':
+                roleFlags.is_cab_member = true;
+                break;
+            case 'implementer':
+                roleFlags.is_implementer = true;
+                break;
+            // For admin and superadmin, all ITSM flags might be true, or handled separately
+            case 'admin':
+            case 'superadmin':
+                // Decide if admin/superadmin automatically get all ITSM roles
+                // For now, let's assume they don't automatically get all specific ITSM flags
+                // unless explicitly assigned. The main 'role' field will grant broad access.
+                break;
+            case 'itsm_division_admin':
+            case 'itsm_manager':
+                // These roles will require division to be set
+                break;
+            default:
+                // 'user' role or any other default
+                break;
+        }
+
+        const updateFields = ['role = $1', 'updated_at = CURRENT_TIMESTAMP'];
+        const updateValues = [role];
+        let paramIndex = 2;
+
+        // Conditionally add division update
+        if (division) {
+            updateFields.push(`division = ${paramIndex}`);
+            updateValues.push(division);
+            paramIndex++;
+        } else {
+            // If no division is provided, set it to NULL for non-division-specific roles
+            // This prevents a user from retaining a division if their role changes
+            if (!['itsm_division_admin', 'itsm_manager'].includes(role)) {
+                updateFields.push(`division = NULL`);
+            }
+        }
+
+        // Add boolean role flags to update fields
+        for (const flag in roleFlags) {
+            updateFields.push(`${flag} = ${paramIndex}`);
+            updateValues.push(roleFlags[flag]);
+            paramIndex++;
+        }
+
+        updateValues.push(userId); // userId is the last parameter for WHERE clause
+
         await db.query(
-            'UPDATE users SET role = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2',
-            [role, userId]
+            `UPDATE users SET ${updateFields.join(', ')} WHERE id = ${paramIndex}`,
+            updateValues
         );
 
         return NextResponse.json({ 

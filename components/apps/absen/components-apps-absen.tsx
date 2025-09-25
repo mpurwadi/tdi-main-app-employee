@@ -389,9 +389,23 @@ const AbsenceComponent = () => {
             
             // Prepare table data
             const tableData = records.map((record: any) => [
-                new Date(record.clockInTime).toLocaleDateString(),
-                record.clockInTime ? new Date(record.clockInTime).toLocaleTimeString() : '-',
-                record.clockOutTime ? new Date(record.clockOutTime).toLocaleTimeString() : '-',
+                new Date(record.clockInTime).toLocaleDateString('id-ID', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit'
+                }),
+                record.clockInTime ? new Date(record.clockInTime).toLocaleTimeString('id-ID', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
+                }) : '-',
+                record.clockOutTime ? new Date(record.clockOutTime).toLocaleTimeString('id-ID', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
+                }) : '-',
                 record.manualCheckinReason || record.manualCheckoutReason ? 'Yes' : 'No'
             ]);
             
@@ -606,7 +620,15 @@ const AbsenceComponent = () => {
             {isCheckedIn && checkInTime && (
                 <div className="mb-4 p-3 rounded-lg bg-info/10 text-info">
                     <p className="font-medium">You checked in today at:</p>
-                    <p>{new Date(checkInTime).toLocaleString()}</p>
+                    <p>{new Date(checkInTime).toLocaleString('id-ID', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: false
+                    })}</p>
                 </div>
             )}
 
@@ -693,9 +715,23 @@ const AbsenceComponent = () => {
                             <tbody>
                                 {attendanceHistory.map((record) => (
                                     <tr key={record.id}>
-                                        <td>{new Date(record.clockInTime).toLocaleDateString()}</td>
-                                        <td>{record.clockInTime ? new Date(record.clockInTime).toLocaleTimeString() : '-'}</td>
-                                        <td>{record.clockOutTime ? new Date(record.clockOutTime).toLocaleTimeString() : '-'}</td>
+                                        <td>{new Date(record.clockInTime).toLocaleDateString('id-ID', {
+                                            year: 'numeric',
+                                            month: '2-digit',
+                                            day: '2-digit'
+                                        })}</td>
+                                        <td>{record.clockInTime ? new Date(record.clockInTime).toLocaleTimeString('id-ID', {
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                            second: '2-digit',
+                                            hour12: false
+                                        }) : '-'}</td>
+                                        <td>{record.clockOutTime ? new Date(record.clockOutTime).toLocaleTimeString('id-ID', {
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                            second: '2-digit',
+                                            hour12: false
+                                        }) : '-'}</td>
                                         <td>
                                             <span className={`badge ${record.clockOutTime ? 'badge-outline-success' : 'badge-outline-warning'}`}>
                                                 {record.clockOutTime ? 'Completed' : 'In Progress'}

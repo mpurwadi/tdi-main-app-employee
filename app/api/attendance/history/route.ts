@@ -60,8 +60,8 @@ export async function GET(req: NextRequest) {
         // Format the records for the frontend
         const records = result.rows.map(record => ({
             id: record.id,
-            clockInTime: record.clock_in_time,
-            clockOutTime: record.clock_out_time,
+            clockInTime: record.clock_in_time ? new Date(record.clock_in_time).toISOString() : null,
+            clockOutTime: record.clock_out_time ? new Date(record.clock_out_time).toISOString() : null,
             latitude: parseFloat(record.latitude),
             longitude: parseFloat(record.longitude),
             manualCheckinReason: record.manual_checkin_reason,

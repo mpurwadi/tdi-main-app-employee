@@ -249,6 +249,7 @@ export const serviceCatalogService = {
       `SELECT sc.*, scat.name as category_name 
        FROM service_catalog sc 
        LEFT JOIN service_categories scat ON sc.category_id = scat.id 
+       WHERE sc.status = 'approved'
        ORDER BY sc.created_at DESC`
     );
     return result.rows;

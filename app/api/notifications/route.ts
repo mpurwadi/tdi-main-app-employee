@@ -1,6 +1,6 @@
 // app/api/notifications/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAuth } from '@/lib/auth';
+import { verifyAuthServer } from "@/lib/auth";
 
 // Mock data for notifications
 let notifications = [
@@ -33,7 +33,7 @@ let notifications = [
 // GET /api/notifications - Get notifications for the authenticated user
 export async function GET(request: NextRequest) {
   try {
-    const auth = verifyAuth();
+    const auth = await verifyAuthServer();
     const userId = parseInt(auth.userId);
     
     // Filter notifications for the current user
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
 // POST /api/notifications - Create a new notification (admin only)
 export async function POST(request: NextRequest) {
   try {
-    const auth = verifyAuth();
+    const auth = await verifyAuthServer();
     
     // Check if user is admin
     if (auth.role !== 'admin' && auth.role !== 'superadmin') {

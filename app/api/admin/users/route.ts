@@ -79,9 +79,10 @@ export async function GET(request: NextRequest) {
         const limitParamIndex = filterParams.length + 1;
         const offsetParamIndex = filterParams.length + 2;
         const userQuery = 
-            "SELECT u.id, u.full_name, u.email, u.student_id, u.campus, u.status, u.role, u.roles, u.created_at, u.updated_at, u.division_id, d.name as division_name " +
+            "SELECT u.id, u.full_name, u.email, u.student_id, u.campus, u.status, u.role, u.roles, u.created_at, u.updated_at, u.division_id, d.name as division_name, u.job_role_id, jr.name as job_role_name " +
             "FROM users u " +
             "LEFT JOIN divisions d ON u.division_id = d.id " +
+            "LEFT JOIN job_roles jr ON u.job_role_id = jr.id " +
             (whereClause ? whereClause + " " : "") +
             "ORDER BY u.full_name " +
             "LIMIT $" + limitParamIndex + " OFFSET $" + offsetParamIndex;
@@ -121,6 +122,18 @@ export async function PUT(request: NextRequest) {
         const targetUser = targetUserResult.rows[0];
 
         switch (action) {
+            case 'update_user':
+                if (!isSuperadmin(auth)) {
+                    return NextResponse.json({ message: 'Forbidden: Only superadmins can update user information.' }, { status: 403 });
+                }
+                const { full_name, email, student_id, campus, division_id, job_role_id } = payload;
+                
+                await pool.query(
+                    'UPDATE users SET full_name = $1, email = $2, student_id = $3, campus = $4, division_id = $5, job_role_id = $6, updated_at = CURRENT_TIMESTAMP WHERE id = $7',
+                    [full_name, email, student_id, campus, division_id, job_role_id || null, userId]
+                );
+                return NextResponse.json({ message: 'User information updated successfully.' }, { status: 200 });
+
             case 'assign_division':
                 if (!isSuperadmin(auth)) {
                     return NextResponse.json({ message: 'Forbidden: Only superadmins can assign divisions.' }, { status: 403 });

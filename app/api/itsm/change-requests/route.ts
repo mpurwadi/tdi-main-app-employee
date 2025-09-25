@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAuth } from '@/lib/auth';
+import { verifyAuthServer } from "@/lib/auth";
 import { 
   changeRequestService,
   changeRequestActivityService
@@ -8,7 +8,7 @@ import {
 // GET /api/itsm/change-requests - Get all change requests
 export async function GET(request: NextRequest) {
   try {
-    const auth = verifyAuth();
+    const auth = await verifyAuthServer();
     
     // Parse query parameters
     const { searchParams } = new URL(request.url);
@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
 // POST /api/itsm/change-requests - Create a new change request
 export async function POST(request: NextRequest) {
   try {
-    const auth = verifyAuth();
+    const auth = await verifyAuthServer();
     
     // Check if user has appropriate role
     const allowedRoles = ['change_requester', 'admin', 'superadmin'];

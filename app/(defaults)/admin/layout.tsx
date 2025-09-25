@@ -1,4 +1,4 @@
-import { verifyAuth, isAdmin } from '@/lib/auth';
+import { verifyAuthServer, isAdmin } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import React from 'react';
 import { cookies } from 'next/headers';
@@ -9,15 +9,7 @@ export default async function AdminLayout({
   children: React.ReactNode;
 }) {
   try {
-    // Create a mock request object with cookies
-    const cookieStore = cookies();
-    const mockRequest = {
-      cookies: {
-        get: (name: string) => cookieStore.get(name)
-      }
-    };
-
-    const auth = await verifyAuth(mockRequest as any);
+    const auth = await verifyAuthServer();
     if (!isAdmin(auth)) {
       // If not an admin, redirect to the homepage.
       redirect('/');
@@ -26,7 +18,7 @@ export default async function AdminLayout({
     // Log the error for debugging purposes
     console.error('Admin layout authentication error:', error);
     // If not authenticated, redirect to the login page.
-    redirect('/auth/cover-login');
+    redirect('/auth/boxed-signin');
   }
 
   return <>{children}</>;

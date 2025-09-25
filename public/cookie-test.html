@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cookie Test</title>
+</head>
+<body>
+    <h1>Cookie Test</h1>
+    <button onclick="testLogin()">Test Login with Cookies</button>
+    <div id="result"></div>
+
+    <script>
+        async function testLogin() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>Testing login with cookies...</p>';
+            
+            try {
+                // Test login with credentials that should set a cookie
+                const response = await fetch('http://localhost:3500/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        email: 'purwadi@tabeldata.com', 
+                        password: 'AdminPassword123!!'
+                    }),
+                    credentials: 'include' // Important: include cookies in the response
+                });
+
+                const data = await response.json();
+                
+                resultDiv.innerHTML += `<p>Login Status: ${response.status}</p>`;
+                resultDiv.innerHTML += `<p>Message: ${data.message}</p>`;
+                resultDiv.innerHTML += `<p>RedirectTo: ${data.redirectTo}</p>`;
+                
+                if (response.ok) {
+                    resultDiv.innerHTML += '<p style="color: green;">Login successful!</p>';
+                    
+                    // Check if cookies were set
+                    const cookies = document.cookie;
+                    resultDiv.innerHTML += `<p>Cookies: ${cookies}</p>`;
+                    
+                    // Test auth endpoint with cookies
+                    resultDiv.innerHTML += '<p>Testing auth endpoint with cookies...</p>';
+                    const authResponse = await fetch('http://localhost:3500/api/auth/me', {
+                        credentials: 'include' // Include cookies
+                    });
+                    
+                    const authData = await authResponse.json();
+                    resultDiv.innerHTML += `<p>Auth Status: ${authResponse.status}</p>`;
+                    
+                    if (authResponse.ok) {
+                        resultDiv.innerHTML += '<p style="color: green;">Authentication successful!</p>';
+                        resultDiv.innerHTML += `<p>User: ${authData.email} (${authData.role})</p>`;
+                        
+                        // Redirect to dashboard
+                        resultDiv.innerHTML += '<p>Redirecting to dashboard in 2 seconds...</p>';
+                        setTimeout(() => {
+                            window.location.href = data.redirectTo;
+                        }, 2000);
+                    } else {
+                        resultDiv.innerHTML += '<p style="color: red;">Authentication failed!</p>';
+                    }
+                } else {
+                    resultDiv.innerHTML += '<p style="color: red;">Login failed!</p>';
+                }
+                
+            } catch (error) {
+                resultDiv.innerHTML += `<p>Error: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

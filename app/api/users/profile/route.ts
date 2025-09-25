@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
         const userId = decodedToken.userId;
 
         const user = await db.query(
-            'SELECT id, full_name, email, student_id, campus, division, status, role FROM users WHERE id = $1',
+            'SELECT u.id, u.full_name, u.email, u.student_id, u.campus, u.status, u.role, u.division_id, d.name as division_name FROM users u LEFT JOIN divisions d ON u.division_id = d.id WHERE u.id = $1',
             [userId]
         );
 
@@ -47,16 +47,16 @@ export async function PUT(req: NextRequest) {
         const decodedToken: any = jwt.verify(token, JWT_SECRET);
         const userId = decodedToken.userId;
 
-        const { full_name, student_id, campus, division } = await req.json();
+        const { full_name, student_id, campus, division_id } = await req.json();
 
         // Basic validation
-        if (!full_name || !student_id || !campus || !division) {
+        if (!full_name || !student_id || !campus || division_id === undefined || division_id === null) {
             return NextResponse.json({ message: 'All fields are required' }, { status: 400 });
         }
 
         const updatedUser = await db.query(
-            'UPDATE users SET full_name = $1, student_id = $2, campus = $3, division = $4, updated_at = CURRENT_TIMESTAMP WHERE id = $5 RETURNING id, full_name, email, student_id, campus, division, status, role',
-            [full_name, student_id, campus, division, userId]
+            'UPDATE users SET full_name = $1, student_id = $2, campus = $3, division_id = $4, updated_at = CURRENT_TIMESTAMP WHERE id = $5 RETURNING id, full_name, email, student_id, campus, division_id, status, role',
+            [full_name, student_id, campus, division_id, userId]
         );
 
         if (updatedUser.rows.length === 0) {

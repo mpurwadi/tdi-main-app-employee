@@ -1,7 +1,7 @@
 // app/api/admin/remote-schedule/interns/route.ts
 import { Pool } from 'pg';
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAuth, isAdmin } from '@/lib/auth';
+import { verifyAuthServer, isAdmin } from "@/lib/auth";
 
 // Force dynamic rendering for this route to avoid static generation issues with cookies
 export const dynamic = 'force-dynamic';
@@ -17,7 +17,7 @@ const pool = new Pool({
 
 export async function GET(request: NextRequest) {
   try {
-    const auth = await verifyAuth();
+    const auth = await verifyAuthServer();
     if (!isAdmin(auth)) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
