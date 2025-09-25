@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { isAdmin } from "@/lib/auth";
+import { isAdmin, verifyAuthServer } from "@/lib/auth";
 import { userManagementService } from '@/services/enhancedItsmService';
 
 // GET /api/itsm/users - Get users with specific roles or divisions

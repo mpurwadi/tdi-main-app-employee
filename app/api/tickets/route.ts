@@ -1,6 +1,6 @@
 export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
-import { isAdmin } from "@/lib/auth";
+import { isAdmin, verifyAuthServer } from "@/lib/auth";
 import { db } from '@/lib/db';
 
 // GET all tickets (admin) or user's tickets

@@ -1,6 +1,6 @@
 import { Pool } from 'pg';
 import { NextResponse } from 'next/server';
-import { isAdmin } from "@/lib/auth";
+import { isAdmin, verifyAuthServer } from "@/lib/auth";
 import { config } from 'dotenv';
 
 // Load environment variables

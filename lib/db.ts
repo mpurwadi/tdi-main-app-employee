@@ -9,8 +9,7 @@ const pool = new Pool({
     ssl: process.env.DB_SSLMODE === 'disable' || !process.env.DB_SSLMODE ? false : { rejectUnauthorized: false },
 });
 
-// Set timezone to Asia/Jakarta for proper time handling
-pool.query('SET timezone = \'Asia/Jakarta\'');
+// Set timezone to Asia/Jakarta for proper time handling\npool.query('SET timezone = \'Asia/Jakarta\'');\npool.query('SET TIME ZONE \'Asia/Jakarta\'');
 
 export const db = {
     query: (text: string, params?: any[]) => pool.query(text, params),

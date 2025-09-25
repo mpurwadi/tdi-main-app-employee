@@ -33,11 +33,14 @@ export async function GET(req: NextRequest) {
         
         if (monthParam && yearParam) {
             // Filter by specific month and year
-            query = `SELECT id, clock_in_time, clock_out_time, latitude, longitude, manual_checkin_reason, manual_checkout_reason
+            query = `SELECT id, 
+                            TO_CHAR(clock_in_time AT TIME ZONE 'Asia/Jakarta', 'YYYY-MM-DD HH24:MI:SS.MS') AS clock_in_time, 
+                            TO_CHAR(clock_out_time AT TIME ZONE 'Asia/Jakarta', 'YYYY-MM-DD HH24:MI:SS.MS') AS clock_out_time, 
+                            latitude, longitude, manual_checkin_reason, manual_checkout_reason
                      FROM attendance_records 
                      WHERE user_id = $1 
-                     AND EXTRACT(MONTH FROM clock_in_time) = $2
-                     AND EXTRACT(YEAR FROM clock_in_time) = $3
+                     AND EXTRACT(MONTH FROM clock_in_time AT TIME ZONE 'Asia/Jakarta') = $2
+                     AND EXTRACT(YEAR FROM clock_in_time AT TIME ZONE 'Asia/Jakarta') = $3
                      ORDER BY clock_in_time DESC`;
             params = [userId, parseInt(monthParam), parseInt(yearParam)];
         } else {
@@ -46,22 +49,25 @@ export async function GET(req: NextRequest) {
             const currentMonth = currentDate.getMonth() + 1; // JavaScript months are 0-indexed
             const currentYear = currentDate.getFullYear();
             
-            query = `SELECT id, clock_in_time, clock_out_time, latitude, longitude, manual_checkin_reason, manual_checkout_reason
+            query = `SELECT id, 
+                            TO_CHAR(clock_in_time AT TIME ZONE 'Asia/Jakarta', 'YYYY-MM-DD HH24:MI:SS.MS') AS clock_in_time, 
+                            TO_CHAR(clock_out_time AT TIME ZONE 'Asia/Jakarta', 'YYYY-MM-DD HH24:MI:SS.MS') AS clock_out_time, 
+                            latitude, longitude, manual_checkin_reason, manual_checkout_reason
                      FROM attendance_records 
                      WHERE user_id = $1 
-                     AND EXTRACT(MONTH FROM clock_in_time) = $2
-                     AND EXTRACT(YEAR FROM clock_in_time) = $3
+                     AND EXTRACT(MONTH FROM clock_in_time AT TIME ZONE 'Asia/Jakarta') = $2
+                     AND EXTRACT(YEAR FROM clock_in_time AT TIME ZONE 'Asia/Jakarta') = $3
                      ORDER BY clock_in_time DESC`;
             params = [userId, currentMonth, currentYear];
         }
 
         const result = await db.query(query, params);
 
-        // Format the records for the frontend
+        // Format the records for the frontend - use the server-formatted times directly
         const records = result.rows.map(record => ({
             id: record.id,
-            clockInTime: record.clock_in_time ? new Date(record.clock_in_time).toISOString() : null,
-            clockOutTime: record.clock_out_time ? new Date(record.clock_out_time).toISOString() : null,
+            clockInTime: record.clock_in_time,
+            clockOutTime: record.clock_out_time,
             latitude: parseFloat(record.latitude),
             longitude: parseFloat(record.longitude),
             manualCheckinReason: record.manual_checkin_reason,

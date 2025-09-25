@@ -100,4 +100,5 @@ export async function verifyAuth(request: NextRequest): Promise<AuthPayload> {
     }
 }
 
+export type { AuthPayload };
 export { isAdmin, isSuperadmin, isDivisionAdmin, isDivisionManager, hasRole, hasAnyRole, isInDivision };

@@ -218,7 +218,7 @@ export async function POST(request: NextRequest) {
         }
 
         const existingUser = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
-        if (existingUser.rowCount > 0) {
+        if (existingUser.rowCount !== null && existingUser.rowCount !== undefined && existingUser.rowCount > 0) {
             return NextResponse.json({ message: 'User with this email already exists' }, { status: 409 });
         }
 

@@ -1,6 +1,6 @@
 // app/api/admin/remote-schedule/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { isAdmin } from "@/lib/auth";
+import { isAdmin, verifyAuthServer } from "@/lib/auth";
 
 // In a real application, this would be replaced with database queries
 // Mock data for interns (active users only)

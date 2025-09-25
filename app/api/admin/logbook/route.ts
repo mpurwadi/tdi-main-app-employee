@@ -2,7 +2,7 @@ import { Pool } from 'pg';
 
 export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
-import { isAdmin } from "@/lib/auth";
+import { isAdmin, verifyAuthServer } from "@/lib/auth";
 import { config } from 'dotenv';
 
 // Load environment variables

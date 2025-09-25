@@ -47,8 +47,8 @@ const SimpleBoxedSignIn = () => {
                 const userRole = data.role;
                 console.log('User role:', userRole);
                 if (userRole === 'superadmin' || userRole === 'admin') {
-                    console.log('Redirecting to admin approval page');
-                    router.push('/admin/approval'); // Redirect to admin approval page
+                    console.log('Redirecting to admin dashboard');
+                    router.push('/admin/dashboard'); // Redirect to admin dashboard
                 } else if (userRole === 'user') {
                     console.log('Redirecting to user dashboard');
                     router.push('/user-dashboard'); // Redirect to the new user dashboard

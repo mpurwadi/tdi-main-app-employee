@@ -1,6 +1,6 @@
 // app/api/itsm/billing/services/[id]/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { hasRole } from "@/lib/auth";
+import { hasRole, verifyAuthServer } from "@/lib/auth";
 import { db } from '@/lib/db';
 
 // GET /api/itsm/billing/services/[id] - Get a specific service catalog item
