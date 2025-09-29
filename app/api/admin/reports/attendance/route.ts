@@ -47,8 +47,6 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ message: authResult.message }, { status: 401 });
         }
 
-        const userId = authResult.userId;
-
         // Get query parameters
         const { searchParams } = new URL(req.url);
         const startDate = searchParams.get('startDate');
@@ -63,8 +61,8 @@ export async function GET(req: NextRequest) {
                 full_name,
                 student_id,
                 division,
-                clock_in_time,
-                clock_out_time,
+                TO_CHAR(clock_in_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Jakarta', 'YYYY-MM-DD HH24:MI:SS.MS') AS clock_in_time,
+                TO_CHAR(clock_out_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Jakarta', 'YYYY-MM-DD HH24:MI:SS.MS') AS clock_out_time,
                 latitude,
                 longitude,
                 'qr' as checkin_type
@@ -89,17 +87,20 @@ export async function GET(req: NextRequest) {
 
         // Apply date filters for QR attendance
         if (startDate && endDate) {
-            query += ' AND ar.clock_in_time >= $' + paramIndex + ' AND ar.clock_in_time <= $' + (paramIndex + 1);
-            params.push(startDate, endDate);
-            paramIndex += 2;
-        } else if (startDate) {
-            query += ' AND ar.clock_in_time >= $' + paramIndex;
+            query += ` AND ar.clock_in_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Jakarta' >= $${paramIndex}`;
             params.push(startDate);
-            paramIndex += 1;
-        } else if (endDate) {
-            query += ' AND ar.clock_in_time <= $' + paramIndex;
+            paramIndex++;
+            query += ` AND ar.clock_in_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Jakarta' <= $${paramIndex}`;
             params.push(endDate);
-            paramIndex += 1;
+            paramIndex++;
+        } else if (startDate) {
+            query += ` AND ar.clock_in_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Jakarta' >= $${paramIndex}`;
+            params.push(startDate);
+            paramIndex++;
+        } else if (endDate) {
+            query += ` AND ar.clock_in_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Jakarta' <= $${paramIndex}`;
+            params.push(endDate);
+            paramIndex++;
         }
 
         query += `
@@ -113,7 +114,7 @@ export async function GET(req: NextRequest) {
                 u.full_name,
                 u.student_id,
                 u.division,
-                rcr.checkin_time as clock_in_time,
+                TO_CHAR(rcr.checkin_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Jakarta', 'YYYY-MM-DD HH24:MI:SS.MS') as clock_in_time,
                 NULL as clock_out_time,
                 rcr.latitude,
                 rcr.longitude,
@@ -125,17 +126,20 @@ export async function GET(req: NextRequest) {
 
         // Apply date filters for remote check-in
         if (startDate && endDate) {
-            query += ' AND rcr.checkin_time >= $' + paramIndex + ' AND rcr.checkin_time <= $' + (paramIndex + 1);
-            params.push(startDate, endDate);
-            paramIndex += 2;
-        } else if (startDate) {
-            query += ' AND rcr.checkin_time >= $' + paramIndex;
+            query += ` AND rcr.checkin_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Jakarta' >= $${paramIndex}`;
             params.push(startDate);
-            paramIndex += 1;
-        } else if (endDate) {
-            query += ' AND rcr.checkin_time <= $' + paramIndex;
+            paramIndex++;
+            query += ` AND rcr.checkin_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Jakarta' <= $${paramIndex}`;
             params.push(endDate);
-            paramIndex += 1;
+            paramIndex++;
+        } else if (startDate) {
+            query += ` AND rcr.checkin_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Jakarta' >= $${paramIndex}`;
+            params.push(startDate);
+            paramIndex++;
+        } else if (endDate) {
+            query += ` AND rcr.checkin_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Jakarta' <= $${paramIndex}`;
+            params.push(endDate);
+            paramIndex++;
         }
 
         // Add ordering

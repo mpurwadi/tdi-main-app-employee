@@ -84,8 +84,8 @@ export async function POST(req: NextRequest) {
 
             // Update the existing record with check-out time
             const updateQuery = manual 
-                ? 'UPDATE attendance_records SET clock_out_time = timezone(\'Asia/Jakarta\', NOW()), manual_checkout_reason = $1 WHERE id = $2'
-                : 'UPDATE attendance_records SET clock_out_time = timezone(\'Asia/Jakarta\', NOW()) WHERE id = $1';
+                ? 'UPDATE attendance_records SET clock_out_time = NOW(), manual_checkout_reason = $1 WHERE id = $2'
+                : 'UPDATE attendance_records SET clock_out_time = NOW() WHERE id = $1';
             
             const updateParams = manual 
                 ? [reason, existingRecord.rows[0].id]
@@ -106,8 +106,8 @@ export async function POST(req: NextRequest) {
 
             // Record attendance with location - ensure using server timezone
             const insertQuery = manual 
-                ? 'INSERT INTO attendance_records (user_id, qr_data, latitude, longitude, clock_in_time, manual_checkin_reason) VALUES ($1, $2, $3, $4, timezone(\'Asia/Jakarta\', NOW()), $5)'
-                : 'INSERT INTO attendance_records (user_id, qr_data, latitude, longitude, clock_in_time) VALUES ($1, $2, $3, $4, timezone(\'Asia/Jakarta\', NOW()))';
+                ? 'INSERT INTO attendance_records (user_id, qr_data, latitude, longitude, clock_in_time, manual_checkin_reason) VALUES ($1, $2, $3, $4, NOW(), $5)'
+                : 'INSERT INTO attendance_records (user_id, qr_data, latitude, longitude, clock_in_time) VALUES ($1, $2, $3, $4, NOW())';
             
             const insertParams = manual 
                 ? [userId, 'MANUAL_CHECK_IN', latitude, longitude, reason]

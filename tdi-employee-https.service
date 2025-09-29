@@ -1,20 +1,17 @@
 [Unit]
-Description=TDI Main App Service
+Description=TDI Employee Application with HTTPS
 After=network.target
 
 [Service]
 Type=simple
 User=root
-Group=root
 WorkingDirectory=/root/app/tdi-main-app-employee
-Environment=NODE_ENV=production
-Environment=PORT=3443
-Environment=HTTPS=true
 ExecStart=/usr/bin/npm run start-https
 Restart=always
 RestartSec=10
-StandardOutput=journal
-StandardError=journal
+Environment=NODE_ENV=production
+Environment=HTTPS=true
+Environment=PORT=3443
 
 [Install]
 WantedBy=multi-user.target
