@@ -393,7 +393,7 @@ const UserProfilePage = () => {
                         type="text"
                         name="roles"
                         className="form-input"
-                        value={userData.roles.join(', ')}
+                        value={Array.isArray(userData.roles) ? userData.roles.join(', ') : ''}
                         disabled
                     />
                 </div>

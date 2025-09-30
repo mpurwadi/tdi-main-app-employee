@@ -28,26 +28,37 @@ export async function GET(request: NextRequest) {
         const fullNameFilter = searchParams.get('fullNameFilter');
         const divisionNameFilter = searchParams.get('divisionNameFilter');
         const roleFilter = searchParams.get('roleFilter');
+        const status = searchParams.get('status');
+        const search = searchParams.get('search');
 
         let filterConditions: string[] = [];
         let filterParams: any[] = [];
         let paramIndex = 1;
 
         if (emailFilter) {
-            filterConditions.push(`u.email ILIKE ${paramIndex++}`);
+            filterConditions.push(`u.email ILIKE $${paramIndex++}`);
             filterParams.push(`%${emailFilter}%`);
         }
         if (fullNameFilter) {
-            filterConditions.push(`u.full_name ILIKE ${paramIndex++}`);
+            filterConditions.push(`u.full_name ILIKE $${paramIndex++}`);
             filterParams.push(`%${fullNameFilter}%`);
         }
         if (divisionNameFilter) {
-            filterConditions.push(`d.name ILIKE ${paramIndex++}`);
+            filterConditions.push(`d.name ILIKE $${paramIndex++}`);
             filterParams.push(`%${divisionNameFilter}%`);
         }
         if (roleFilter) {
-            filterConditions.push(`(u.role ILIKE ${paramIndex} OR ${paramIndex} = ANY(u.roles))`);
+            filterConditions.push(`(u.role ILIKE $${paramIndex} OR $${paramIndex} = ANY(u.roles))`);
             filterParams.push(`%${roleFilter}%`);
+            paramIndex++;
+        }
+        if (status) {
+            filterConditions.push(`u.status = $${paramIndex++}`);
+            filterParams.push(status);
+        }
+        if (search) {
+            filterConditions.push(`(u.full_name ILIKE $${paramIndex} OR u.email ILIKE $${paramIndex} OR u.student_id ILIKE $${paramIndex})`);
+            filterParams.push(`%${search}%`);
             paramIndex++;
         }
 
@@ -56,7 +67,7 @@ export async function GET(request: NextRequest) {
             if (!auth.divisionId) {
                 return NextResponse.json({ message: 'Admin is not assigned to a division' }, { status: 400 });
             }
-            filterConditions.push(`u.division_id = ${paramIndex++}`);
+            filterConditions.push(`u.division_id = $${paramIndex++}`);
             filterParams.push(auth.divisionId);
         }
 

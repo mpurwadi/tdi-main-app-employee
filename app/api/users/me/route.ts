@@ -40,7 +40,7 @@ export async function PUT(request: Request) {
             WHERE id = $5
             RETURNING id, full_name, email, student_id, campus, division, role;
         `;
-        const values = [fullName, studentId, campus, auth.userId, division];
+        const values = [fullName, studentId, campus, division, auth.userId];
 
         const updatedUser = await db.query(query, values);
 

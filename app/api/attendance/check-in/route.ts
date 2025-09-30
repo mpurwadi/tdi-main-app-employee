@@ -62,21 +62,22 @@ export async function POST(req: NextRequest) {
             }
         }
 
-        // Check if user has already checked in today
-        const today = new Date().toISOString().split('T')[0];
-        const existingRecord = await db.query(
-            `SELECT id, clock_in_time, clock_out_time 
-             FROM attendance_records 
-             WHERE user_id = $1 
-             AND DATE(clock_in_time AT TIME ZONE 'Asia/Jakarta') = $2 
-             ORDER BY clock_in_time DESC 
-             LIMIT 1`,
-            [userId, today]
-        );
-
         if (action === 'check-out') {
+            // For check-out, specifically look for active (not checked out) records
+            const today = new Date().toISOString().split('T')[0];
+            const activeCheckInRecord = await db.query(
+                `SELECT id, clock_in_time, clock_out_time 
+                 FROM attendance_records 
+                 WHERE user_id = $1 
+                 AND DATE(clock_in_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Jakarta') = $2
+                 AND clock_out_time IS NULL
+                 ORDER BY clock_in_time DESC 
+                 LIMIT 1`,
+                [userId, today]
+            );
+            
             // Handle check-out
-            if (existingRecord.rows.length === 0 || existingRecord.rows[0].clock_out_time) {
+            if (activeCheckInRecord.rows.length === 0) {
                 return NextResponse.json({ 
                     message: 'No active check-in found for today' 
                 }, { status: 400 });
@@ -88,8 +89,8 @@ export async function POST(req: NextRequest) {
                 : 'UPDATE attendance_records SET clock_out_time = NOW() WHERE id = $1';
             
             const updateParams = manual 
-                ? [reason, existingRecord.rows[0].id]
-                : [existingRecord.rows[0].id];
+                ? [reason, activeCheckInRecord.rows[0].id]
+                : [activeCheckInRecord.rows[0].id];
 
             await db.query(updateQuery, updateParams);
 
@@ -97,6 +98,18 @@ export async function POST(req: NextRequest) {
                 message: manual ? 'Manual check-out successful!' : 'Check-out successful!' 
             }, { status: 200 });
         } else {
+            // For check-in, check if user has any record today
+            const today = new Date().toISOString().split('T')[0];
+            const existingRecord = await db.query(
+                `SELECT id, clock_in_time, clock_out_time 
+                 FROM attendance_records 
+                 WHERE user_id = $1 
+                 AND DATE(clock_in_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Jakarta') = $2 
+                 ORDER BY clock_in_time DESC 
+                 LIMIT 1`,
+                [userId, today]
+            );
+            
             // Handle check-in
             if (existingRecord.rows.length > 0 && !existingRecord.rows[0].clock_out_time) {
                 return NextResponse.json({ 
