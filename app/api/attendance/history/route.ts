@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
             query = `SELECT id, 
                             TO_CHAR(clock_in_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Jakarta', 'YYYY-MM-DD HH24:MI:SS.MS') AS clock_in_time, 
                             TO_CHAR(clock_out_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Jakarta', 'YYYY-MM-DD HH24:MI:SS.MS') AS clock_out_time, 
-                            latitude, longitude, manual_checkin_reason, manual_checkout_reason
+                            latitude, longitude, manual_checkin_reason, manual_checkout_reason, late_checkin_reason
                      FROM attendance_records 
                      WHERE user_id = $1 
                      AND EXTRACT(MONTH FROM clock_in_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Jakarta') = $2
@@ -52,7 +52,7 @@ export async function GET(req: NextRequest) {
             query = `SELECT id, 
                             TO_CHAR(clock_in_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Jakarta', 'YYYY-MM-DD HH24:MI:SS.MS') AS clock_in_time, 
                             TO_CHAR(clock_out_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Jakarta', 'YYYY-MM-DD HH24:MI:SS.MS') AS clock_out_time, 
-                            latitude, longitude, manual_checkin_reason, manual_checkout_reason
+                            latitude, longitude, manual_checkin_reason, manual_checkout_reason, late_checkin_reason
                      FROM attendance_records 
                      WHERE user_id = $1 
                      AND EXTRACT(MONTH FROM clock_in_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Jakarta') = $2
@@ -71,7 +71,8 @@ export async function GET(req: NextRequest) {
             latitude: parseFloat(record.latitude),
             longitude: parseFloat(record.longitude),
             manualCheckinReason: record.manual_checkin_reason,
-            manualCheckoutReason: record.manual_checkout_reason
+            manualCheckoutReason: record.manual_checkout_reason,
+            lateCheckinReason: record.late_checkin_reason
         }));
 
         return NextResponse.json({ records }, { status: 200 });

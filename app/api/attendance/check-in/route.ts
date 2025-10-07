@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ message: 'Invalid token' }, { status: 401 });
         }
 
-        const { latitude, longitude, action, manual, reason } = await req.json();
+        const { latitude, longitude, action, manual, reason, late, lateReason } = await req.json();
 
         // Validate required fields
         if (!latitude || !longitude) {
@@ -117,19 +117,34 @@ export async function POST(req: NextRequest) {
                 }, { status: 400 });
             }
 
+            // If it's a late check-in, validate that the late reason is provided
+            if (late) {
+                if (!lateReason || !lateReason.trim()) {
+                    return NextResponse.json({ 
+                        message: 'Keterangan (reason) is required for late check-in' 
+                    }, { status: 400 });
+                }
+            }
+
             // Record attendance with location - ensure using server timezone
-            const insertQuery = manual 
-                ? 'INSERT INTO attendance_records (user_id, qr_data, latitude, longitude, clock_in_time, manual_checkin_reason) VALUES ($1, $2, $3, $4, NOW(), $5)'
-                : 'INSERT INTO attendance_records (user_id, qr_data, latitude, longitude, clock_in_time) VALUES ($1, $2, $3, $4, NOW())';
+            let insertQuery: string;
+            let insertParams: any[];
             
-            const insertParams = manual 
-                ? [userId, 'MANUAL_CHECK_IN', latitude, longitude, reason]
-                : [userId, 'GEOFENCE_CHECK_IN', latitude, longitude];
+            if (manual) {
+                insertQuery = 'INSERT INTO attendance_records (user_id, qr_data, latitude, longitude, clock_in_time, manual_checkin_reason) VALUES ($1, $2, $3, $4, NOW(), $5)';
+                insertParams = [userId, 'MANUAL_CHECK_IN', latitude, longitude, reason];
+            } else if (late) {
+                insertQuery = 'INSERT INTO attendance_records (user_id, qr_data, latitude, longitude, clock_in_time, late_checkin_reason) VALUES ($1, $2, $3, $4, NOW(), $5)';
+                insertParams = [userId, 'LATE_CHECK_IN', latitude, longitude, lateReason];
+            } else {
+                insertQuery = 'INSERT INTO attendance_records (user_id, qr_data, latitude, longitude, clock_in_time) VALUES ($1, $2, $3, $4, NOW())';
+                insertParams = [userId, 'GEOFENCE_CHECK_IN', latitude, longitude];
+            }
 
             await db.query(insertQuery, insertParams);
 
             return NextResponse.json({ 
-                message: manual ? 'Manual check-in successful!' : 'Check-in successful!' 
+                message: late ? 'Late check-in recorded successfully!' : (manual ? 'Manual check-in successful!' : 'Check-in successful!') 
             }, { status: 200 });
         }
 

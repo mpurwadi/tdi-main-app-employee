@@ -27,6 +27,8 @@ interface AttendanceRecord {
     latitude: number;
     longitude: number;
     checkinType: 'qr' | 'remote';
+    lateCheckinReason: string | null;
+    manualCheckinReason: string | null;
 }
 
 const AttendanceReport = () => {
@@ -100,6 +102,13 @@ const AttendanceReport = () => {
                 'Check-in Type': record.checkinType === 'qr' ? 'GeoFencing' : 'Remote Check-in',
                 'Clock In Time': formatDate(record.clockInTime) + (isLateCheckIn(record.clockInTime) ? ' (LATE)' : ''),
                 'Clock Out Time': record.clockOutTime ? formatDate(record.clockOutTime) + (isEarlyCheckOut(record.clockOutTime) ? ' (EARLY)' : '') : 'Not clocked out',
+                'Reason': isLateCheckIn(record.clockInTime) && record.lateCheckinReason 
+                    ? record.lateCheckinReason 
+                    : record.manualCheckinReason 
+                        ? record.manualCheckinReason 
+                        : isLateCheckIn(record.clockInTime) 
+                            ? 'Late arrival' 
+                            : 'N/A',
                 'Latitude': record.latitude,
                 'Longitude': record.longitude
             }));
@@ -182,12 +191,19 @@ const AttendanceReport = () => {
                 record.checkinType === 'qr' ? 'GeoFencing' : 'Remote Check-in',
                 formatDate(record.clockInTime) + (isLateCheckIn(record.clockInTime) ? ' (LATE)' : ''),
                 record.clockOutTime ? formatDate(record.clockOutTime) + (isEarlyCheckOut(record.clockOutTime) ? ' (EARLY)' : '') : 'Not clocked out',
+                isLateCheckIn(record.clockInTime) && record.lateCheckinReason 
+                    ? record.lateCheckinReason 
+                    : record.manualCheckinReason 
+                        ? record.manualCheckinReason 
+                        : isLateCheckIn(record.clockInTime) 
+                            ? 'Late arrival' 
+                            : 'N/A',
                 `${record.latitude.toFixed(6)}, ${record.longitude.toFixed(6)}`
             ]);
 
             // Add table
             autoTable(doc, {
-                head: [['User Name', 'Student ID', 'Division', 'Check-in Type', 'Clock In', 'Clock Out', 'Location']],
+                head: [['User Name', 'Student ID', 'Division', 'Check-in Type', 'Clock In', 'Clock Out', 'Reason', 'Location']],
                 body: tableData,
                 startY: 40,
                 styles: {
@@ -264,14 +280,14 @@ const AttendanceReport = () => {
         return new Date(dateString).toLocaleTimeString();
     };
 
-    // Check if check-in time is late (after 09:00)
+    // Check if check-in time is late (after 09:10)
     const isLateCheckIn = (clockInTime: string) => {
         if (!clockInTime) return false;
         const checkInDate = new Date(clockInTime);
         const checkInHour = checkInDate.getHours();
         const checkInMinute = checkInDate.getMinutes();
-        // Late if after 09:00 (9:00 AM)
-        return (checkInHour > 9) || (checkInHour === 9 && checkInMinute > 0);
+        // Late if after 09:10 (9:10 AM)
+        return (checkInHour > 9) || (checkInHour === 9 && checkInMinute > 10);
     };
 
     // Check if check-out time is early (before 17:00)
@@ -431,6 +447,7 @@ const AttendanceReport = () => {
                                 <th>Check-in Type</th>
                                 <th>Clock In</th>
                                 <th>Clock Out</th>
+                                <th>Reason</th>
                                 <th>Location</th>
                                 <th>Map</th>
                             </tr>
@@ -451,6 +468,15 @@ const AttendanceReport = () => {
                                     <td className={record.clockOutTime && isEarlyCheckOut(record.clockOutTime) ? 'text-orange-500 font-bold' : ''}>
                                         {record.clockOutTime ? formatDate(record.clockOutTime) : 'Not clocked out'}
                                         {record.clockOutTime && isEarlyCheckOut(record.clockOutTime) && ' ⚠️'}
+                                    </td>
+                                    <td>
+                                        {isLateCheckIn(record.clockInTime) && record.lateCheckinReason 
+                                            ? record.lateCheckinReason 
+                                            : record.manualCheckinReason 
+                                                ? record.manualCheckinReason 
+                                                : isLateCheckIn(record.clockInTime) 
+                                                    ? 'Late arrival' 
+                                                    : 'N/A'}
                                     </td>
                                     <td>
                                         {record.latitude.toFixed(6)}, {record.longitude.toFixed(6)}

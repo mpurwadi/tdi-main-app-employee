@@ -65,7 +65,9 @@ export async function GET(req: NextRequest) {
                 TO_CHAR(clock_out_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Jakarta', 'YYYY-MM-DD HH24:MI:SS.MS') AS clock_out_time,
                 latitude,
                 longitude,
-                'qr' as checkin_type
+                'qr' as checkin_type,
+                NULL as late_checkin_reason,
+                NULL as manual_checkin_reason
             FROM (
                 SELECT 
                     ar.id,
@@ -76,7 +78,9 @@ export async function GET(req: NextRequest) {
                     ar.clock_in_time,
                     ar.clock_out_time,
                     ar.latitude,
-                    ar.longitude
+                    ar.longitude,
+                    NULL as late_checkin_reason,
+                    NULL as manual_checkin_reason
                 FROM attendance_records ar
                 JOIN users u ON ar.user_id = u.id
                 WHERE 1=1
@@ -118,7 +122,9 @@ export async function GET(req: NextRequest) {
                 NULL as clock_out_time,
                 rcr.latitude,
                 rcr.longitude,
-                'remote' as checkin_type
+                'remote' as checkin_type,
+                NULL as late_checkin_reason,
+                NULL as manual_checkin_reason
             FROM remote_checkin_records rcr
             JOIN users u ON rcr.user_id = u.id
             WHERE 1=1
@@ -157,9 +163,11 @@ export async function GET(req: NextRequest) {
             division: record.division,
             clockInTime: record.clock_in_time,
             clockOutTime: record.clock_out_time,
-            latitude: parseFloat(record.latitude),
-            longitude: parseFloat(record.longitude),
-            checkinType: record.checkin_type // 'qr' or 'remote'
+            latitude: record.latitude ? parseFloat(record.latitude) : 0,
+            longitude: record.longitude ? parseFloat(record.longitude) : 0,
+            checkinType: record.checkin_type, // 'qr' or 'remote'
+            lateCheckinReason: record.late_checkin_reason || null,
+            manualCheckinReason: record.manual_checkin_reason || null
         }));
 
         return NextResponse.json({ 
