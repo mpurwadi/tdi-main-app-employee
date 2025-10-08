@@ -6,9 +6,9 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-key';
 
 // Remote work coordinates for geofencing (must match frontend for consistency)
 // For remote work, we'll allow a larger radius
-const DEFAULT_LATITUDE = -6.200000; // Example: Jakarta
-const DEFAULT_LONGITUDE = 106.816666; // Example: Jakarta
-const REMOTE_GEOFENCE_RADIUS_METERS = 50000; // 50km radius for remote work
+const DEFAULT_LATITUDE = parseFloat(process.env.REMOTE_DEFAULT_LATITUDE || '-6.200000'); // Example: Jakarta
+const DEFAULT_LONGITUDE = parseFloat(process.env.REMOTE_DEFAULT_LONGITUDE || '106.816666'); // Example: Jakarta
+const REMOTE_GEOFENCE_RADIUS_METERS = parseInt(process.env.REMOTE_GEOFENCE_RADIUS_METERS || '50000'); // 50km radius for remote work
 
 // Haversine formula to calculate distance between two lat/lon points
 const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {

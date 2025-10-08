@@ -7,9 +7,9 @@ export const dynamic = 'force-dynamic';
 const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-key';
 
 // Office coordinates for geofencing (must match frontend for consistency)
-const OFFICE_LATITUDE = -6.9248406; // Updated coordinates
-const OFFICE_LONGITUDE = 107.6586951; // Updated coordinates
-const GEOFENCE_RADIUS_METERS = 400; // 400 meters
+const OFFICE_LATITUDE = parseFloat(process.env.OFFICE_LATITUDE || '-6.9248406'); // Updated coordinates
+const OFFICE_LONGITUDE = parseFloat(process.env.OFFICE_LONGITUDE || '107.6586951'); // Updated coordinates
+const GEOFENCE_RADIUS_METERS = parseInt(process.env.GEOFENCE_RADIUS_METERS || '400'); // 400 meters
 
 // Haversine formula to calculate distance between two lat/lon points
 const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
