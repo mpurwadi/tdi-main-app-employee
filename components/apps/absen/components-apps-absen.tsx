@@ -24,9 +24,9 @@ const AbsenceComponent = () => {
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
     const [locationConfig, setLocationConfig] = useState({
-        officeLatitude: -6.9248406, // Default fallback
-        officeLongitude: 107.6586951, // Default fallback
-        geofenceRadiusMeters: 400 // Default fallback
+        officeLatitude: process.env.OFFICE_LATITUDE ? parseFloat(process.env.OFFICE_LATITUDE) : -6.924841, // Default fallback
+        officeLongitude: process.env.OFFICE_LONGITUDE ? parseFloat(process.env.OFFICE_LONGITUDE) : 107.658695, // Default fallback
+        geofenceRadiusMeters: process.env.GEOFENCE_RADIUS_METERS ? parseInt(process.env.GEOFENCE_RADIUS_METERS) : 400 // Default fallback
     });
 
     useEffect(() => {

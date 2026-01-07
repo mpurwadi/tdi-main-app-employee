@@ -13,9 +13,9 @@ const AttendanceWidget = () => {
     const [isScanning, setIsScanning] = useState(true);
     const [attendanceStatus, setAttendanceStatus] = useState<string | null>(null);
     const [locationConfig, setLocationConfig] = useState({
-        officeLatitude: -6.200000, // Default fallback
-        officeLongitude: 106.816666, // Default fallback
-        geofenceRadiusMeters: 100 // Default fallback
+        officeLatitude: process.env.DASHBOARD_OFFICE_LATITUDE ? parseFloat(process.env.DASHBOARD_OFFICE_LATITUDE) : -6.200000, // Default fallback
+        officeLongitude: process.env.DASHBOARD_OFFICE_LONGITUDE ? parseFloat(process.env.DASHBOARD_OFFICE_LONGITUDE) : 106.816666, // Default fallback
+        geofenceRadiusMeters: process.env.DASHBOARD_GEOFENCE_RADIUS_METERS ? parseInt(process.env.DASHBOARD_GEOFENCE_RADIUS_METERS) : 100 // Default fallback
     });
 
     useEffect(() => {

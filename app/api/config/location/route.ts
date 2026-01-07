@@ -4,8 +4,8 @@ export async function GET(req: NextRequest) {
   try {
     // Return location configuration from environment variables
     const config = {
-      officeLatitude: process.env.OFFICE_LATITUDE ? parseFloat(process.env.OFFICE_LATITUDE) : -6.9248406,
-      officeLongitude: process.env.OFFICE_LONGITUDE ? parseFloat(process.env.OFFICE_LONGITUDE) : 107.6586951,
+      officeLatitude: process.env.OFFICE_LATITUDE ? parseFloat(process.env.OFFICE_LATITUDE) : -6.924841,
+      officeLongitude: process.env.OFFICE_LONGITUDE ? parseFloat(process.env.OFFICE_LONGITUDE) : 107.658695,
       geofenceRadiusMeters: process.env.GEOFENCE_RADIUS_METERS ? parseInt(process.env.GEOFENCE_RADIUS_METERS) : 400,
       remoteDefaultLatitude: process.env.REMOTE_DEFAULT_LATITUDE ? parseFloat(process.env.REMOTE_DEFAULT_LATITUDE) : -6.200000,
       remoteDefaultLongitude: process.env.REMOTE_DEFAULT_LONGITUDE ? parseFloat(process.env.REMOTE_DEFAULT_LONGITUDE) : 106.816666,
