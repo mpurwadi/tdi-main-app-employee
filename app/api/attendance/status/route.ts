@@ -26,10 +26,12 @@ export async function GET(req: NextRequest) {
         // Check if user has already checked in today but not checked out
         const today = new Date().toISOString().split('T')[0];
         const existingRecord = await db.query(
-            `SELECT id, clock_in_time, clock_out_time 
+            `SELECT id, 
+                    TO_CHAR(clock_in_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Jakarta', 'YYYY-MM-DD HH24:MI:SS.MS') AS clock_in_time, 
+                    TO_CHAR(clock_out_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Jakarta', 'YYYY-MM-DD HH24:MI:SS.MS') AS clock_out_time
              FROM attendance_records 
              WHERE user_id = $1 
-             AND DATE(clock_in_time) = $2 
+             AND DATE(clock_in_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Jakarta') = $2 
              ORDER BY clock_in_time DESC 
              LIMIT 1`,
             [userId, today]

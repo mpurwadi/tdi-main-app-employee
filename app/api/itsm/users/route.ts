@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAuth, isAdmin } from '@/lib/auth';
+import { isAdmin, verifyAuthServer } from "@/lib/auth";
 import { userManagementService } from '@/services/enhancedItsmService';
 
 // GET /api/itsm/users - Get users with specific roles or divisions
 export async function GET(request: NextRequest) {
   try {
-    const auth = verifyAuth();
+    const auth = await verifyAuthServer();
     
     // Only admins can access this endpoint
     if (!isAdmin(auth) && auth.role !== 'superadmin') {

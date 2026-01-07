@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAuth } from '@/lib/auth';
+import { verifyAuthServer } from "@/lib/auth";
 import { 
   serviceCatalogService,
   serviceCatalogActivityService
@@ -103,7 +103,7 @@ const validateServiceInput = (data: any) => {
 // GET /api/itsm/service-catalog/[id] - Get service by ID
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const auth = verifyAuth();
+    const auth = await verifyAuthServer();
     
     const serviceId = parseInt(params.id);
     if (isNaN(serviceId) || serviceId <= 0) {
@@ -147,7 +147,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 // PUT /api/itsm/service-catalog/[id] - Update service
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const auth = verifyAuth();
+    const auth = await verifyAuthServer();
     
     const serviceId = parseInt(params.id);
     if (isNaN(serviceId) || serviceId <= 0) {
@@ -230,7 +230,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 // DELETE /api/itsm/service-catalog/[id] - Delete service
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const auth = verifyAuth();
+    const auth = await verifyAuthServer();
     
     const serviceId = parseInt(params.id);
     if (isNaN(serviceId) || serviceId <= 0) {

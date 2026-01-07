@@ -9,7 +9,7 @@ interface PendingUser {
     email: string;
     student_id: string;
     campus: string;
-    division: string;
+    division_name: string | null; // Changed to match API response
     status: string;
     created_at: string;
 }
@@ -35,8 +35,10 @@ const UserApprovalComponent = () => {
                 const data = await response.json();
                 throw new Error(data.message || 'Failed to fetch users');
             }
-            const data: PendingUser[] = await response.json();
-            setUsers(data);
+            const result = await response.json();
+            // Extract users array from the response object
+            const usersData: PendingUser[] = Array.isArray(result) ? result : result.users || [];
+            setUsers(usersData);
         } catch (err: any) {
             setError(err.message);
         } finally {
@@ -140,7 +142,7 @@ const UserApprovalComponent = () => {
                                     <td>{user.email}</td>
                                     <td>{user.student_id}</td>
                                     <td>{user.campus}</td>
-                                    <td>{user.division}</td>
+                                    <td>{user.division_name || 'N/A'}</td>
                                     <td>{new Date(user.created_at).toLocaleDateString()}</td>
                                     <td className="text-center space-x-2">
                                         {user.status === 'pending' && (

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAuth } from '@/lib/auth';
+import { verifyAuthServer } from "@/lib/auth";
 import { 
   serviceRequestService,
   serviceRequestActivityService
@@ -8,7 +8,7 @@ import {
 // GET /api/itsm/service-requests/[id] - Get service request by ID
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const auth = verifyAuth();
+    const auth = await verifyAuthServer();
     
     const requestId = parseInt(params.id);
     if (isNaN(requestId)) {
@@ -49,17 +49,16 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   }
 }
 
-// PUT /api/itsm/service-requests/[id] - Update service request
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const auth = verifyAuth();
+    const auth = await verifyAuthServer();
     
     const requestId = parseInt(params.id);
     if (isNaN(requestId)) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Invalid service request ID' 
+        {
+          success: false,
+          error: 'Invalid service request ID'
         },
         { status: 400 }
       );
@@ -71,9 +70,9 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     const serviceRequest = await serviceRequestService.getServiceRequestById(requestId);
     if (!serviceRequest) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Service request not found' 
+        {
+          success: false,
+          error: 'Service request not found'
         },
         { status: 404 }
       );
@@ -87,9 +86,9 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     
     if (!hasPermission) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Unauthorized: Insufficient permissions' 
+        {
+          success: false,
+          error: 'Unauthorized: Insufficient permissions'
         },
         { status: 403 }
       );
@@ -105,26 +104,25 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       description: `Updated service request: ${updatedRequest.title}`
     });
     
-    return NextResponse.json({ 
-      success: true, 
-      data: updatedRequest 
+    return NextResponse.json({
+      success: true,
+      data: updatedRequest
     });
   } catch (error: any) {
     console.error('Error updating service request:', error);
     return NextResponse.json(
-      { 
-        success: false, 
-        error: error.message || 'Failed to update service request' 
+      {
+        success: false,
+        error: error.message || 'Failed to update service request'
       },
       { status: 500 }
     );
   }
 }
-
 // DELETE /api/itsm/service-requests/[id] - Delete service request
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const auth = verifyAuth();
+    const auth = await verifyAuthServer();
     
     const requestId = parseInt(params.id);
     if (isNaN(requestId)) {

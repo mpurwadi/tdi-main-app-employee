@@ -1,6 +1,6 @@
 import { Pool } from 'pg';
 import { NextResponse } from 'next/server';
-import { verifyAuth } from '@/lib/auth';
+import { verifyAuthServer } from "@/lib/auth";
 
 // Database connection pool
 const pool = new Pool({
@@ -14,7 +14,7 @@ const pool = new Pool({
 // Get TODO items for a user
 export async function GET(request: Request) {
     try {
-        const auth = verifyAuth();
+        const auth = await verifyAuthServer();
         
         const { searchParams } = new URL(request.url);
         const status = searchParams.get('status');
@@ -44,7 +44,7 @@ export async function GET(request: Request) {
 // Create a new TODO item
 export async function POST(request: Request) {
     try {
-        const auth = verifyAuth();
+        const auth = await verifyAuthServer();
         
         const body = await request.json();
         const { title, description, priority, dueDate } = body;
@@ -73,7 +73,7 @@ export async function POST(request: Request) {
 // Update a TODO item
 export async function PUT(request: Request) {
     try {
-        const auth = verifyAuth();
+        const auth = await verifyAuthServer();
         
         const body = await request.json();
         const { id, title, description, status, priority, dueDate } = body;
@@ -116,7 +116,7 @@ export async function PUT(request: Request) {
 // Delete a TODO item
 export async function DELETE(request: Request) {
     try {
-        const auth = verifyAuth();
+        const auth = await verifyAuthServer();
         
         const { searchParams } = new URL(request.url);
         const id = searchParams.get('id');

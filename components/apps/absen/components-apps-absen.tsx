@@ -18,13 +18,40 @@ const AbsenceComponent = () => {
     const [attendanceHistory, setAttendanceHistory] = useState<any[]>([]);
     const [showManualCheckIn, setShowManualCheckIn] = useState(false);
     const [manualReason, setManualReason] = useState('');
+    const [lateReason, setLateReason] = useState('');
+    const [showLateReason, setShowLateReason] = useState(false);
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // 1-12
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
-    // Office coordinates for geofencing (example - replace with actual office location)
-    const OFFICE_LATITUDE = -6.9248406; // Updated coordinates
-    const OFFICE_LONGITUDE = 107.6586951; // Updated coordinates
-    const GEOFENCE_RADIUS_METERS = 400; // 400 meters
+    const [locationConfig, setLocationConfig] = useState({
+        officeLatitude: process.env.OFFICE_LATITUDE ? parseFloat(process.env.OFFICE_LATITUDE) : -6.924841, // Default fallback
+        officeLongitude: process.env.OFFICE_LONGITUDE ? parseFloat(process.env.OFFICE_LONGITUDE) : 107.658695, // Default fallback
+        geofenceRadiusMeters: process.env.GEOFENCE_RADIUS_METERS ? parseInt(process.env.GEOFENCE_RADIUS_METERS) : 400 // Default fallback
+    });
+
+    useEffect(() => {
+        // Fetch location configuration from API
+        const fetchLocationConfig = async () => {
+            try {
+                const response = await fetch('/api/config/location');
+                if (response.ok) {
+                    const config = await response.json();
+                    setLocationConfig({
+                        officeLatitude: config.officeLatitude,
+                        officeLongitude: config.officeLongitude,
+                        geofenceRadiusMeters: config.geofenceRadiusMeters
+                    });
+                }
+            } catch (error) {
+                console.error('Failed to fetch location configuration:', error);
+                // Keep default values if fetching fails
+            }
+        };
+
+        fetchLocationConfig();
+
+        // ... other useEffect code remains the same
+    }, []);
 
     useEffect(() => {
         // Check location permission status
@@ -122,7 +149,7 @@ const AbsenceComponent = () => {
         }
     };
 
-    const getCurrentLocation = () => {
+    const getCurrentLocation = (isForLateCheckIn = false) => {
         setLoading(true);
         setError(null);
 
@@ -147,21 +174,35 @@ const AbsenceComponent = () => {
                 const calculatedDistance = calculateDistance(
                     latitude,
                     longitude,
-                    OFFICE_LATITUDE,
-                    OFFICE_LONGITUDE
+                    locationConfig.officeLatitude,
+                    locationConfig.officeLongitude
                 );
                 
                 setDistance(calculatedDistance);
 
-                if (calculatedDistance <= GEOFENCE_RADIUS_METERS) {
-                    // Location is within geofence, proceed with attendance submission
-                    await submitAttendance(latitude, longitude);
+                if (calculatedDistance <= locationConfig.geofenceRadiusMeters) {
+                    // If this is specifically for late check-in (from the late form), submit late check-in
+                    if (isForLateCheckIn && showLateReason) {
+                        await submitLateCheckIn(latitude, longitude);
+                    } else if (isForLateCheckIn) {
+                        // If this is called for late check-in but the form is not shown, it means
+                        // we're trying to submit a late check-in but without going through the late prompt
+                        if (isLateCheckIn(null)) {
+                            setShowLateReason(true);
+                        } else {
+                            // If it's not actually late, submit regular check-in
+                            await submitAttendance(latitude, longitude);
+                        }
+                    } else {
+                        // Location is within geofence, proceed with attendance submission
+                        await submitAttendance(latitude, longitude);
+                    }
                 } else {
-                    setError(`You are ${calculatedDistance.toFixed(2)} meters away from the office. Must be within ${GEOFENCE_RADIUS_METERS} meters.`);
+                    setError(`You are ${calculatedDistance.toFixed(2)} meters away from the office. Must be within ${locationConfig.geofenceRadiusMeters} meters.`);
                     Swal.fire({
                         icon: 'error',
                         title: 'Location Error',
-                        text: `You are ${calculatedDistance.toFixed(2)} meters away from the office. Must be within ${GEOFENCE_RADIUS_METERS} meters.`,
+                        text: `You are ${calculatedDistance.toFixed(2)} meters away from the office. Must be within ${locationConfig.geofenceRadiusMeters} meters.`,
                         padding: '2em',
                         customClass: {
                             container: 'sweet-alerts'
@@ -241,6 +282,13 @@ const AbsenceComponent = () => {
     const submitAttendance = async (latitude: number, longitude: number) => {
         try {
             const action = isCheckedIn ? 'check-out' : 'check-in';
+            
+            // Determine if this is likely to be a late check-in based on current time
+            if (action === 'check-in' && isLateCheckIn(null)) { // Pass null to check current time
+                setShowLateReason(true);
+                return;
+            }
+
             const response = await fetch('/api/attendance/check-in', {
                 method: 'POST',
                 headers: {
@@ -291,6 +339,79 @@ const AbsenceComponent = () => {
         }
     };
 
+    const submitLateCheckIn = async (latitude: number, longitude: number) => {
+        if (!lateReason.trim()) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Keterangan Required',
+                text: 'Please provide a reason (keterangan) for late check-in.',
+                padding: '2em',
+                customClass: {
+                    container: 'sweet-alerts'
+                },
+            });
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/attendance/check-in', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    latitude, 
+                    longitude, 
+                    action: 'check-in',
+                    late: true,
+                    lateReason: lateReason
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Late Check-in Recorded!',
+                    text: data.message || 'Your late check-in has been successfully recorded.',
+                    padding: '2em',
+                    customClass: {
+                        container: 'sweet-alerts'
+                    },
+                });
+                
+                // Refresh attendance status and history
+                await checkAttendanceStatus();
+                await loadAttendanceHistory();
+                
+                // Reset form
+                setLateReason('');
+                setShowLateReason(false);
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Check-in Failed',
+                    text: data.message || 'Failed to record check-in.',
+                    padding: '2em',
+                    customClass: {
+                        container: 'sweet-alerts'
+                    },
+                });
+            }
+        } catch (err: any) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: `An unexpected error occurred: ${err.message}`,
+                padding: '2em',
+                customClass: {
+                    container: 'sweet-alerts'
+                },
+            });
+        }
+    };
+
     const submitManualCheckIn = async () => {
         if (!manualReason.trim()) {
             Swal.fire({
@@ -313,8 +434,8 @@ const AbsenceComponent = () => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ 
-                    latitude: OFFICE_LATITUDE, 
-                    longitude: OFFICE_LONGITUDE, 
+                    latitude: locationConfig.officeLatitude, 
+                    longitude: locationConfig.officeLongitude, 
                     action,
                     manual: true,
                     reason: manualReason
@@ -389,16 +510,31 @@ const AbsenceComponent = () => {
             
             // Prepare table data
             const tableData = records.map((record: any) => [
-                new Date(record.clockInTime).toLocaleDateString(),
-                record.clockInTime ? new Date(record.clockInTime).toLocaleTimeString() : '-',
-                record.clockOutTime ? new Date(record.clockOutTime).toLocaleTimeString() : '-',
-                record.manualCheckinReason || record.manualCheckoutReason ? 'Yes' : 'No'
+                new Date(record.clockInTime).toLocaleDateString('id-ID', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit'
+                }),
+                record.clockInTime ? new Date(record.clockInTime).toLocaleTimeString('id-ID', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
+                }) : '-',
+                record.clockOutTime ? new Date(record.clockOutTime).toLocaleTimeString('id-ID', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
+                }) : '-',
+                record.manualCheckinReason || record.manualCheckoutReason ? 'Yes' : (record.lateCheckinReason ? 'Late with reason' : 'No'),
+                record.lateCheckinReason || '-'
             ]);
             
             // Add table using the imported autotable function
             autoTable(doc, {
                 startY: 40,
-                head: [['Date', 'Check-in Time', 'Check-out Time', 'Manual Entry']],
+                head: [['Date', 'Check-in Time', 'Check-out Time', 'Manual/Late Entry', 'Keterangan']],
                 body: tableData,
                 theme: 'striped',
                 styles: {
@@ -440,6 +576,19 @@ const AbsenceComponent = () => {
             'July', 'August', 'September', 'October', 'November', 'December'
         ];
         return months[month - 1];
+    };
+
+    // Check if the time is late (after 9:10 AM)
+    const isLateCheckIn = (checkInTime: string | null = null): boolean => {
+        const timeToCheck = checkInTime ? new Date(checkInTime) : new Date();
+        const hours = timeToCheck.getHours();
+        const minutes = timeToCheck.getMinutes();
+        
+        // Standard office start time is 9:00 AM, late if after 9:10 AM
+        if (hours > 9 || (hours === 9 && minutes > 10)) {
+            return true;
+        }
+        return false;
     };
 
     // Format distance with appropriate units
@@ -503,6 +652,55 @@ const AbsenceComponent = () => {
                     </div>
                 </div>
             )}
+
+            {/* Late Check-in Form */}
+            {showLateReason && (
+                <div className="mb-6 panel">
+                    <h3 className="text-lg font-bold mb-4">Late Check-in Reason Required</h3>
+                    <p className="mb-4">
+                        You are checking in after the standard start time (9:10 AM). Please provide a reason for the late arrival.
+                    </p>
+                    
+                    <div className="mb-4">
+                        <label htmlFor="lateReason" className="block text-sm font-medium mb-1">Keterangan (Reason)</label>
+                        <textarea
+                            id="lateReason"
+                            className="form-input"
+                            value={lateReason}
+                            onChange={(e) => setLateReason(e.target.value)}
+                            placeholder="Enter reason for late check-in"
+                            rows={3}
+                        />
+                    </div>
+                    
+                    <div className="flex justify-end gap-2">
+                        <button
+                            type="button"
+                            className="btn btn-outline-secondary"
+                            onClick={() => {
+                                setShowLateReason(false);
+                                setLateReason('');
+                            }}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="button"
+                            className="btn btn-primary"
+                            onClick={() => {
+                                if (location) {
+                                    submitLateCheckIn(location.latitude, location.longitude);
+                                } else {
+                                    // If location is not available, get the current location first
+                                    getCurrentLocation(true);
+                                }
+                            }}
+                        >
+                            Submit Late Check In
+                        </button>
+                    </div>
+                </div>
+            )}
             
             {/* Location permission instructions */}
             {showLocationInstructions && (
@@ -550,13 +748,13 @@ const AbsenceComponent = () => {
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                     </svg>
-                    <span>Office Location: {OFFICE_LATITUDE.toFixed(6)}, {OFFICE_LONGITUDE.toFixed(6)}</span>
+                    <span>Office Location: {locationConfig.officeLatitude.toFixed(6)}, {locationConfig.officeLongitude.toFixed(6)}</span>
                 </div>
                 <div className="mt-1 flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
                     </svg>
-                    <span>Geofence Radius: {GEOFENCE_RADIUS_METERS} meters</span>
+                    <span>Geofence Radius: {locationConfig.geofenceRadiusMeters} meters</span>
                 </div>
             </div>
 
@@ -578,7 +776,7 @@ const AbsenceComponent = () => {
 
             {distance !== null && (
                 <div className={`p-3 rounded-lg mb-4 ${
-                    distance <= GEOFENCE_RADIUS_METERS 
+                    distance <= locationConfig.geofenceRadiusMeters 
                         ? 'bg-success/10 text-success' 
                         : 'bg-warning/10 text-warning'
                 }`}>
@@ -589,15 +787,15 @@ const AbsenceComponent = () => {
                     <div className="mt-2 w-full bg-gray-200 rounded-full h-2.5">
                         <div 
                             className={`h-2.5 rounded-full ${
-                                distance <= GEOFENCE_RADIUS_METERS ? 'bg-success' : 'bg-warning'
+                                distance <= locationConfig.geofenceRadiusMeters ? 'bg-success' : 'bg-warning'
                             }`} 
-                            style={{ width: `${Math.min(100, (distance / GEOFENCE_RADIUS_METERS) * 100)}%` }}
+                            style={{ width: `${Math.min(100, (distance / locationConfig.geofenceRadiusMeters) * 100)}%` }}
                         ></div>
                     </div>
                     <div className="flex justify-between text-xs mt-1">
                         <span>0m</span>
-                        <span className={distance <= GEOFENCE_RADIUS_METERS ? 'text-success font-bold' : 'text-warning font-bold'}>
-                            {GEOFENCE_RADIUS_METERS}m (Limit)
+                        <span className={distance <= locationConfig.geofenceRadiusMeters ? 'text-success font-bold' : 'text-warning font-bold'}>
+                            {locationConfig.geofenceRadiusMeters}m (Limit)
                         </span>
                     </div>
                 </div>
@@ -606,7 +804,15 @@ const AbsenceComponent = () => {
             {isCheckedIn && checkInTime && (
                 <div className="mb-4 p-3 rounded-lg bg-info/10 text-info">
                     <p className="font-medium">You checked in today at:</p>
-                    <p>{new Date(checkInTime).toLocaleString()}</p>
+                    <p>{new Date(checkInTime).toLocaleString('id-ID', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: false
+                    })}</p>
                 </div>
             )}
 
@@ -614,7 +820,13 @@ const AbsenceComponent = () => {
                 <button
                     type="button"
                     className={`btn ${isCheckedIn ? 'btn-danger' : 'btn-primary'} w-full max-w-xs`}
-                    onClick={getCurrentLocation}
+                    onClick={() => {
+                        if (location) {
+                            submitAttendance(location.latitude, location.longitude);
+                        } else {
+                            getCurrentLocation();
+                        }
+                    }}
                     disabled={loading}
                 >
                     {loading ? (
@@ -688,18 +900,37 @@ const AbsenceComponent = () => {
                                     <th>Check-in Time</th>
                                     <th>Check-out Time</th>
                                     <th>Status</th>
+                                    <th>Keterangan</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {attendanceHistory.map((record) => (
                                     <tr key={record.id}>
-                                        <td>{new Date(record.clockInTime).toLocaleDateString()}</td>
-                                        <td>{record.clockInTime ? new Date(record.clockInTime).toLocaleTimeString() : '-'}</td>
-                                        <td>{record.clockOutTime ? new Date(record.clockOutTime).toLocaleTimeString() : '-'}</td>
+                                        <td>{new Date(record.clockInTime).toLocaleDateString('id-ID', {
+                                            year: 'numeric',
+                                            month: '2-digit',
+                                            day: '2-digit'
+                                        })}</td>
+                                        <td>{record.clockInTime ? new Date(record.clockInTime).toLocaleTimeString('id-ID', {
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                            second: '2-digit',
+                                            hour12: false
+                                        }) : '-'}</td>
+                                        <td>{record.clockOutTime ? new Date(record.clockOutTime).toLocaleTimeString('id-ID', {
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                            second: '2-digit',
+                                            hour12: false
+                                        }) : '-'}</td>
                                         <td>
                                             <span className={`badge ${record.clockOutTime ? 'badge-outline-success' : 'badge-outline-warning'}`}>
                                                 {record.clockOutTime ? 'Completed' : 'In Progress'}
                                             </span>
+                                        </td>
+                                        <td>
+                                            {record.lateCheckinReason ? record.lateCheckinReason : 
+                                             record.manualCheckinReason ? record.manualCheckinReason : '-'}
                                         </td>
                                     </tr>
                                 ))}

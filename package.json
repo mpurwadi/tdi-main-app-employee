@@ -11,7 +11,9 @@
         "generate-certificates": "node generate-certificates.js",
         "start-production": "./start-production.sh",
         "start-production-https": "./start-production-https.sh",
-        "lint": "next lint"
+        "lint": "next lint",
+        "seed-itsm-categories": "node scripts/seed-itsm-categories.js",
+        "test": "jest"
     },
     "dependencies": {
         "@emotion/react": "^11.10.6",
@@ -51,10 +53,12 @@
         "jspdf": "^3.0.2",
         "jspdf-autotable": "^5.0.2",
         "leaflet": "^1.9.4",
+        "lodash": "^4.17.21",
         "mantine-datatable": "^1.7.35",
         "next": "14.2.13",
         "ni18n": "^1.0.5",
         "pg": "^8.16.3",
+        "puppeteer": "^24.22.0",
         "qrcode.react": "^4.2.0",
         "react": "18.3.1",
         "react-animate-height": "^3.1.0",
@@ -99,9 +103,11 @@
         "@vitejs/plugin-basic-ssl": "^2.1.0",
         "autoprefixer": "^10.4.17",
         "express": "^5.1.0",
+        "jest": "^30.2.0",
         "postcss": "^8.4.35",
         "prettier": "^3.3.3",
         "prettier-plugin-tailwindcss": "^0.6.8",
+        "supertest": "^7.1.4",
         "tailwindcss": "^3.4.1"
     }
 }

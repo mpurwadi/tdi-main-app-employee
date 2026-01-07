@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAuth } from '@/lib/auth';
+import { verifyAuthServer } from "@/lib/auth";
 import { 
   serviceRequestCommentService
 } from '@/services/itsmService';
@@ -7,7 +7,7 @@ import {
 // POST /api/itsm/service-requests/[id]/comments - Add comment to service request
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const auth = verifyAuth();
+    const auth = await verifyAuthServer();
     
     const requestId = parseInt(params.id);
     if (isNaN(requestId)) {

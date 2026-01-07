@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import IconMail from '@/components/icon/icon-mail';
@@ -18,12 +18,50 @@ const SimpleCoverRegister = () => {
         passwordConfirm: '',
         studentId: '',
         campus: '',
-        division: '',
+        division: '', // This will now be the actual division ID
+        jobRoleId: '', // This is the new job role field
     });
     const [showPassword, setShowPassword] = useState(false);
     const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [divisions, setDivisions] = useState<{id: number, name: string}[]>([]);
+    const [jobRoles, setJobRoles] = useState<{id: number, name: string}[]>([]);
+    const [loadingDivisions, setLoadingDivisions] = useState(true);
+    const [loadingJobRoles, setLoadingJobRoles] = useState(true);
+
+    // Fetch divisions and job roles on component mount
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                // Fetch divisions
+                const divisionsResponse = await fetch('/api/admin/divisions', { credentials: 'include' });
+                if (divisionsResponse.ok) {
+                    const divisionsData = await divisionsResponse.json();
+                    setDivisions(divisionsData);
+                }
+            } catch (err) {
+                console.error('Error fetching divisions:', err);
+            } finally {
+                setLoadingDivisions(false);
+            }
+
+            try {
+                // Fetch job roles
+                const jobRolesResponse = await fetch('/api/job-roles', { credentials: 'include' });
+                if (jobRolesResponse.ok) {
+                    const jobRolesData = await jobRolesResponse.json();
+                    setJobRoles(jobRolesData);
+                }
+            } catch (err) {
+                console.error('Error fetching job roles:', err);
+            } finally {
+                setLoadingJobRoles(false);
+            }
+        };
+
+        fetchData();
+    }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -54,14 +92,8 @@ const SimpleCoverRegister = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    fullName: formData.fullName,
-                    email: formData.email,
-                    password: formData.password,
-                    studentId: formData.studentId,
-                    campus: formData.campus,
-                    division: formData.division,
-                }),
+                credentials: 'include', // Include credentials (cookies) in the request
+                body: JSON.stringify(formData),
             });
 
             const data = await response.json();
@@ -79,8 +111,6 @@ const SimpleCoverRegister = () => {
             setIsLoading(false);
         }
     };
-
-    const divisions = ['BA', 'QA', 'Developer', 'UIUX', 'Multimedia', 'Helpdesk'];
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
@@ -240,7 +270,7 @@ const SimpleCoverRegister = () => {
                             </div>
                         </div>
 
-                        <div className="mb-6">
+                        <div className="mb-4">
                             <label htmlFor="division" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Division
                             </label>
@@ -251,11 +281,34 @@ const SimpleCoverRegister = () => {
                                 value={formData.division}
                                 onChange={handleChange}
                                 required
+                                disabled={loadingDivisions}
                             >
-                                <option value="">Select Division</option>
+                                <option value="">{loadingDivisions ? 'Loading divisions...' : 'Select Division'}</option>
                                 {divisions.map((div) => (
-                                    <option key={div} value={div}>
-                                        {div}
+                                    <option key={div.id} value={div.id}>
+                                        {div.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="mb-6">
+                            <label htmlFor="jobRoleId" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                Job Role
+                            </label>
+                            <select
+                                id="jobRoleId"
+                                name="jobRoleId"
+                                className="w-full py-2 px-3 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                value={formData.jobRoleId}
+                                onChange={handleChange}
+                                required
+                                disabled={loadingJobRoles}
+                            >
+                                <option value="">{loadingJobRoles ? 'Loading job roles...' : 'Select Job Role'}</option>
+                                {jobRoles.map((role) => (
+                                    <option key={role.id} value={role.id}>
+                                        {role.name}
                                     </option>
                                 ))}
                             </select>

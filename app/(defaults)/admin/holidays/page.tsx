@@ -32,7 +32,7 @@ const AdminHolidaysPage = () => {
     const fetchHolidays = async () => {
         try {
             setLoading(true);
-            const response = await fetch('/api/holidays');
+            const response = await fetch('/api/holidays', { credentials: 'include' });
             
             if (!response.ok) {
                 const data = await response.json();
@@ -91,6 +91,7 @@ const AdminHolidaysPage = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include',
                 body: JSON.stringify(body)
             });
             
@@ -158,7 +159,8 @@ const AdminHolidaysPage = () => {
             if (result.isConfirmed) {
                 try {
                     const response = await fetch(`/api/holidays?id=${id}`, {
-                        method: 'DELETE'
+                        method: 'DELETE',
+                        credentials: 'include'
                     });
                     
                     const data = await response.json();

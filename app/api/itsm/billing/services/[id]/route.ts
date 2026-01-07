@@ -1,6 +1,6 @@
 // app/api/itsm/billing/services/[id]/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAuth, hasRole } from '@/lib/auth';
+import { hasRole, verifyAuthServer } from "@/lib/auth";
 import { db } from '@/lib/db';
 
 // GET /api/itsm/billing/services/[id] - Get a specific service catalog item
@@ -9,7 +9,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const auth = await verifyAuth();
+    const auth = await verifyAuthServer();
     
     // Check if user has appropriate role for billing
     const hasBillingAccess = hasRole(auth, 'billing_coordinator') || 
@@ -63,7 +63,7 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const auth = await verifyAuth();
+    const auth = await verifyAuthServer();
     
     // Only service catalog managers, admins, and superadmins can update services
     const hasUpdateAccess = hasRole(auth, 'service_catalog_manager') || 
@@ -155,7 +155,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const auth = await verifyAuth();
+    const auth = await verifyAuthServer();
     
     // Only service catalog managers, admins, and superadmins can delete services
     const hasDeleteAccess = hasRole(auth, 'service_catalog_manager') || 

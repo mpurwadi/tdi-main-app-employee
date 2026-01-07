@@ -1,13 +1,13 @@
 
 export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
-import { verifyAuth } from '@/lib/auth';
+import { verifyAuthServer } from "@/lib/auth";
 import { db } from '@/lib/db';
 
 // GET current user's profile
 export async function GET(request: Request) {
     try {
-        const auth = verifyAuth(); // Ensures user is authenticated
+        const auth = await verifyAuthServer(); // Ensures user is authenticated
 
         const userResult = await db.query('SELECT id, full_name, email, student_id, campus, division, role FROM users WHERE id = $1', [auth.userId]);
 
@@ -29,7 +29,7 @@ export async function GET(request: Request) {
 // UPDATE current user's profile
 export async function PUT(request: Request) {
     try {
-        const auth = verifyAuth(); // Ensures user is authenticated
+        const auth = await verifyAuthServer(); // Ensures user is authenticated
         const body = await request.json();
         const { fullName, studentId, campus, division } = body;
 
@@ -40,7 +40,7 @@ export async function PUT(request: Request) {
             WHERE id = $5
             RETURNING id, full_name, email, student_id, campus, division, role;
         `;
-        const values = [fullName, studentId, campus, auth.userId, division];
+        const values = [fullName, studentId, campus, division, auth.userId];
 
         const updatedUser = await db.query(query, values);
 

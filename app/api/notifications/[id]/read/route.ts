@@ -1,6 +1,6 @@
 // app/api/notifications/[id]/read/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAuth } from '@/lib/auth';
+import { verifyAuthServer } from "@/lib/auth";
 
 // Mock data for notifications (in a real app, this would be in a database)
 let notifications = [
@@ -33,7 +33,7 @@ let notifications = [
 // POST /api/notifications/[id]/read - Mark a notification as read
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const auth = verifyAuth();
+    const auth = await verifyAuthServer();
     const userId = auth.userId;
     const notificationId = parseInt(params.id);
     

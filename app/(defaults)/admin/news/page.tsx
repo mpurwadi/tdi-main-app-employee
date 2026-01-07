@@ -37,7 +37,7 @@ const AdminNewsManagement = () => {
     const fetchNewsItems = async () => {
         try {
             setLoading(true);
-            const response = await fetch('/api/admin/news');
+            const response = await fetch('/api/admin/news', { credentials: 'include' });
             const data = await response.json();
             
             if (data.success) {
@@ -76,6 +76,7 @@ const AdminNewsManagement = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include',
                 body: JSON.stringify(formData),
             });
             
@@ -115,6 +116,7 @@ const AdminNewsManagement = () => {
         try {
             const response = await fetch(`/api/admin/news/${id}`, {
                 method: 'DELETE',
+                credentials: 'include',
             });
             
             const data = await response.json();

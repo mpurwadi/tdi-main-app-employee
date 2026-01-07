@@ -1,5 +1,5 @@
 import { cookies } from 'next/headers';
-import { verifyAuth } from '@/lib/auth';
+import { verifyAuthServer } from '@/lib/auth';
 
 export default async function TestAuthPage() {
   let authInfo = null;
@@ -13,7 +13,7 @@ export default async function TestAuthPage() {
     cookieInfo = token ? 'Token found' : 'No token';
     
     // Try to verify auth
-    authInfo = await verifyAuth();
+    authInfo = await verifyAuthServer();
   } catch (error: any) {
     errorInfo = error.message;
   }

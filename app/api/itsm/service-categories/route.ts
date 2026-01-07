@@ -5,9 +5,12 @@ import { serviceCategoryService } from '@/services/enhancedItsmService';
 // GET /api/itsm/service-categories - Get all categories
 export async function GET(request: NextRequest) {
   try {
-    const auth = verifyAuth();
+    console.log('Service categories request received');
+    const auth = await verifyAuth(request);
+    console.log('Authentication successful:', auth);
     
     const categories = await serviceCategoryService.getAllCategories();
+    console.log('Categories fetched:', categories.length);
     
     return NextResponse.json({ 
       success: true, 
@@ -28,7 +31,7 @@ export async function GET(request: NextRequest) {
 // POST /api/itsm/service-categories - Create a new category
 export async function POST(request: NextRequest) {
   try {
-    const auth = verifyAuth();
+    const auth = await verifyAuth(request);
     
     // Check if user has appropriate role (admin or service catalog manager)
     const allowedRoles = ['service_catalog_manager', 'admin', 'superadmin'];

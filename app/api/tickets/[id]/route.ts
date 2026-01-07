@@ -1,12 +1,12 @@
 export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
-import { verifyAuth, isAdmin } from '@/lib/auth';
+import { isAdmin, verifyAuthServer } from "@/lib/auth";
 import { db } from '@/lib/db';
 
 // GET a specific ticket
 export async function GET(request: Request, { params }: { params: { id: string } }) {
     try {
-        const auth = verifyAuth();
+        const auth = await verifyAuthServer();
         const ticketId = params.id;
         
         // Check if ticket exists and user has permission to view it
@@ -70,7 +70,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
 // UPDATE a ticket (admin only for assignment/status changes, user can edit their own)
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
     try {
-        const auth = verifyAuth();
+        const auth = await verifyAuthServer();
         const ticketId = params.id;
         const body = await request.json();
         const { title, description, category, priority, status, assignedTo } = body;
@@ -169,7 +169,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 // DELETE a ticket (only ticket creator can delete, and only if it's still open)
 export async function DELETE(request: Request, { params }: { params: { id: string } }) {
     try {
-        const auth = verifyAuth();
+        const auth = await verifyAuthServer();
         const ticketId = params.id;
         
         // Check if ticket exists and user has permission to delete it

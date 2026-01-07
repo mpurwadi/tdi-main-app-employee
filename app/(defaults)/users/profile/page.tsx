@@ -12,7 +12,10 @@ interface UserProfile {
     email: string;
     student_id: string;
     campus: string;
-    division: string;
+    division_id: number | null;
+    division_name: string | null;
+    role: string;
+    roles: string[];
 }
 
 const PasswordResetForm = () => {
@@ -171,36 +174,51 @@ const UserProfilePage = () => {
         email: '',
         student_id: '',
         campus: '',
-        division: '',
+        division_id: null,
+        division_name: null,
+        role: '',
+        roles: [],
     });
+    const [divisions, setDivisions] = useState<{ id: number; name: string }[]>([]);
     const [errors, setErrors] = useState<any>({});
 
     useEffect(() => {
-        const fetchUserProfile = async () => {
+        const fetchData = async () => {
             try {
-                const response = await fetch('/api/users/profile', { credentials: 'include' });
-                if (response.ok) {
-                    const data = await response.json();
-                    setUserData(data);
+                // Fetch user profile
+                const userResponse = await fetch('/api/users/profile', { credentials: 'include' });
+                if (userResponse.ok) {
+                    const userData = await userResponse.json();
+                    setUserData(userData);
                 } else {
-                    // Handle error, e.g., redirect to login if not authenticated
                     router.push('/auth/boxed-signin');
+                    return;
                 }
+
+                // Fetch divisions
+                const divisionsResponse = await fetch('/api/admin/divisions');
+                if (divisionsResponse.ok) {
+                    const divisionsData = await divisionsResponse.json();
+                    setDivisions(divisionsData);
+                } else {
+                    console.error('Failed to fetch divisions');
+                }
+
             } catch (error) {
-                console.error('Failed to fetch user profile:', error);
+                console.error('Failed to fetch data:', error);
                 router.push('/auth/boxed-signin');
             } finally {
                 setLoading(false);
             }
         };
-        fetchUserProfile();
+        fetchData();
     }, [router]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setUserData((prevData) => ({
             ...prevData,
-            [name]: value,
+            [name]: name === 'division_id' ? (value ? parseInt(value, 10) : null) : value,
         }));
     };
 
@@ -214,7 +232,7 @@ const UserProfilePage = () => {
         }
         if (!userData.student_id) newErrors.student_id = 'Student ID is required';
         if (!userData.campus) newErrors.campus = 'Campus is required';
-        if (!userData.division) newErrors.division = 'Division is required';
+        if (userData.division_id === null) newErrors.division_id = 'Division is required';
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -341,23 +359,43 @@ const UserProfilePage = () => {
                     {errors.campus && <div className="text-danger text-sm">{errors.campus}</div>}
                 </div>
                 <div>
-                    <label htmlFor="division">Division</label>
+                    <label htmlFor="division_id">Division</label>
                     <select
-                        id="division"
-                        name="division"
+                        id="division_id"
+                        name="division_id"
                         className="form-select"
-                        value={userData.division}
+                        value={userData.division_id || ''}
                         onChange={handleChange}
                     >
                         <option value="">Select Division</option>
-                        <option value="BA">BA</option>
-                        <option value="QA">QA</option>
-                        <option value="Developer">Developer</option>
-                        <option value="UIUX">UIUX</option>
-                        <option value="Multimedia">Multimedia</option>
-                        <option value="Helpdesk">Helpdesk</option>
+                        {divisions.map((div) => (
+                            <option key={div.id} value={div.id}>
+                                {div.name}
+                            </option>
+                        ))}
                     </select>
-                    {errors.division && <div className="text-danger text-sm">{errors.division}</div>}
+                </div>
+                <div>
+                    <label htmlFor="role">Global Role</label>
+                    <input
+                        id="role"
+                        type="text"
+                        name="role"
+                        className="form-input"
+                        value={userData.role}
+                        disabled
+                    />
+                </div>
+                <div>
+                    <label htmlFor="roles">Division Roles</label>
+                    <input
+                        id="roles"
+                        type="text"
+                        name="roles"
+                        className="form-input"
+                        value={Array.isArray(userData.roles) ? userData.roles.join(', ') : ''}
+                        disabled
+                    />
                 </div>
                 <button type="submit" className="btn btn-primary !mt-6">
                     Update Profile

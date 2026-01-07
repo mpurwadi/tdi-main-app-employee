@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { IRootState } from '@/store';
+import Swal from 'sweetalert2';
 
 const ServiceFormPage = () => {
     const themeConfig = useSelector((state: IRootState) => state.themeConfig);
@@ -83,24 +84,52 @@ const ServiceFormPage = () => {
                 ...formData,
                 category_id: parseInt(formData.category_id),
                 cost_amount: parseFloat(formData.cost_amount),
-                sla_days: formData.sla_days ? parseInt(formData.sla_days) : null
+                sla_days: formData.sla_days ? parseInt(formData.sla_days) : null,
+                tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0) // Process tags
             };
             
-            // In a real implementation, you would send this data to the API
-            // For now, we'll simulate the API call
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            
-            // If there's a document, upload it
-            if (documentFile) {
-                // In a real implementation, you would upload the document here
-                console.log('Uploading document:', documentFile.name);
-                await new Promise(resolve => setTimeout(resolve, 500));
+            const response = await fetch('/api/itsm/service-catalog', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(serviceData),
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                console.error('Service creation validation errors:', result.details); // Log validation details
+                throw new Error(result.message || 'Failed to create service');
+            }
+
+            // If there's a document, upload it after service creation
+            if (documentFile && result.data && result.data.id) {
+                const docFormData = new FormData();
+                docFormData.append('document', documentFile);
+                
+                const uploadResponse = await fetch(`/api/itsm/service-catalog/${result.data.id}/document`, {
+                    method: 'POST',
+                    body: docFormData,
+                });
+
+                if (!uploadResponse.ok) {
+                    const uploadError = await uploadResponse.json();
+                    console.error('Document upload failed:', uploadError.message);
+                    // Don't block service creation if document upload fails, just log
+                }
             }
             
-            // Redirect to service catalog page
+            Swal.fire({
+                icon: 'success',
+                title: 'Service Created!',
+                text: 'Your service has been submitted for approval.',
+                timer: 3000,
+                showConfirmButton: false,
+            });
             router.push('/itsm/service-catalog');
-        } catch (err) {
-            setError('Failed to create service. Please try again.');
+        } catch (err: any) {
+            setError(err.message || 'Failed to create service. Please try again.');
         } finally {
             setLoading(false);
         }

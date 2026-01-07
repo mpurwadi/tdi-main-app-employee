@@ -1,0 +1,1559 @@
+
+> tdi-service@0.1.0 dev
+> next dev --hostname 0.0.0.0 --port 3500
+
+  ▲ Next.js 14.2.13
+  - Local:        http://localhost:3500
+  - Network:      http://0.0.0.0:3500
+  - Environments: .env
+
+ ✓ Starting...
+ ✓ Ready in 5.8s
+ ○ Compiling /middleware ...
+ ✓ Compiled /middleware in 1118ms (72 modules)
+ ○ Compiling / ...
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+ ✓ Compiled / in 10.8s (660 modules)
+ HEAD / 200 in 11266ms
+ ✓ Compiled in 1323ms (328 modules)
+ ✓ Compiled in 10.4s (328 modules)
+ ○ Compiling /api/auth/login ...
+ ✓ Compiled /api/auth/login in 1242ms (421 modules)
+ POST /api/auth/login 200 in 1688ms
+ ⨯ Error: Cannot find module './8948.js'
+Require stack:
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/api/auth/login/route.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1420:15)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1058:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1063:22)
+    at Module._load (node:internal/modules/cjs/loader:1226:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at __webpack_require__.f.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:272:28)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:185:40
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:184:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:236:22)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/page.js:1:6365
+    at Object.<anonymous> (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/page.js:1:6418)
+    at Module._compile (node:internal/modules/cjs/loader:1760:14)
+    at Object..js (node:internal/modules/cjs/loader:1893:10)
+    at Module.load (node:internal/modules/cjs/loader:1480:32)
+    at Module._load (node:internal/modules/cjs/loader:1299:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at requirePage (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js:109:84)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:98:84
+    at async loadComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:98:26)
+    at async DevServer.findPageComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/next-server.js:709:36)
+    at async DevServer.findPageComponents (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/next-dev-server.js:577:20)
+    at async DevServer.renderPageComponent (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:1887:24)
+    at async DevServer.renderToResponseImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:1939:32)
+    at async DevServer.pipeImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:914:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:810:17)
+    at async /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js:173:21)
+    at async handleRequest (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js:350:24)
+    at async requestHandlerImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js:374:13)
+    at async Server.requestListener (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/api/auth/login/route.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js'
+  ],
+  page: '/'
+}
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 3.9s (974 modules)
+ GET / 500 in 4261ms
+ ⨯ Error: Cannot find module './8948.js'
+Require stack:
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/pages/_document.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1420:15)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1058:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1063:22)
+    at Module._load (node:internal/modules/cjs/loader:1226:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at __webpack_require__.f.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:272:28)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:185:40
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:184:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:236:22)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/page.js:1:6365
+    at Object.<anonymous> (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/page.js:1:6418)
+    at Module._compile (node:internal/modules/cjs/loader:1760:14)
+    at Object..js (node:internal/modules/cjs/loader:1893:10)
+    at Module.load (node:internal/modules/cjs/loader:1480:32)
+    at Module._load (node:internal/modules/cjs/loader:1299:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at requirePage (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js:109:84)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:98:84
+    at async loadComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:98:26)
+    at async DevServer.findPageComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/next-server.js:709:36)
+    at async DevServer.findPageComponents (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/next-dev-server.js:577:20)
+    at async DevServer.renderPageComponent (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:1887:24)
+    at async DevServer.renderToResponseImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:1939:32)
+    at async DevServer.pipeImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:914:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:810:17)
+    at async /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js:173:21)
+    at async handleRequest (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js:350:24)
+    at async requestHandlerImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js:374:13)
+    at async Server.requestListener (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/pages/_document.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js'
+  ],
+  page: '/'
+}
+ GET / 500 in 39ms
+ ✓ Compiled in 1766ms (513 modules)
+ ⨯ Error: Cannot find module './8948.js'
+Require stack:
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/pages/_document.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1420:15)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1058:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1063:22)
+    at Module._load (node:internal/modules/cjs/loader:1226:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at __webpack_require__.f.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:272:28)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:185:40
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:184:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:236:22)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/page.js:1:6365
+    at Object.<anonymous> (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/page.js:1:6418)
+    at Module._compile (node:internal/modules/cjs/loader:1760:14)
+    at Object..js (node:internal/modules/cjs/loader:1893:10)
+    at Module.load (node:internal/modules/cjs/loader:1480:32)
+    at Module._load (node:internal/modules/cjs/loader:1299:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at requirePage (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js:109:84)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:98:84
+    at async loadComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:98:26)
+    at async DevServer.findPageComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/next-server.js:709:36)
+    at async DevServer.findPageComponents (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/next-dev-server.js:577:20)
+    at async DevServer.renderPageComponent (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:1887:24)
+    at async DevServer.renderToResponseImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:1939:32)
+    at async DevServer.pipeImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:914:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:810:17)
+    at async /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js:173:21)
+    at async handleRequest (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js:350:24)
+    at async requestHandlerImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js:374:13)
+    at async Server.requestListener (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/pages/_document.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js'
+  ],
+  page: '/'
+}
+ GET / 500 in 33ms
+ POST /api/auth/login 200 in 326ms
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server'
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/api/auth/login/route' in /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/api/auth/login/route.js', but to 'Error: Can't resolve '../../../../.next/server/app/api/auth/login/route' in '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../.next/server/app/api/auth/login/route (expected /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/api/auth/login/route.js)
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at resolve commonjs /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/pages/_error' in /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server for build dependencies doesn't lead to expected result '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/pages/_error.js', but to 'Error: Can't resolve '../../../../.next/server/pages/_error' in '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../.next/server/pages/_error (expected /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/pages/_error.js)
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at resolve commonjs /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+ ✓ Compiled in 1526ms (513 modules)
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⨯ Error: Cannot find module './8948.js'
+Require stack:
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/pages/_document.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1420:15)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1058:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1063:22)
+    at Module._load (node:internal/modules/cjs/loader:1226:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at __webpack_require__.f.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:272:28)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:185:40
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:184:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:236:22)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/page.js:1:6365
+    at Object.<anonymous> (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/page.js:1:6418)
+    at Module._compile (node:internal/modules/cjs/loader:1760:14)
+    at Object..js (node:internal/modules/cjs/loader:1893:10)
+    at Module.load (node:internal/modules/cjs/loader:1480:32)
+    at Module._load (node:internal/modules/cjs/loader:1299:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at requirePage (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js:109:84)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:98:84
+    at async loadComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:98:26)
+    at async DevServer.findPageComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/next-server.js:709:36)
+    at async DevServer.findPageComponents (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/next-dev-server.js:577:20)
+    at async DevServer.renderPageComponent (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:1887:24)
+    at async DevServer.renderToResponseImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:1939:32)
+    at async DevServer.pipeImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:914:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:810:17)
+    at async /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js:173:21)
+    at async handleRequest (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js:350:24)
+    at async requestHandlerImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js:374:13)
+    at async Server.requestListener (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/pages/_document.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js'
+  ],
+  page: '/'
+}
+ GET / 500 in 62ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 864ms (945 modules)
+ GET /_next/static/chunks/react-refresh.js 404 in 1153ms
+ GET /_next/static/chunks/main.js 404 in 879ms
+ GET /_next/static/chunks/pages/_app.js 404 in 870ms
+ GET /_next/static/chunks/pages/_error.js 404 in 275ms
+ ✓ Compiled in 2.4s (513 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/vendor-chunks/react-perfect-scrollbar.js'
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving './vendor-chunks/react-perfect-scrollbar' in /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server for build dependencies doesn't lead to expected result '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/vendor-chunks/react-perfect-scrollbar.js', but to 'Error: Can't resolve './vendor-chunks/react-perfect-scrollbar' in '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ./vendor-chunks/react-perfect-scrollbar (expected /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/vendor-chunks/react-perfect-scrollbar.js)
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at resolve commonjs /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving './vendor-chunks/redux-thunk' in /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server for build dependencies doesn't lead to expected result '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/vendor-chunks/redux-thunk.js', but to 'Error: Can't resolve './vendor-chunks/redux-thunk' in '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ./vendor-chunks/redux-thunk (expected /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/vendor-chunks/redux-thunk.js)
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at resolve commonjs /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving './vendor-chunks/use-sync-external-store' in /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server for build dependencies doesn't lead to expected result '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/vendor-chunks/use-sync-external-store.js', but to 'Error: Can't resolve './vendor-chunks/use-sync-external-store' in '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ./vendor-chunks/use-sync-external-store (expected /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/vendor-chunks/use-sync-external-store.js)
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at resolve commonjs /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving './vendor-chunks/redux' in /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server for build dependencies doesn't lead to expected result '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/vendor-chunks/redux.js', but to 'Error: Can't resolve './vendor-chunks/redux' in '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ./vendor-chunks/redux (expected /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/vendor-chunks/redux.js)
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at resolve commonjs /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving './vendor-chunks/reselect' in /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server for build dependencies doesn't lead to expected result '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/vendor-chunks/reselect.js', but to 'Error: Can't resolve './vendor-chunks/reselect' in '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ./vendor-chunks/reselect (expected /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/vendor-chunks/reselect.js)
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at resolve commonjs /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving './vendor-chunks/immer' in /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server for build dependencies doesn't lead to expected result '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/vendor-chunks/immer.js', but to 'Error: Can't resolve './vendor-chunks/immer' in '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ./vendor-chunks/immer (expected /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/vendor-chunks/immer.js)
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+<w>  at resolve commonjs /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/webpack/loaders/next-route-loader/index.js
+ ✓ Compiled in 1795ms (513 modules)
+ ✓ Compiled in 1264ms (513 modules)
+ ⨯ Error: Cannot find module './8948.js'
+Require stack:
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1420:15)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1058:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1063:22)
+    at Module._load (node:internal/modules/cjs/loader:1226:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at __webpack_require__.f.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:272:28)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:185:40
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:184:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:236:22)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/api/auth/login/route.js:1:3402
+    at Object.<anonymous> (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/api/auth/login/route.js:1:3455)
+    at Module._compile (node:internal/modules/cjs/loader:1760:14)
+    at Object..js (node:internal/modules/cjs/loader:1893:10)
+    at Module.load (node:internal/modules/cjs/loader:1480:32)
+    at Module._load (node:internal/modules/cjs/loader:1299:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at requirePage (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js:109:84)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:98:84
+    at async loadComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:98:26)
+    at async DevServer.findPageComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/next-server.js:709:36)
+    at async DevServer.findPageComponents (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/next-dev-server.js:577:20)
+    at async DevServer.renderPageComponent (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:1887:24)
+    at async DevServer.renderToResponseImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:1939:32)
+    at async DevServer.pipeImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:914:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:810:17)
+    at async /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js:173:21)
+    at async handleRequest (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js:350:24)
+    at async requestHandlerImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js:374:13)
+    at async Server.requestListener (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js'
+  ],
+  page: '/api/auth/login'
+}
+ ⨯ Error: Cannot find module './7925.js'
+Require stack:
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1420:15)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1058:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1063:22)
+    at Module._load (node:internal/modules/cjs/loader:1226:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at __webpack_require__.f.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:272:28)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:185:40
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:184:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:236:22)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/pages/_document.js:1:340
+    at Object.<anonymous> (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/pages/_document.js:1:383)
+    at Module._compile (node:internal/modules/cjs/loader:1760:14)
+    at Object..js (node:internal/modules/cjs/loader:1893:10)
+    at Module.load (node:internal/modules/cjs/loader:1480:32)
+    at Module._load (node:internal/modules/cjs/loader:1299:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at requirePage (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js:109:84)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:72:65
+    at async Promise.all (index 0)
+    at async loadComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:71:33)
+    at async DevServer.findPageComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/next-server.js:709:36) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js'
+  ]
+}
+ POST /api/auth/login 500 in 5704ms
+ ⨯ Error: Cannot find module './8948.js'
+Require stack:
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1420:15)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1058:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1063:22)
+    at Module._load (node:internal/modules/cjs/loader:1226:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at __webpack_require__.f.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:272:28)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:185:40
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:184:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:236:22)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/page.js:1:6365
+    at Object.<anonymous> (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/page.js:1:6418)
+    at Module._compile (node:internal/modules/cjs/loader:1760:14)
+    at Object..js (node:internal/modules/cjs/loader:1893:10)
+    at Module.load (node:internal/modules/cjs/loader:1480:32)
+    at Module._load (node:internal/modules/cjs/loader:1299:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at requirePage (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js:109:84)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:98:84
+    at async loadComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:98:26)
+    at async DevServer.findPageComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/next-server.js:709:36)
+    at async DevServer.findPageComponents (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/next-dev-server.js:577:20)
+    at async DevServer.renderPageComponent (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:1887:24)
+    at async DevServer.renderToResponseImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:1939:32)
+    at async DevServer.pipeImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:914:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:810:17)
+    at async /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js:173:21)
+    at async handleRequest (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js:350:24)
+    at async requestHandlerImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js:374:13)
+    at async Server.requestListener (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js'
+  ],
+  page: '/'
+}
+ ⨯ Error: Cannot find module './7925.js'
+Require stack:
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1420:15)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1058:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1063:22)
+    at Module._load (node:internal/modules/cjs/loader:1226:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at __webpack_require__.f.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:272:28)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:185:40
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:184:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:236:22)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/pages/_document.js:1:340
+    at Object.<anonymous> (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/pages/_document.js:1:383)
+    at Module._compile (node:internal/modules/cjs/loader:1760:14)
+    at Object..js (node:internal/modules/cjs/loader:1893:10)
+    at Module.load (node:internal/modules/cjs/loader:1480:32)
+    at Module._load (node:internal/modules/cjs/loader:1299:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at requirePage (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js:109:84)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:72:65
+    at async Promise.all (index 0)
+    at async loadComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:71:33)
+    at async DevServer.findPageComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/next-server.js:709:36) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js'
+  ]
+}
+ GET / 500 in 50ms
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/vendor-chunks'
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving './vendor-chunks/react-perfect-scrollbar' in /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server for build dependencies doesn't lead to expected result '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/vendor-chunks/react-perfect-scrollbar.js', but to 'Error: Can't resolve './vendor-chunks/react-perfect-scrollbar' in '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ./vendor-chunks/react-perfect-scrollbar (expected /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/vendor-chunks/react-perfect-scrollbar.js)
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/handle-externals.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/handle-externals.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w>  at resolve commonjs /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving './vendor-chunks/redux-thunk' in /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server for build dependencies doesn't lead to expected result '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/vendor-chunks/redux-thunk.js', but to 'Error: Can't resolve './vendor-chunks/redux-thunk' in '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ./vendor-chunks/redux-thunk (expected /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/vendor-chunks/redux-thunk.js)
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/handle-externals.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/handle-externals.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w>  at resolve commonjs /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving './vendor-chunks/use-sync-external-store' in /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server for build dependencies doesn't lead to expected result '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/vendor-chunks/use-sync-external-store.js', but to 'Error: Can't resolve './vendor-chunks/use-sync-external-store' in '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ./vendor-chunks/use-sync-external-store (expected /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/vendor-chunks/use-sync-external-store.js)
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/handle-externals.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/handle-externals.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w>  at resolve commonjs /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving './vendor-chunks/redux' in /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server for build dependencies doesn't lead to expected result '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/vendor-chunks/redux.js', but to 'Error: Can't resolve './vendor-chunks/redux' in '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ./vendor-chunks/redux (expected /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/vendor-chunks/redux.js)
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/handle-externals.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/handle-externals.js
+<w>  at file dependencies /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w>  at file /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+<w>  at resolve commonjs /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+ ⨯ Error: Cannot find module './8948.js'
+Require stack:
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1420:15)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1058:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1063:22)
+    at Module._load (node:internal/modules/cjs/loader:1226:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at __webpack_require__.f.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:272:28)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:185:40
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:184:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:236:22)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/api/auth/login/route.js:1:3402
+    at Object.<anonymous> (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/api/auth/login/route.js:1:3455)
+    at Module._compile (node:internal/modules/cjs/loader:1760:14)
+    at Object..js (node:internal/modules/cjs/loader:1893:10)
+    at Module.load (node:internal/modules/cjs/loader:1480:32)
+    at Module._load (node:internal/modules/cjs/loader:1299:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at requirePage (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js:109:84)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:98:84
+    at async loadComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:98:26)
+    at async DevServer.findPageComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/next-server.js:709:36)
+    at async DevServer.findPageComponents (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/next-dev-server.js:577:20)
+    at async DevServer.renderPageComponent (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:1887:24)
+    at async DevServer.renderToResponseImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:1939:32)
+    at async DevServer.pipeImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:914:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:810:17)
+    at async /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js:173:21)
+    at async handleRequest (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js:350:24)
+    at async requestHandlerImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js:374:13)
+    at async Server.requestListener (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js'
+  ],
+  page: '/api/auth/login'
+}
+ ⨯ Error: Cannot find module './7925.js'
+Require stack:
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1420:15)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1058:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1063:22)
+    at Module._load (node:internal/modules/cjs/loader:1226:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at __webpack_require__.f.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:272:28)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:185:40
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:184:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:236:22)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/pages/_document.js:1:340
+    at Object.<anonymous> (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/pages/_document.js:1:383)
+    at Module._compile (node:internal/modules/cjs/loader:1760:14)
+    at Object..js (node:internal/modules/cjs/loader:1893:10)
+    at Module.load (node:internal/modules/cjs/loader:1480:32)
+    at Module._load (node:internal/modules/cjs/loader:1299:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at requirePage (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js:109:84)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:72:65
+    at async Promise.all (index 0)
+    at async loadComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:71:33)
+    at async DevServer.findPageComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/next-server.js:709:36) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js'
+  ]
+}
+ POST /api/auth/login 500 in 63ms
+ ✓ Compiled in 2.8s (513 modules)
+ ⨯ Error: Cannot find module './8948.js'
+Require stack:
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1420:15)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1058:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1063:22)
+    at Module._load (node:internal/modules/cjs/loader:1226:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at __webpack_require__.f.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:272:28)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:185:40
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:184:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:236:22)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/page.js:1:6365
+    at Object.<anonymous> (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/page.js:1:6418)
+    at Module._compile (node:internal/modules/cjs/loader:1760:14)
+    at Object..js (node:internal/modules/cjs/loader:1893:10)
+    at Module.load (node:internal/modules/cjs/loader:1480:32)
+    at Module._load (node:internal/modules/cjs/loader:1299:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at requirePage (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js:109:84)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:98:84
+    at async loadComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:98:26)
+    at async DevServer.findPageComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/next-server.js:709:36)
+    at async DevServer.findPageComponents (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/next-dev-server.js:577:20)
+    at async DevServer.renderPageComponent (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:1887:24)
+    at async DevServer.renderToResponseImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:1939:32)
+    at async DevServer.pipeImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:914:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:810:17)
+    at async /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js:173:21)
+    at async handleRequest (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js:350:24)
+    at async requestHandlerImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js:374:13)
+    at async Server.requestListener (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js'
+  ],
+  page: '/'
+}
+ ⨯ Error: Cannot find module './7925.js'
+Require stack:
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1420:15)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1058:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1063:22)
+    at Module._load (node:internal/modules/cjs/loader:1226:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at __webpack_require__.f.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:272:28)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:185:40
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:184:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:236:22)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/pages/_document.js:1:340
+    at Object.<anonymous> (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/pages/_document.js:1:383)
+    at Module._compile (node:internal/modules/cjs/loader:1760:14)
+    at Object..js (node:internal/modules/cjs/loader:1893:10)
+    at Module.load (node:internal/modules/cjs/loader:1480:32)
+    at Module._load (node:internal/modules/cjs/loader:1299:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at requirePage (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js:109:84)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:72:65
+    at async Promise.all (index 0)
+    at async loadComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:71:33)
+    at async DevServer.findPageComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/next-server.js:709:36) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js'
+  ]
+}
+ GET / 500 in 50ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ✓ Compiled in 2.4s (513 modules)
+ ⨯ Error: Cannot find module './8948.js'
+Require stack:
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1420:15)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1058:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1063:22)
+    at Module._load (node:internal/modules/cjs/loader:1226:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at __webpack_require__.f.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:272:28)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:185:40
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:184:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:236:22)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/page.js:1:6365
+    at Object.<anonymous> (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/page.js:1:6418)
+    at Module._compile (node:internal/modules/cjs/loader:1760:14)
+    at Object..js (node:internal/modules/cjs/loader:1893:10)
+    at Module.load (node:internal/modules/cjs/loader:1480:32)
+    at Module._load (node:internal/modules/cjs/loader:1299:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at requirePage (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js:109:84)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:98:84
+    at async loadComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:98:26)
+    at async DevServer.findPageComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/next-server.js:709:36)
+    at async DevServer.findPageComponents (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/next-dev-server.js:577:20)
+    at async DevServer.renderPageComponent (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:1887:24)
+    at async DevServer.renderToResponseImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:1939:32)
+    at async DevServer.pipeImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:914:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:810:17)
+    at async /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js:173:21)
+    at async handleRequest (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js:350:24)
+    at async requestHandlerImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js:374:13)
+    at async Server.requestListener (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js'
+  ],
+  page: '/'
+}
+ GET /_next/static/webpack/55688410fb2e0905.webpack.hot-update.json 404 in 104ms
+ ⨯ Error: Cannot find module './7925.js'
+Require stack:
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1420:15)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1058:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1063:22)
+    at Module._load (node:internal/modules/cjs/loader:1226:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at __webpack_require__.f.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:272:28)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:185:40
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:184:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:236:22)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/pages/_document.js:1:340
+    at Object.<anonymous> (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/pages/_document.js:1:383)
+    at Module._compile (node:internal/modules/cjs/loader:1760:14)
+    at Object..js (node:internal/modules/cjs/loader:1893:10)
+    at Module.load (node:internal/modules/cjs/loader:1480:32)
+    at Module._load (node:internal/modules/cjs/loader:1299:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at requirePage (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js:109:84)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:72:65
+    at async Promise.all (index 0)
+    at async loadComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:71:33)
+    at async DevServer.findPageComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/next-server.js:709:36) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js'
+  ]
+}
+ GET / 500 in 105ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⨯ Error: Cannot find module './8948.js'
+Require stack:
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1420:15)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1058:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1063:22)
+    at Module._load (node:internal/modules/cjs/loader:1226:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at __webpack_require__.f.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:272:28)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:185:40
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:184:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:236:22)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/page.js:1:6365
+    at Object.<anonymous> (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/page.js:1:6418)
+    at Module._compile (node:internal/modules/cjs/loader:1760:14)
+    at Object..js (node:internal/modules/cjs/loader:1893:10)
+    at Module.load (node:internal/modules/cjs/loader:1480:32)
+    at Module._load (node:internal/modules/cjs/loader:1299:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at requirePage (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js:109:84)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:98:84
+    at async loadComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:98:26)
+    at async DevServer.findPageComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/next-server.js:709:36)
+    at async DevServer.findPageComponents (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/next-dev-server.js:577:20)
+    at async DevServer.renderPageComponent (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:1887:24)
+    at async DevServer.renderToResponseImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:1939:32)
+    at async DevServer.pipeImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:914:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:810:17)
+    at async /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js:173:21)
+    at async handleRequest (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js:350:24)
+    at async requestHandlerImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js:374:13)
+    at async Server.requestListener (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js'
+  ],
+  page: '/'
+}
+ ⨯ Error: Cannot find module './7925.js'
+Require stack:
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1420:15)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1058:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1063:22)
+    at Module._load (node:internal/modules/cjs/loader:1226:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at __webpack_require__.f.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:272:28)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:185:40
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:184:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:236:22)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/pages/_document.js:1:340
+    at Object.<anonymous> (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/pages/_document.js:1:383)
+    at Module._compile (node:internal/modules/cjs/loader:1760:14)
+    at Object..js (node:internal/modules/cjs/loader:1893:10)
+    at Module.load (node:internal/modules/cjs/loader:1480:32)
+    at Module._load (node:internal/modules/cjs/loader:1299:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at requirePage (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js:109:84)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:72:65
+    at async Promise.all (index 0)
+    at async loadComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:71:33)
+    at async DevServer.findPageComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/next-server.js:709:36) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js'
+  ]
+}
+ GET / 500 in 40ms
+ ✓ Compiled in 1569ms (513 modules)
+ ⨯ Error: Cannot find module './8948.js'
+Require stack:
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1420:15)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1058:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1063:22)
+    at Module._load (node:internal/modules/cjs/loader:1226:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at __webpack_require__.f.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:272:28)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:185:40
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:184:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:236:22)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/page.js:1:6365
+    at Object.<anonymous> (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/page.js:1:6418)
+    at Module._compile (node:internal/modules/cjs/loader:1760:14)
+    at Object..js (node:internal/modules/cjs/loader:1893:10)
+    at Module.load (node:internal/modules/cjs/loader:1480:32)
+    at Module._load (node:internal/modules/cjs/loader:1299:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at requirePage (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js:109:84)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:98:84
+    at async loadComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:98:26)
+    at async DevServer.findPageComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/next-server.js:709:36)
+    at async DevServer.findPageComponents (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/next-dev-server.js:577:20)
+    at async DevServer.renderPageComponent (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:1887:24)
+    at async DevServer.renderToResponseImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:1939:32)
+    at async DevServer.pipeImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:914:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:810:17)
+    at async /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js:173:21)
+    at async handleRequest (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js:350:24)
+    at async requestHandlerImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js:374:13)
+    at async Server.requestListener (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js'
+  ],
+  page: '/'
+}
+ ⨯ Error: Cannot find module './7925.js'
+Require stack:
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1420:15)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1058:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1063:22)
+    at Module._load (node:internal/modules/cjs/loader:1226:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at __webpack_require__.f.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:272:28)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:185:40
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:184:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:236:22)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/pages/_document.js:1:340
+    at Object.<anonymous> (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/pages/_document.js:1:383)
+    at Module._compile (node:internal/modules/cjs/loader:1760:14)
+    at Object..js (node:internal/modules/cjs/loader:1893:10)
+    at Module.load (node:internal/modules/cjs/loader:1480:32)
+    at Module._load (node:internal/modules/cjs/loader:1299:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at requirePage (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js:109:84)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:72:65
+    at async Promise.all (index 0)
+    at async loadComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:71:33)
+    at async DevServer.findPageComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/next-server.js:709:36) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js'
+  ]
+}
+ GET /_next/static/webpack/55688410fb2e0905.webpack.hot-update.json 404 in 67ms
+ GET / 500 in 69ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⨯ Error: Cannot find module './8948.js'
+Require stack:
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1420:15)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1058:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1063:22)
+    at Module._load (node:internal/modules/cjs/loader:1226:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at __webpack_require__.f.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:272:28)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:185:40
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:184:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:236:22)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/page.js:1:6365
+    at Object.<anonymous> (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/page.js:1:6418)
+    at Module._compile (node:internal/modules/cjs/loader:1760:14)
+    at Object..js (node:internal/modules/cjs/loader:1893:10)
+    at Module.load (node:internal/modules/cjs/loader:1480:32)
+    at Module._load (node:internal/modules/cjs/loader:1299:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at requirePage (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js:109:84)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:98:84
+    at async loadComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:98:26)
+    at async DevServer.findPageComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/next-server.js:709:36)
+    at async DevServer.findPageComponents (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/next-dev-server.js:577:20)
+    at async DevServer.renderPageComponent (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:1887:24)
+    at async DevServer.renderToResponseImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:1939:32)
+    at async DevServer.pipeImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:914:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/base-server.js:810:17)
+    at async /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js:173:21)
+    at async handleRequest (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js:350:24)
+    at async requestHandlerImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js:374:13)
+    at async Server.requestListener (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js'
+  ],
+  page: '/'
+}
+ ⨯ Error: Cannot find module './7925.js'
+Require stack:
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js
+- /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1420:15)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1058:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1063:22)
+    at Module._load (node:internal/modules/cjs/loader:1226:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at __webpack_require__.f.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:272:28)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:185:40
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:184:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js:236:22)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/pages/_document.js:1:340
+    at Object.<anonymous> (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/pages/_document.js:1:383)
+    at Module._compile (node:internal/modules/cjs/loader:1760:14)
+    at Object..js (node:internal/modules/cjs/loader:1893:10)
+    at Module.load (node:internal/modules/cjs/loader:1480:32)
+    at Module._load (node:internal/modules/cjs/loader:1299:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at requirePage (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js:109:84)
+    at /root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:72:65
+    at async Promise.all (index 0)
+    at async loadComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js:71:33)
+    at async DevServer.findPageComponentsImpl (/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/next-server.js:709:36) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/webpack-runtime.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/.next/server/app/_not-found/page.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/require.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/load-components.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/build/utils.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-middleware.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/dev/hot-reloader-webpack.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/router-server.js',
+    '/root/app/tdi-main-app-employee_itsm/tdi-main-app-employee/node_modules/next/dist/server/lib/start-server.js'
+  ]
+}
+ GET / 500 in 43ms
+[?25h

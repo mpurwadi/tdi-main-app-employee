@@ -12,11 +12,33 @@ const AttendanceWidget = () => {
     const [error, setError] = useState<string | null>(null);
     const [isScanning, setIsScanning] = useState(true);
     const [attendanceStatus, setAttendanceStatus] = useState<string | null>(null);
+    const [locationConfig, setLocationConfig] = useState({
+        officeLatitude: process.env.DASHBOARD_OFFICE_LATITUDE ? parseFloat(process.env.DASHBOARD_OFFICE_LATITUDE) : -6.200000, // Default fallback
+        officeLongitude: process.env.DASHBOARD_OFFICE_LONGITUDE ? parseFloat(process.env.DASHBOARD_OFFICE_LONGITUDE) : 106.816666, // Default fallback
+        geofenceRadiusMeters: process.env.DASHBOARD_GEOFENCE_RADIUS_METERS ? parseInt(process.env.DASHBOARD_GEOFENCE_RADIUS_METERS) : 100 // Default fallback
+    });
 
-    // Office coordinates for geofencing (example - replace with actual office location)
-    const OFFICE_LATITUDE = -6.200000; // Example: Jakarta
-    const OFFICE_LONGITUDE = 106.816666; // Example: Jakarta
-    const GEOFENCE_RADIUS_METERS = 100; // 100 meters
+    useEffect(() => {
+        // Fetch location configuration from API
+        const fetchLocationConfig = async () => {
+            try {
+                const response = await fetch('/api/config/location');
+                if (response.ok) {
+                    const config = await response.json();
+                    setLocationConfig({
+                        officeLatitude: config.dashboardOfficeLatitude,
+                        officeLongitude: config.dashboardOfficeLongitude,
+                        geofenceRadiusMeters: config.dashboardGeofenceRadiusMeters
+                    });
+                }
+            } catch (error) {
+                console.error('Failed to fetch location configuration:', error);
+                // Keep default values if fetching fails
+            }
+        };
+
+        fetchLocationConfig();
+    }, []);
 
     useEffect(() => {
         // Initialize QR code scanner
@@ -84,21 +106,21 @@ const AttendanceWidget = () => {
                 const calculatedDistance = calculateDistance(
                     latitude,
                     longitude,
-                    OFFICE_LATITUDE,
-                    OFFICE_LONGITUDE
+                    locationConfig.officeLatitude,
+                    locationConfig.officeLongitude
                 );
                 
                 setDistance(calculatedDistance);
 
-                if (calculatedDistance <= GEOFENCE_RADIUS_METERS) {
+                if (calculatedDistance <= locationConfig.geofenceRadiusMeters) {
                     // Location is within geofence, proceed with attendance submission
                     await submitAttendance(qrData, latitude, longitude);
                 } else {
-                    setError(`You are ${calculatedDistance.toFixed(2)} meters away from the office. Must be within ${GEOFENCE_RADIUS_METERS} meters.`);
+                    setError(`You are ${calculatedDistance.toFixed(2)} meters away from the office. Must be within ${locationConfig.geofenceRadiusMeters} meters.`);
                     Swal.fire({
                         icon: 'error',
                         title: 'Location Error',
-                        text: `You are ${calculatedDistance.toFixed(2)} meters away from the office. Must be within ${GEOFENCE_RADIUS_METERS} meters.`,
+                        text: `You are ${calculatedDistance.toFixed(2)} meters away from the office. Must be within ${locationConfig.geofenceRadiusMeters} meters.`,
                         padding: '2em',
                         customClass: {
                             container: 'sweet-alerts'
@@ -212,13 +234,13 @@ const AttendanceWidget = () => {
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                     </svg>
-                    <span>Office Location: {OFFICE_LATITUDE.toFixed(6)}, {OFFICE_LONGITUDE.toFixed(6)}</span>
+                    <span>Office Location: {locationConfig.officeLatitude.toFixed(6)}, {locationConfig.officeLongitude.toFixed(6)}</span>
                 </div>
                 <div className="mt-1 flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
                     </svg>
-                    <span>Geofence Radius: {GEOFENCE_RADIUS_METERS} meters</span>
+                    <span>Geofence Radius: {locationConfig.geofenceRadiusMeters} meters</span>
                 </div>
             </div>
 
@@ -240,7 +262,7 @@ const AttendanceWidget = () => {
 
             {distance !== null && (
                 <div className={`p-3 rounded-lg mb-4 ${
-                    distance <= GEOFENCE_RADIUS_METERS 
+                    distance <= locationConfig.geofenceRadiusMeters 
                         ? 'bg-success/10 text-success' 
                         : 'bg-warning/10 text-warning'
                 }`}>
@@ -251,15 +273,15 @@ const AttendanceWidget = () => {
                     <div className="mt-2 w-full bg-gray-200 rounded-full h-2.5">
                         <div 
                             className={`h-2.5 rounded-full ${
-                                distance <= GEOFENCE_RADIUS_METERS ? 'bg-success' : 'bg-warning'
+                                distance <= locationConfig.geofenceRadiusMeters ? 'bg-success' : 'bg-warning'
                             }`} 
-                            style={{ width: `${Math.min(100, (distance / GEOFENCE_RADIUS_METERS) * 100)}%` }}
+                            style={{ width: `${Math.min(100, (distance / locationConfig.geofenceRadiusMeters) * 100)}%` }}
                         ></div>
                     </div>
                     <div className="flex justify-between text-xs mt-1">
                         <span>0m</span>
-                        <span className={distance <= GEOFENCE_RADIUS_METERS ? 'text-success font-bold' : 'text-warning font-bold'}>
-                            {GEOFENCE_RADIUS_METERS}m (Limit)
+                        <span className={distance <= locationConfig.geofenceRadiusMeters ? 'text-success font-bold' : 'text-warning font-bold'}>
+                            {locationConfig.geofenceRadiusMeters}m (Limit)
                         </span>
                     </div>
                 </div>

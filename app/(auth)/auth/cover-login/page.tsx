@@ -26,6 +26,7 @@ const SimpleCoverLogin = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include', // Include credentials (cookies) in the request
                 body: JSON.stringify({ email, password }),
             });
 
@@ -36,17 +37,22 @@ const SimpleCoverLogin = () => {
             }
 
             // On successful login, the API sets a cookie.
-            // Redirect based on the redirectTo field from the API response.
+            // Redirect based on redirectTo value from API response.
             if (data.redirectTo) {
+                console.log('Redirecting to:', data.redirectTo);
                 router.push(data.redirectTo);
             } else {
-                // Fallback redirect logic based on user role.
+                // Fallback to role-based redirect if redirectTo is not provided
                 const userRole = data.role;
+                console.log('User role:', userRole);
                 if (userRole === 'superadmin' || userRole === 'admin') {
+                    console.log('Redirecting to admin dashboard');
                     router.push('/admin/dashboard'); // Redirect to admin dashboard
                 } else if (userRole === 'user') {
+                    console.log('Redirecting to user dashboard');
                     router.push('/user-dashboard'); // Redirect to the new user dashboard
                 } else {
+                    console.log('Redirecting to home page');
                     router.push('/'); // Fallback to home if role is unknown
                 }
             }

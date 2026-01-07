@@ -1,12 +1,12 @@
 export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
-import { verifyAuth, isAdmin } from '@/lib/auth';
+import { isAdmin, verifyAuthServer } from "@/lib/auth";
 import { db } from '@/lib/db';
 
 // POST a new comment on a ticket
 export async function POST(request: Request, { params }: { params: { id: string } }) {
     try {
-        const auth = verifyAuth();
+        const auth = await verifyAuthServer();
         const ticketId = params.id;
         const body = await request.json();
         const { comment } = body;

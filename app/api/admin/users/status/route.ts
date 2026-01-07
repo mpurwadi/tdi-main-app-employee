@@ -1,6 +1,6 @@
 import { Pool } from 'pg';
 import { NextResponse } from 'next/server';
-import { verifyAuth, isAdmin } from '@/lib/auth';
+import { isAdmin, verifyAuthServer } from "@/lib/auth";
 import { config } from 'dotenv';
 
 // Load environment variables
@@ -17,7 +17,7 @@ const pool = new Pool({
 
 export async function PUT(request: Request) {
     try {
-        const auth = await verifyAuth();
+        const auth = await verifyAuthServer();
         if (!isAdmin(auth)) {
             return NextResponse.json({ message: 'Forbidden' }, { status: 403 });
         }

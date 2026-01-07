@@ -27,7 +27,7 @@ const UserProfileSettings = () => {
     useEffect(() => {
         const fetchUserProfile = async () => {
             try {
-                const response = await fetch('/api/users/me');
+                const response = await fetch('/api/users/me', { credentials: 'include' });
                 if (!response.ok) {
                     if (response.status === 401) {
                         router.push('/auth/boxed-signin'); // Redirect to login if unauthorized

@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
-import { verifyAuth } from '@/lib/auth';
+import { verifyAuthServer } from "@/lib/auth";
 import { db } from '@/lib/db';
 
 // Get logbook entries for a user
 export async function GET(request: Request) {
     try {
-        const auth = verifyAuth();
+        const auth = await verifyAuthServer();
         
         const { searchParams } = new URL(request.url);
         const startDate = searchParams.get('startDate');
@@ -36,7 +36,7 @@ export async function GET(request: Request) {
 // Create a new logbook entry
 export async function POST(request: Request) {
     try {
-        const auth = verifyAuth();
+        const auth = await verifyAuthServer();
         
         const body = await request.json();
         const { entryDate, activity, workType, startTime, endTime } = body;
@@ -78,7 +78,7 @@ export async function POST(request: Request) {
 // Update a logbook entry
 export async function PUT(request: Request) {
     try {
-        const auth = verifyAuth();
+        const auth = await verifyAuthServer();
         
         const body = await request.json();
         const { entryId, activity, workType, startTime, endTime } = body;
@@ -126,7 +126,7 @@ export async function PUT(request: Request) {
 // Delete a logbook entry
 export async function DELETE(request: Request) {
     try {
-        const auth = verifyAuth();
+        const auth = await verifyAuthServer();
         
         const { searchParams } = new URL(request.url);
         const entryId = searchParams.get('entryId');

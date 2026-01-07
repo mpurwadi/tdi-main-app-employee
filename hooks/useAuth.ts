@@ -1,40 +1,49 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { AuthPayload } from '@/lib/auth-helpers'; // Import AuthPayload from auth-helpers
 
-interface User {
-    id: number;
-    full_name: string;
-    email: string;
-    role: string;
-    student_id?: string;
-    campus?: string;
-    division?: string;
+interface UseAuthResult {
+    isAuthenticated: boolean;
+    user: AuthPayload | null;
+    loading: boolean;
+    error: string | null;
 }
 
-export function useAuth() {
-    const [user, setUser] = useState<User | null>(null);
+export function useAuth(): UseAuthResult {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [user, setUser] = useState<AuthPayload | null>(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const router = useRouter();
 
     useEffect(() => {
-        const fetchUser = async () => {
+        const checkAuth = async () => {
             try {
-                const response = await fetch('/api/users/me');
+                const response = await fetch('/api/auth/me'); // Endpoint to get current user's info
                 if (!response.ok) {
-                    throw new Error('Failed to fetch user');
+                    // If not authenticated, clear user and redirect to login
+                    setIsAuthenticated(false);
+                    setUser(null);
+                    router.push('/auth/boxed-signin'); // Redirect to login page
+                    return;
                 }
-                const userData = await response.json();
+                const userData: AuthPayload = await response.json();
+                setIsAuthenticated(true);
                 setUser(userData);
-            } catch (error) {
-                console.error('Error fetching user:', error);
+            } catch (err: any) {
+                setError('Authentication failed: ' + err.message);
+                setIsAuthenticated(false);
                 setUser(null);
+                router.push('/auth/boxed-signin'); // Redirect to login page on error
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchUser();
-    }, []);
+        checkAuth();
+    }, [router]);
 
-    return { user, loading };
+    return { isAuthenticated, user, loading, error };
 }

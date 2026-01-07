@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAuth } from '@/lib/auth';
+import { verifyAuthServer } from "@/lib/auth";
 import { 
   serviceRequestService,
   serviceRequestActivityService,
@@ -9,7 +9,7 @@ import {
 // POST /api/itsm/service-requests/[id]/complete - Complete a service request
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const auth = verifyAuth();
+    const auth = await verifyAuthServer();
     
     const requestId = parseInt(params.id);
     if (isNaN(requestId)) {

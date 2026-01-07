@@ -7,9 +7,9 @@ export const dynamic = 'force-dynamic';
 const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-key';
 
 // Office coordinates for geofencing (must match frontend for consistency)
-const OFFICE_LATITUDE = -6.9248406; // Updated coordinates
-const OFFICE_LONGITUDE = 107.6586951; // Updated coordinates
-const GEOFENCE_RADIUS_METERS = 400; // 400 meters
+const OFFICE_LATITUDE = parseFloat(process.env.OFFICE_LATITUDE || '-6.924841'); // Updated coordinates
+const OFFICE_LONGITUDE = parseFloat(process.env.OFFICE_LONGITUDE || '107.658695'); // Updated coordinates
+const GEOFENCE_RADIUS_METERS = parseInt(process.env.GEOFENCE_RADIUS_METERS || '400'); // 400 meters
 
 // Haversine formula to calculate distance between two lat/lon points
 const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ message: 'Invalid token' }, { status: 401 });
         }
 
-        const { latitude, longitude, action, manual, reason } = await req.json();
+        const { latitude, longitude, action, manual, reason, late, lateReason } = await req.json();
 
         // Validate required fields
         if (!latitude || !longitude) {
@@ -62,21 +62,22 @@ export async function POST(req: NextRequest) {
             }
         }
 
-        // Check if user has already checked in today
-        const today = new Date().toISOString().split('T')[0];
-        const existingRecord = await db.query(
-            `SELECT id, clock_in_time, clock_out_time 
-             FROM attendance_records 
-             WHERE user_id = $1 
-             AND DATE(clock_in_time) = $2 
-             ORDER BY clock_in_time DESC 
-             LIMIT 1`,
-            [userId, today]
-        );
-
         if (action === 'check-out') {
+            // For check-out, specifically look for active (not checked out) records
+            const today = new Date().toISOString().split('T')[0];
+            const activeCheckInRecord = await db.query(
+                `SELECT id, clock_in_time, clock_out_time 
+                 FROM attendance_records 
+                 WHERE user_id = $1 
+                 AND DATE(clock_in_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Jakarta') = $2
+                 AND clock_out_time IS NULL
+                 ORDER BY clock_in_time DESC 
+                 LIMIT 1`,
+                [userId, today]
+            );
+            
             // Handle check-out
-            if (existingRecord.rows.length === 0 || existingRecord.rows[0].clock_out_time) {
+            if (activeCheckInRecord.rows.length === 0) {
                 return NextResponse.json({ 
                     message: 'No active check-in found for today' 
                 }, { status: 400 });
@@ -84,12 +85,12 @@ export async function POST(req: NextRequest) {
 
             // Update the existing record with check-out time
             const updateQuery = manual 
-                ? 'UPDATE attendance_records SET clock_out_time = CURRENT_TIMESTAMP, manual_checkout_reason = $1 WHERE id = $2'
-                : 'UPDATE attendance_records SET clock_out_time = CURRENT_TIMESTAMP WHERE id = $1';
+                ? 'UPDATE attendance_records SET clock_out_time = NOW(), manual_checkout_reason = $1 WHERE id = $2'
+                : 'UPDATE attendance_records SET clock_out_time = NOW() WHERE id = $1';
             
             const updateParams = manual 
-                ? [reason, existingRecord.rows[0].id]
-                : [existingRecord.rows[0].id];
+                ? [reason, activeCheckInRecord.rows[0].id]
+                : [activeCheckInRecord.rows[0].id];
 
             await db.query(updateQuery, updateParams);
 
@@ -97,6 +98,18 @@ export async function POST(req: NextRequest) {
                 message: manual ? 'Manual check-out successful!' : 'Check-out successful!' 
             }, { status: 200 });
         } else {
+            // For check-in, check if user has any record today
+            const today = new Date().toISOString().split('T')[0];
+            const existingRecord = await db.query(
+                `SELECT id, clock_in_time, clock_out_time 
+                 FROM attendance_records 
+                 WHERE user_id = $1 
+                 AND DATE(clock_in_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Jakarta') = $2 
+                 ORDER BY clock_in_time DESC 
+                 LIMIT 1`,
+                [userId, today]
+            );
+            
             // Handle check-in
             if (existingRecord.rows.length > 0 && !existingRecord.rows[0].clock_out_time) {
                 return NextResponse.json({ 
@@ -104,19 +117,34 @@ export async function POST(req: NextRequest) {
                 }, { status: 400 });
             }
 
-            // Record attendance with location
-            const insertQuery = manual 
-                ? 'INSERT INTO attendance_records (user_id, qr_data, latitude, longitude, clock_in_time, manual_checkin_reason) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP, $5)'
-                : 'INSERT INTO attendance_records (user_id, qr_data, latitude, longitude, clock_in_time) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)';
+            // If it's a late check-in, validate that the late reason is provided
+            if (late) {
+                if (!lateReason || !lateReason.trim()) {
+                    return NextResponse.json({ 
+                        message: 'Keterangan (reason) is required for late check-in' 
+                    }, { status: 400 });
+                }
+            }
+
+            // Record attendance with location - ensure using server timezone
+            let insertQuery: string;
+            let insertParams: any[];
             
-            const insertParams = manual 
-                ? [userId, 'MANUAL_CHECK_IN', latitude, longitude, reason]
-                : [userId, 'GEOFENCE_CHECK_IN', latitude, longitude];
+            if (manual) {
+                insertQuery = 'INSERT INTO attendance_records (user_id, qr_data, latitude, longitude, clock_in_time, manual_checkin_reason) VALUES ($1, $2, $3, $4, NOW(), $5)';
+                insertParams = [userId, 'MANUAL_CHECK_IN', latitude, longitude, reason];
+            } else if (late) {
+                insertQuery = 'INSERT INTO attendance_records (user_id, qr_data, latitude, longitude, clock_in_time, late_checkin_reason) VALUES ($1, $2, $3, $4, NOW(), $5)';
+                insertParams = [userId, 'LATE_CHECK_IN', latitude, longitude, lateReason];
+            } else {
+                insertQuery = 'INSERT INTO attendance_records (user_id, qr_data, latitude, longitude, clock_in_time) VALUES ($1, $2, $3, $4, NOW())';
+                insertParams = [userId, 'GEOFENCE_CHECK_IN', latitude, longitude];
+            }
 
             await db.query(insertQuery, insertParams);
 
             return NextResponse.json({ 
-                message: manual ? 'Manual check-in successful!' : 'Check-in successful!' 
+                message: late ? 'Late check-in recorded successfully!' : (manual ? 'Manual check-in successful!' : 'Check-in successful!') 
             }, { status: 200 });
         }
 

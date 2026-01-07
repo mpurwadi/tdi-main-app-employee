@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS attendance_records (
     clock_out_time TIMESTAMP NULL,
     manual_checkin_reason TEXT NULL,
     manual_checkout_reason TEXT NULL,
+    late_checkin_reason TEXT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );

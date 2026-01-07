@@ -1,11 +1,11 @@
 // test-auth-api/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAuth } from '@/lib/auth';
+import { verifyAuthServer } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
   try {
     // Test authentication
-    const auth = await verifyAuth();
+    const auth = await verifyAuthServer();
     
     return NextResponse.json({
       success: true,

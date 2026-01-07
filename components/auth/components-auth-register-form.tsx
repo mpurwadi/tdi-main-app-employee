@@ -6,7 +6,7 @@ import IconUser from '@/components/icon/icon-user';
 import IconEye from '@/components/icon/icon-eye';
 import IconEyeOff from '@/components/icon/icon-eye-off';
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const ComponentsAuthRegisterForm = () => {
     const router = useRouter();
@@ -17,11 +17,49 @@ const ComponentsAuthRegisterForm = () => {
         passwordConfirm: '',
         studentId: '',
         campus: '',
-        division: '',
+        division: '', // This will now be the actual division
+        jobRoleId: '', // This is the new job role field
     });
     const [showPassword, setShowPassword] = useState(false);
     const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [divisions, setDivisions] = useState<{id: number, name: string}[]>([]);
+    const [jobRoles, setJobRoles] = useState<{id: number, name: string}[]>([]);
+    const [loadingDivisions, setLoadingDivisions] = useState(true);
+    const [loadingJobRoles, setLoadingJobRoles] = useState(true);
+
+    // Fetch divisions and job roles on component mount
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                // Fetch divisions
+                const divisionsResponse = await fetch('/api/admin/divisions', { credentials: 'include' });
+                if (divisionsResponse.ok) {
+                    const divisionsData = await divisionsResponse.json();
+                    setDivisions(divisionsData);
+                }
+            } catch (err) {
+                console.error('Error fetching divisions:', err);
+            } finally {
+                setLoadingDivisions(false);
+            }
+
+            try {
+                // Fetch job roles
+                const jobRolesResponse = await fetch('/api/job-roles', { credentials: 'include' });
+                if (jobRolesResponse.ok) {
+                    const jobRolesData = await jobRolesResponse.json();
+                    setJobRoles(jobRolesData);
+                }
+            } catch (err) {
+                console.error('Error fetching job roles:', err);
+            } finally {
+                setLoadingJobRoles(false);
+            }
+        };
+
+        fetchData();
+    }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -49,6 +87,7 @@ const ComponentsAuthRegisterForm = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include',
                 body: JSON.stringify({
                     fullName: formData.fullName,
                     email: formData.email,
@@ -56,6 +95,7 @@ const ComponentsAuthRegisterForm = () => {
                     studentId: formData.studentId,
                     campus: formData.campus,
                     division: formData.division,
+                    jobRoleId: formData.jobRoleId,
                 }),
             });
 
@@ -72,8 +112,6 @@ const ComponentsAuthRegisterForm = () => {
             setError(err.message);
         }
     };
-
-    const divisions = ['BA', 'QA', 'Developer', 'UIUX', 'Multimedia', 'Helpdesk'];
 
     return (
         <form className="space-y-5 dark:text-white" onSubmit={handleSubmit}>
@@ -167,11 +205,38 @@ const ComponentsAuthRegisterForm = () => {
             </div>
             <div>
                 <label htmlFor="division">Division</label>
-                <select id="division" name="division" className="form-select text-white-dark" value={formData.division} onChange={handleChange} required>
-                    <option value="">Select Division</option>
+                <select 
+                    id="division" 
+                    name="division" 
+                    className="form-select text-white-dark" 
+                    value={formData.division} 
+                    onChange={handleChange} 
+                    required
+                    disabled={loadingDivisions}
+                >
+                    <option value="">{loadingDivisions ? 'Loading divisions...' : 'Select Division'}</option>
                     {divisions.map((div) => (
-                        <option key={div} value={div}>
-                            {div}
+                        <option key={div.id} value={div.id}>
+                            {div.name}
+                        </option>
+                    ))}
+                </select>
+            </div>
+            <div>
+                <label htmlFor="jobRoleId">Job Role</label>
+                <select 
+                    id="jobRoleId" 
+                    name="jobRoleId" 
+                    className="form-select text-white-dark" 
+                    value={formData.jobRoleId} 
+                    onChange={handleChange} 
+                    required
+                    disabled={loadingJobRoles}
+                >
+                    <option value="">{loadingJobRoles ? 'Loading job roles...' : 'Select Job Role'}</option>
+                    {jobRoles.map((role) => (
+                        <option key={role.id} value={role.id}>
+                            {role.name}
                         </option>
                     ))}
                 </select>
